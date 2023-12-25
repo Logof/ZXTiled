@@ -17,11 +17,10 @@ import org.github.logof.zxtiled.core.MapperFrame;
  */
 public class ViewMenu extends Menu
 {
-	private static final long serialVersionUID = 5739872015701945346L;
 	private JCheckBoxMenuItem collisionItem, gridItem;
 	private JCheckBoxMenuItem tileLayerItem, objectLayerItem;
 	private List<JMenuItem> mapDependentItems;
-	private MapperFrame parentFrame;
+	private final MapperFrame parentFrame;
 
 	/**
 	 * Constructor for the ViewMenu
@@ -58,14 +57,14 @@ public class ViewMenu extends Menu
 		objectLayerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
 		
 		// Add them to the ArrayList of map dependent items
-		mapDependentItems = new ArrayList<JMenuItem>();
+		mapDependentItems = new ArrayList<>();
 		mapDependentItems.add(collisionItem);
 		mapDependentItems.add(gridItem);
 		mapDependentItems.add(tileLayerItem);
 		mapDependentItems.add(objectLayerItem);
 		
 		// Create and add each JMenuItem to the Menu
-		ArrayList<JMenuItem> temp = new ArrayList<JMenuItem>();
+		List<JMenuItem> temp = new ArrayList<>();
 		temp.add(collisionItem);
 		temp.add(gridItem);
 		temp.add(tileLayerItem);
@@ -74,15 +73,7 @@ public class ViewMenu extends Menu
 		return temp;
 	}
 
-	/**
-	 * Gets all of the map dependent menu items
-	 * @return Menu items which are dependent on the map being loaded
-	 */
-	public List<JMenuItem> getMapDependentItems()
-	{
-		return mapDependentItems;
-	}
-	
+
 	/**
 	 * Gets whether or not collision mode is enabled
 	 * @return Whether or not collision mode is enabled

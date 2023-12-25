@@ -10,11 +10,13 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
+import lombok.Getter;
 import org.github.logof.zxtiled.util.SpringUtilities;
 
 /**
  * A panel which shows all of the currently loaded tiles to select from.
  */
+@Getter
 public class TilePanel extends JPanel
 {
 	private int selectedTileIndex;
@@ -120,7 +122,7 @@ public class TilePanel extends JPanel
 	 */
 	public int calcTileColumns(int tilePanelWidth, int tileWidth, int padding)
 	{
-		return (Integer) tilePanelWidth/(tileWidth + padding);
+		return tilePanelWidth/(tileWidth + padding);
 	}
 	
 	/**
@@ -132,15 +134,7 @@ public class TilePanel extends JPanel
 		return associatedMapPanel;
 	}
 	
-	/**
-	 * Get the TileSheet associated with this TilePanel
-	 * @return - The TileSheet associated with this TilePanel
-	 */
-	public TileSheet getTileSheet()
-	{
-		return tileSheet;
-	}
-	
+
 	/**
 	 * Sets the selected tile to the incoming 
 	 * index and clears the previously selected one
@@ -153,15 +147,7 @@ public class TilePanel extends JPanel
 		tiles.get(index).setSelected(true);
 	}
 	
-	/**
-	 * Gets the index of the currently selected tile in this panel
-	 * @return The index of the currently selected tile
-	 */
-	public int getSelectedTileIndex()
-	{
-		return selectedTileIndex;
-	}
-	
+
 	/**
 	 * Gets the tile of the currently selected tile in this panel
 	 * @return The tile of the currently selected tile

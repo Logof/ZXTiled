@@ -1,4 +1,5 @@
 package org.github.logof.zxtiled.core;
+import lombok.Getter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,14 +14,14 @@ import javax.swing.Icon;
 /**
  * A tile which can be selected in one of the TilePanels.
  */
+@Getter
 public class Tile extends JLabel
 {
-	private static final long serialVersionUID = 4917332631093002577L;
 	private boolean selected = false;
-	private Image image;
-	private Icon iconImage;
-	private TilePanel parentTilePanel;
-	private int id;
+	private final Image image;
+	private final Icon iconImage;
+	private final TilePanel parentTilePanel;
+	private final int id;
 	
 	/**
 	 * This constructs a drawable tile to be displayed on a TilePanel
@@ -38,16 +39,7 @@ public class Tile extends JLabel
 		parentTilePanel = tilePanel;
 		addMouseListener(new TileListener());
 	}
-	
-	/**
-	 * Gets the TilePanel to which this Tile belongs
-	 * @return the TilePanel to which this Tile belongs
-	 */
-	public TilePanel getParentTilePanel()
-	{
-		return parentTilePanel;
-	}
-	
+
 	/**
 	 * @Override of the JLabel method
 	 * Paints the component. If selected,
@@ -76,25 +68,7 @@ public class Tile extends JLabel
 		selected = flag;
 		repaint();
 	}
-	
-	/**
-	 * Sets the id of this Tile
-	 * @param id - Tile id to set
-	 */
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-	
-	/**
-	 * Gets the image displayed in this Tile
-	 * @return The image displayed in this Tile
-	 */
-	public Image getImage()
-	{
-		return image;
-	}
-	
+
 	/**
 	 * Simple MouseListener used for updating the selected Tile
 	 */
@@ -103,16 +77,10 @@ public class Tile extends JLabel
 		public void mousePressed(MouseEvent e)
 		{
 			// Tell the MapPanel which panel was selected last
-			if (parentTilePanel.isObjectPanel())
-				parentTilePanel.getMapPanel().setObjectPanelSelectedLast(true);
-			else
-				parentTilePanel.getMapPanel().setObjectPanelSelectedLast(false);
-			
+			parentTilePanel.getMapPanel().setObjectPanelSelectedLast(parentTilePanel.isObjectPanel());
+
 			// Tell the parent TilePanel that this tile has been selected
-			if (id < 0)
-				parentTilePanel.setSelectedTile(0);
-			else
-				parentTilePanel.setSelectedTile(id);
+            parentTilePanel.setSelectedTile(Math.max(id, 0));
 			repaint();
 		}
 		
@@ -121,16 +89,10 @@ public class Tile extends JLabel
 			if (e.getModifiers() == 16)
 			{
 				// Tell the MapPanel which panel was selected last
-				if (parentTilePanel.isObjectPanel())
-					parentTilePanel.getMapPanel().setObjectPanelSelectedLast(true);
-				else
-					parentTilePanel.getMapPanel().setObjectPanelSelectedLast(false);
-				
+				parentTilePanel.getMapPanel().setObjectPanelSelectedLast(parentTilePanel.isObjectPanel());
+
 				// Tell the parent TilePanel that this tile has been selected
-				if (id < 0)
-					parentTilePanel.setSelectedTile(0);
-				else
-					parentTilePanel.setSelectedTile(id);
+                parentTilePanel.setSelectedTile(Math.max(id, 0));
 				repaint();
 			}
 		}

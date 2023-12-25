@@ -141,7 +141,7 @@ public class TileSheet
 			for (int y = 0; y < i.getHeight(); y++)
 			{
 				int color = i.getRGB(x, y);
-				int alpha = (color & 0xFF000000) >> 32;
+				int alpha = (color & 0xFF000000);
 				int red = (color & 0x00FF0000) >> 16;
 		    	int green = (color & 0x0000FF00) >> 8;
 		    	int blue = color & 0x000000FF;

@@ -12,9 +12,9 @@ import javax.imageio.ImageIO;
  */
 public class Splash implements Runnable
 {
-	private MapperFrame parent;
-	private final int INITIAL_WAIT = 350;
-	private final int SPLASH_DISPLAY_TIME = 4000;
+	private final MapperFrame parent;
+	private final static int INITIAL_WAIT = 350;
+	private final static int SPLASH_DISPLAY_TIME = 4000;
 	
 	/**
 	 * Creates a splash screen for use with a frame
