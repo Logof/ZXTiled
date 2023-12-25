@@ -33,12 +33,12 @@ public class TileSheet48 extends AbstractTileSheet {
                         TILE_HEIGHT), 0, 0, null);
 
                 switch (TileTypeEnum.getTileTypeById(lastTileNumber)) {
-                    case PUSH -> pushableTile = new AbstractTile(bufferedImage);
-                    case LOCK -> lockTile = new AbstractTile(bufferedImage);
-                    case LIFE -> lifeTile = new AbstractTile(bufferedImage);
-                    case COLLECTABLE -> collectableTile = new AbstractTile(bufferedImage);
-                    case KEY -> keyTile = new AbstractTile(bufferedImage);
-                    default -> backgroundTiles.add(new AbstractTile(bufferedImage));
+                    case PUSH: pushableTile = new AbstractTile(bufferedImage); break;
+                    case LOCK: lockTile = new AbstractTile(bufferedImage); break;
+                    case LIFE: lifeTile = new AbstractTile(bufferedImage); break;
+                    case COLLECTABLE : collectableTile = new AbstractTile(bufferedImage); break;
+                    case KEY: keyTile = new AbstractTile(bufferedImage); break;
+                    default: backgroundTiles.add(new AbstractTile(bufferedImage)); break;
                 }
                 lastTileNumber += 1;
             }

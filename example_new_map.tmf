@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<project xsi:noNamespaceSchemaLocation="schema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <graphic>
+    <loading>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </loading>
+    <title>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </title>
+    <ending>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </ending>
+    <frame>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </frame>
+    <tiles>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </tiles>
+    <sprites>
+      <sprites>
+        <filePath>string</filePath>
+        <base64>string</base64>
+      </sprites>
+      <sprites_bullet>
+        <filePath>string</filePath>
+        <base64>string</base64>
+      </sprites_bullet>
+      <sprites_extra>
+        <filePath>string</filePath>
+        <base64>string</base64>
+      </sprites_extra>
+    </sprites>
+    <font>
+      <filePath>string</filePath>
+      <base64>string</base64>
+    </font>
+  </graphic>
+  <map screen_width="-3177" screen_height="7">
+    <screen id="3186">
+      <tile />
+      <tile />
+      <tile />
+    </screen>
+  </map>
+</project>

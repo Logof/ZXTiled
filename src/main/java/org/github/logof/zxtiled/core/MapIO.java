@@ -3,6 +3,7 @@ package org.github.logof.zxtiled.core;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -18,150 +19,6 @@ import org.jdom2.output.*;
  */
 public class MapIO 
 {
-	/*
-	 * Information about Base64 can be found at http://en.wikipedia.org/wiki/Base64
-	 */
-	
-	// Code characters for values 0 ... 63
-	private final static char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray();
-	
-	// Lookup table for converting base64 characters to value in range 0 ... 63
-	private static final byte[] base64Codes = new byte[256];
-	static
-	{
-		// set all to -1
-		for(int i = 0; i < 256; i++) base64Codes[i] = -1;
-		// 'A' ... 'Z' = 0 ... 25
-		for(int i = 'A'; i <= 'Z'; i++) base64Codes[i] = (byte)(i - 'A');
-		// 'a' ... 'z' = 26 ... 51
-		for(int i = 'a'; i <= 'z'; i++) base64Codes[i] = (byte)(26 + i - 'a');
-		// '0' ... '9' = 52 ... 61
-		for(int i = '0'; i <= '9'; i++) base64Codes[i] = (byte)(52 + i - '0');
-		// '+' = 62
-		base64Codes['+'] = 62;
-		// '/' = 63
-		base64Codes['/'] = 63;
-	}
-	
-	/**
-	 * 
-	 * This method generates a base64 character array from a byte array.
-	 * Usage (Image):
-	 * BufferedImage image = BUFFEREDIMAGE_CREATED_FROM_IMAGE;
-	 * ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	 * ImageIO.write(image, FILE_EXTENSION, outputStream);
-	 * char[] encodedImage = MapIO.base64Encode(outputStream.toByteArray());
-	 * Usage (String):
-	 * String string = "";
-	 * char[] encodedString = MapIO.base64Encode(string.getBytes());
-	 * See documentation if you need to encode something else.
-	 * Information about Base64 can be found at http://en.wikipedia.org/wiki/Base64
-	 * 
-	 * @param data - The byte[] to encode
-	 * @return The Base64 encoded char[]
-	 */
-	public static char[] base64Encode(byte[] data)
-	{
-		// Integer division so will always be multiple of 4
-		char[] out = new char[((data.length + 2) / 3) * 4];
-		
-		//
-		// 3 bytes encode to 4 characters. out.length % 4 == 0 (ALWAYS)
-		//
-		for (int i = 0, ii = 0; i < data.length; i += 3, ii += 4)
-		{
-			boolean fours = false;
-			boolean threes = false;
-			
-			int val = (0xFF & (int)data[i]);
-			val <<= 8;
-			if ((i + 1) < data.length)
-			{
-				val |= (0xFF & (int)data[i+1]);
-				threes = true;
-			}
-			val <<= 8;
-			if ((i + 2) < data.length)
-			{
-				val |= (0xFF & (int)data[i+2]);
-				fours = true;
-			}
-			out[ii + 3] = alpha[fours ? (val & 0x3F) : 64];
-			val >>= 6;
-			out[ii + 2] = alpha[threes ? (val & 0x3F) : 64];
-			val >>= 6;
-			out[ii+1] = alpha[val & 0x3F];
-			val >>= 6;
-			out[ii] = alpha[val & 0x3F];
-		}
-		
-		return out;
-	}
-	
-	/**
-	 * 
-	 * This method decodes a base64 character array and outputs a byte array.
-	 * Usage (Image):
-	 * char[] base64Chars = BASE64CHARS;
-	 * byte[] imageBytes = MapIO.base64Decode(base64Chars);
-	 * InputStream in = new ByteArrayInputStream(imageBytes);
-	 * BufferedImage decodedImage = ImageIO.read(in);
-	 * Usage (String):
-	 * char[] base64Chars = BASE64CHARS;
-	 * byte[] stringBytes = MapIO.base64Decode(base64Chars);
-	 * String decodedString = new String(stringBytes);
-	 * Information about Base64 can be found at http://en.wikipedia.org/wiki/Base64
-	 * 
-	 * @param data - The char[] to be decoded
-	 * @return The Base64 decoded byte[]
-	 */
-	public static byte[] base64Decode(char[] data)
-	{
-		int inputLength = data.length;
-        for (char datum : data) {
-            if (datum > 255 || base64Codes[datum] < 0) inputLength--; // Ignore non-valid chars and padding
-        }
-		
-		//
-		// 3 bytes for every 4 valid base64 chars.
-		// Also add 2 bytes if there are 3 extra base64 chars, or add 1 byte if there are 2 extra
-		//
-		int len = (inputLength / 4) * 3;
-		if((inputLength % 4) == 3) len += 2;
-		if((inputLength % 4) == 2) len += 1;
-		
-		byte[] out = new byte[len];
-		
-		int shift = 0;
-		int excess = 0;
-		int index = 0;
-
-        for (char datum : data) {
-            int value = (datum > 255) ? -1 : base64Codes[datum];
-
-            // Skip over invalid base64 chars
-            if (value >= 0) {
-                // Bits shift up 6 each iteration, and new bits get put at bottom
-                excess <<= 6;
-                shift += 6;
-                excess |= value;
-                // If there are more than 8 shifted in, write them out. (leave excess at bottom)
-                if (shift >= 8) {
-                    shift -= 8;
-                    out[index++] = (byte) ((excess >> shift) & 0xff);
-                }
-            }
-        }
-		
-		if (index != out.length)
-		{
-			throw new Error("Data Length Calculation Error: (wrote " + index + " instead of " + out.length + ")");
-		}
-		
-		return out;
-	}
-
-	
 	/**
 	 * Loads the .tmf file into the program and sets it up to be edited
 	 * @param fileName - The file path to read the project from
@@ -226,7 +83,7 @@ public class MapIO
             }
 			
 			// Convert Base64 string to the image
-			byte[] imageBytes = MapIO.base64Decode(tileSheetOriginal.toCharArray());
+			byte[] imageBytes = Base64.getDecoder().decode(tileSheetOriginal);
 			InputStream in = new ByteArrayInputStream(imageBytes);
 			BufferedImage decodedImage = ImageIO.read(in);
 						
@@ -311,7 +168,7 @@ public class MapIO
             // Calculate original tilesheet image
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
     		ImageIO.write(frame.getTilePanel().getTileSheet().getRawImage(), "png", baos);
-    		char[] encodedImage = MapIO.base64Encode(baos.toByteArray());
+    		byte[] encodedImage = Base64.getEncoder().encode(baos.toByteArray());
     		
     		// Store it
             Element tilesheet_image = map.getChild("tilesheet_image");

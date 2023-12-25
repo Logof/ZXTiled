@@ -36,16 +36,16 @@ public class TileSheet16 extends AbstractTileSheet {
                         TILE_HEIGHT), 0, 0, null);
 
                 switch (TileTypeEnum.getTileTypeById(lastTileNumber)) {
-                    case PRIMARY_BACKGROUND -> primaryBackgroundTile = new AbstractTile(bufferedImage);
-                    case BACKGROUND -> backgroundTiles.add(new AbstractTile(bufferedImage));
-                    case PUSH -> pushableTile = new AbstractTile(bufferedImage);
-                    case LOCK -> lockTile = new AbstractTile(bufferedImage);
-                    case LIFE -> lifeTile = new AbstractTile(bufferedImage);
-                    case COLLECTABLE -> collectableTile = new AbstractTile(bufferedImage);
-                    case KEY -> keyTile = new AbstractTile(bufferedImage);
-                    case ALTERNATIVE_BACKGROUND -> alternativeBackgroundTile = new AbstractTile(bufferedImage);
-                    case SHADOW -> shadingBackgroundTiles.add(new AbstractTile(bufferedImage));
-                    default -> System.out.println("Не удалось определить тип тайла");
+                    case PRIMARY_BACKGROUND: primaryBackgroundTile = new AbstractTile(bufferedImage); break;
+                    case BACKGROUND: backgroundTiles.add(new AbstractTile(bufferedImage)); break;
+                    case PUSH: pushableTile = new AbstractTile(bufferedImage);break;
+                    case LOCK: lockTile = new AbstractTile(bufferedImage);break;
+                    case LIFE: lifeTile = new AbstractTile(bufferedImage);break;
+                    case COLLECTABLE: collectableTile = new AbstractTile(bufferedImage);break;
+                    case KEY: keyTile = new AbstractTile(bufferedImage);break;
+                    case ALTERNATIVE_BACKGROUND: alternativeBackgroundTile = new AbstractTile(bufferedImage);break;
+                    case SHADOW: shadingBackgroundTiles.add(new AbstractTile(bufferedImage));break;
+                    default: System.out.println("Не удалось определить тип тайла");break;
                 }
                 lastTileNumber +=1;
             }
