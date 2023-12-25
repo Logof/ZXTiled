@@ -39,7 +39,7 @@ public class DrawMenu extends Menu
 	@Override
 	public List<JMenuItem> createMenuItems()
 	{
-		ArrayList<JMenuItem> temp = new ArrayList<JMenuItem>();
+		ArrayList<JMenuItem> temp = new ArrayList<>();
 		
 		// Create  the radio buttons
 		button1 = new JRadioButtonMenuItem("1 x 1");
@@ -87,16 +87,21 @@ public class DrawMenu extends Menu
 	 */
 	private int drawAmount()
 	{
-		if(button1.isSelected())
+		if(button1.isSelected()) {
 			return 1;
-		else if (button2.isSelected())
+		}
+		else if (button2.isSelected()) {
 			return 2;
-		else if (button3.isSelected())
+		}
+		else if (button3.isSelected()) {
 			return 3;
-		else if (button5.isSelected())
+		}
+		else if (button5.isSelected()) {
 			return 5;
-		else
+		}
+		else {
 			return 10;
+		}
 	}
 	
 	/**

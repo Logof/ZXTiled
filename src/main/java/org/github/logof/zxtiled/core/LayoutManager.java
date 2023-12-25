@@ -17,7 +17,7 @@ public class LayoutManager
 	private JScrollPane objectPanelScrollPane;
 	private JScrollPane mapPanelScrollPane;
 	
-	private final float TILE_PANEL_RATIO = 0.25f;	
+	private final static float TILE_PANEL_RATIO = 0.25f;
 	
 	/**
 	 * Constructs a new LayoutManager
@@ -61,33 +61,33 @@ public class LayoutManager
 		mapPanelScrollPane.setBorder(BorderFactory.createTitledBorder("Map"));
 				
 		// Declare the constraints for the GridBagLayout
-		GridBagConstraints c = new GridBagConstraints();
-		c.weightx = 1;
-		c.weighty = 1;
-		c.gridheight = 2;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.fill = GridBagConstraints.BOTH;
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.weighty = 1;
+		gridBagConstraints.gridheight = 2;
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
 				
 		// Add the MapPanel to the frame
-		parentFrame.add(mapPanelScrollPane, c);
+		parentFrame.add(mapPanelScrollPane, gridBagConstraints);
 		parentFrame.validate();
 				
 		// Update constraints for the object panel
-		c.weightx = 0;
-		c.weighty = 1;
-		c.gridheight = 1;
-		c.gridx = 1;
-		c.gridy = 1;
+		gridBagConstraints.weightx = 0;
+		gridBagConstraints.weighty = 1;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 1;
 				
-		parentFrame.add(objectPanelScrollPane, c);
+		parentFrame.add(objectPanelScrollPane, gridBagConstraints);
 		parentFrame.validate();
 		
 		// Update constraints for the tile panel
-		c.gridy = 0;
+		gridBagConstraints.gridy = 0;
 		
 		// Add the TilePanel to the frame
-		parentFrame.add(tilePanelScrollPane, c);
+		parentFrame.add(tilePanelScrollPane, gridBagConstraints);
 		parentFrame.validate();
 		
 		// Enable map dependent menu buttons
@@ -108,5 +108,4 @@ public class LayoutManager
 		parentFrame.remove(tilePanelScrollPane);
 		parentFrame.remove(mapPanelScrollPane);
 	}
-	
 }
