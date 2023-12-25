@@ -10,11 +10,13 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.core.MapperFrame;
 
 /**
  * The View menu of the GUI
  */
+@Getter
 public class ViewMenu extends Menu
 {
 	private JCheckBoxMenuItem collisionItem, gridItem;
