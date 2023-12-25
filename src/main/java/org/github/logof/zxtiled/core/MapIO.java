@@ -23,10 +23,10 @@ public class MapIO
 	 */
 	
 	// Code characters for values 0 ... 63
-	private static char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray();
+	private final static char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray();
 	
 	// Lookup table for converting base64 characters to value in range 0 ... 63
-	private static byte[] base64Codes = new byte[256];
+	private static final byte[] base64Codes = new byte[256];
 	static
 	{
 		// set all to -1
@@ -46,19 +46,15 @@ public class MapIO
 	/**
 	 * 
 	 * This method generates a base64 character array from a byte array.
-	 * 
 	 * Usage (Image):
 	 * BufferedImage image = BUFFEREDIMAGE_CREATED_FROM_IMAGE;
 	 * ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	 * ImageIO.write(image, FILE_EXTENSION, outputStream);
 	 * char[] encodedImage = MapIO.base64Encode(outputStream.toByteArray());
-	 * 
 	 * Usage (String):
 	 * String string = "";
 	 * char[] encodedString = MapIO.base64Encode(string.getBytes());
-	 * 
 	 * See documentation if you need to encode something else.
-	 * 
 	 * Information about Base64 can be found at http://en.wikipedia.org/wiki/Base64
 	 * 
 	 * @param data - The byte[] to encode
@@ -105,18 +101,15 @@ public class MapIO
 	/**
 	 * 
 	 * This method decodes a base64 character array and outputs a byte array.
-	 * 
 	 * Usage (Image):
 	 * char[] base64Chars = BASE64CHARS;
 	 * byte[] imageBytes = MapIO.base64Decode(base64Chars);
 	 * InputStream in = new ByteArrayInputStream(imageBytes);
 	 * BufferedImage decodedImage = ImageIO.read(in);
-	 * 
 	 * Usage (String):
 	 * char[] base64Chars = BASE64CHARS;
 	 * byte[] stringBytes = MapIO.base64Decode(base64Chars);
 	 * String decodedString = new String(stringBytes);
-	 * 
 	 * Information about Base64 can be found at http://en.wikipedia.org/wiki/Base64
 	 * 
 	 * @param data - The char[] to be decoded
@@ -125,10 +118,9 @@ public class MapIO
 	public static byte[] base64Decode(char[] data)
 	{
 		int inputLength = data.length;
-		for (int i = 0; i < data.length; i++)
-		{
-			if(data[i] > 255 || base64Codes[data[i]] < 0) inputLength--; // Ignore non-valid chars and padding
-		}
+        for (char datum : data) {
+            if (datum > 255 || base64Codes[datum] < 0) inputLength--; // Ignore non-valid chars and padding
+        }
 		
 		//
 		// 3 bytes for every 4 valid base64 chars.
@@ -143,26 +135,23 @@ public class MapIO
 		int shift = 0;
 		int excess = 0;
 		int index = 0;
-		
-		for (int i = 0; i < data.length; i++)
-		{
-			int value = (data[i] > 255) ? -1 : base64Codes[data[i]];
-			
-			// Skip over invalid base64 chars
-			if (value >= 0)
-			{
-				// Bits shift up 6 each iteration, and new bits get put at bottom
-				excess <<= 6;
-				shift += 6;
-				excess |= value;
-				// If there are more than 8 shifted in, write them out. (leave excess at bottom)
-				if (shift >= 8)
-				{
-					shift -= 8;
-					out[index++] = (byte)((excess >> shift) & 0xff);
-				}
-			}
-		}
+
+        for (char datum : data) {
+            int value = (datum > 255) ? -1 : base64Codes[datum];
+
+            // Skip over invalid base64 chars
+            if (value >= 0) {
+                // Bits shift up 6 each iteration, and new bits get put at bottom
+                excess <<= 6;
+                shift += 6;
+                excess |= value;
+                // If there are more than 8 shifted in, write them out. (leave excess at bottom)
+                if (shift >= 8) {
+                    shift -= 8;
+                    out[index++] = (byte) ((excess >> shift) & 0xff);
+                }
+            }
+        }
 		
 		if (index != out.length)
 		{
@@ -217,25 +206,24 @@ public class MapIO
 			int blue = Integer.parseInt(eBlue.getText());
 			
 			// Get tile, object, and collision layer data
-			ArrayList<Integer> tilesLayerData = new ArrayList<Integer>();
-			ArrayList<Integer> objectsLayerData = new ArrayList<Integer>();
-			ArrayList<Byte> collisionLayerData = new ArrayList<Byte>(); 
+			List<Integer> tilesLayerData = new ArrayList<>();
+			List<Integer> objectsLayerData = new ArrayList<>();
+			List<Byte> collisionLayerData = new ArrayList<>();
 			
 			List<Element> list = root.getChildren("tile");
 			
 			// Iterate through each tile element
-			for (int i = 0; i < list.size(); i++)
-			{
-				// Get the value of each ID
-				int tileLayerID = Integer.parseInt((list.get(i)).getChild("tile_layer_id").getText());
-				int objectLayerID = Integer.parseInt((list.get(i)).getChild("object_layer_id").getText());
-				byte collisionLayerID = Byte.parseByte(list.get(i).getChild("collision_layer_id").getText());
-				
-				// Add them to the list
-				tilesLayerData.add(tileLayerID);
-				objectsLayerData.add(objectLayerID);
-				collisionLayerData.add(collisionLayerID);
-			}
+            for (Element element : list) {
+                // Get the value of each ID
+                int tileLayerID = Integer.parseInt(element.getChild("tile_layer_id").getText());
+                int objectLayerID = Integer.parseInt(element.getChild("object_layer_id").getText());
+                byte collisionLayerID = Byte.parseByte(element.getChild("collision_layer_id").getText());
+
+                // Add them to the list
+                tilesLayerData.add(tileLayerID);
+                objectsLayerData.add(objectLayerID);
+                collisionLayerData.add(collisionLayerID);
+            }
 			
 			// Convert Base64 string to the image
 			byte[] imageBytes = MapIO.base64Decode(tileSheetOriginal.toCharArray());

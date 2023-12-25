@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by user (home) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="project">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="graphic">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="loading" type="Image"/>
+							<xs:element name="title" type="Image"/>
+							<xs:element name="ending" type="Image"/>
+							<xs:element name="frame" type="Image"/>
+							<xs:element name="tiles" type="Image"/>
+							<xs:element name="sprites">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="sprites" type="Image"/>
+										<xs:element name="sprites_bullet" type="Image"/>
+										<xs:element name="sprites_extra" type="Image" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="font" type="Image"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="map">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="screens">
+								<xs:complexType>
+									<xs:sequence minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="screen">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="tile" minOccurs="0" maxOccurs="150">
+														<xs:complexType>
+															<xs:attribute name="id"/>
+															<xs:attribute name="layer"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="width"/>
+									<xs:attribute name="height"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="Image">
+		<xs:sequence>
+			<xs:element name="FilePath"/>
+			<xs:element name="base64"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

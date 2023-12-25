@@ -175,10 +175,10 @@ public class MapPanel extends JPanel
 	/**
 	 * Used when loading maps, this sets the layer data for both the tile and object layers
 	 * and then repaints them so that the loaded map can be shown
-	 * @param tileLayer - The ArrayList<Integer> of tile data to set
-	 * @param objectLayer - The ArrayList<Integer> of object data to set
+	 * @param tileLayer - The List<Integer> of tile data to set
+	 * @param objectLayer - The List<Integer> of object data to set
 	 */
-	public void setLayerData(ArrayList<Integer> tileLayer, ArrayList<Integer> objectLayer, ArrayList<Byte> collisionLayer)
+	public void setLayerData(List<Integer> tileLayer, List<Integer> objectLayer, List<Byte> collisionLayer)
 	{
 		for (int i = 0; i < tiles.size(); i++)
 		{

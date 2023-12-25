@@ -13,13 +13,14 @@ import javax.imageio.ImageIO;
  * Contains all of the information about the tile sheet that was loaded, such as
  * image loaded, tile width and height, and the transparent color associated with it
  */
+@Getter
 public class TileSheet 
 {
-	public List<AbstractTile> tiles, objects;
+	public List<AbstractTile> tiles;
+	public List<AbstractTile> objects;
 	private BufferedImage rawTileSheet;
 	private final int tileWidth;
     private final int tileHeight;
-	@Getter
 	private final Color transparentColor;
 	
 	/**
