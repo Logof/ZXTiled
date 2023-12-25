@@ -1,17 +1,20 @@
 package org.github.logof.zxtiled.core;
 
-import java.awt.Image;
+import lombok.Getter;
+import lombok.Setter;
+import org.github.logof.zxtiled.util.SpringUtilities;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import org.github.logof.zxtiled.util.SpringUtilities;
+import java.util.stream.Collectors;
 
 /**
  * This panel holds all of the MapTiles which can be drawn to. It 
  * displays the map that is currently being drawn on.
  */
+@Getter
+@Setter
 public class MapPanel extends JPanel 
 {
 	private static final long serialVersionUID = 6810863879602201457L;
@@ -36,8 +39,8 @@ public class MapPanel extends JPanel
 	{
 		// Setup initial attributes
 		this.parentFrame = parentFrame;
-		tiles = new ArrayList<MapTile>();
-		projectedTileIndexes = new ArrayList<Integer>();
+		tiles = new ArrayList<>();
+		projectedTileIndexes = new ArrayList<>();
 		this.tilePanel = tilePanel;
 		this.objectPanel = objectPanel;
 		this.xTiles = xTiles;
@@ -56,9 +59,8 @@ public class MapPanel extends JPanel
 		// Add the blank tiles to the MapPanel
 		for(int i = 0; i < xTiles * yTiles; i++)
 		{
-			ImageIcon icon = temp;
-			icon.setImage(scaledIcon);
-			MapTile tile = new MapTile(icon, this, i);
+            temp.setImage(scaledIcon);
+			MapTile tile = new MapTile(temp, this, i);
 			
 			tiles.add(tile);
 			add(tile);
@@ -70,17 +72,8 @@ public class MapPanel extends JPanel
                 0, 0,  //initX, initY
                 0, 0); //xPad, yPad
 	}
-	
-	/**
-	 * Gets the tile panel associated with this MapPanel
-	 * @return The tile panel associated with this MapPanel
-	 */
-	public TilePanel getTilePanel()
-	{
-		return tilePanel;
-	}
-	
-	
+
+
 	/**
 	 * Gets all of the MapTiles stored in this map
 	 * @return The ArrayList<MapTile> stored in this MapPanel
@@ -89,16 +82,7 @@ public class MapPanel extends JPanel
 	{
 		return tiles;
 	}
-	
-	/**
-	 * Gets the object panel associated with this MapPanel
-	 * @return The object panel associated with this MapPanel
-	 */
-	public TilePanel getObjectPanel()
-	{
-		return objectPanel;
-	}
-	
+
 	/**
 	 * Tells whether the object panel was the last panel selected
 	 * @return True if object panel was last selected, false if tile panel was last selected
@@ -106,15 +90,6 @@ public class MapPanel extends JPanel
 	public boolean objectPanelSelectedLast()
 	{
 		return objectPanelSelectedLast;
-	}
-	
-	/**
-	 * Sets whether the object panel was the last panel selected
-	 * @param flag - If the object panel was just selected
-	 */
-	public void setObjectPanelSelectedLast(boolean flag)
-	{
-		objectPanelSelectedLast = flag;
 	}
 	
 	/**
@@ -132,12 +107,7 @@ public class MapPanel extends JPanel
 	 */
 	public List<Byte> getCollisionLayerData()
 	{
-		ArrayList<Byte> temp = new ArrayList<Byte>();
-		
-		for (int i = 0; i < tiles.size(); i++)
-			temp.add(tiles.get(i).getCollidable());
-			
-		return temp;
+		return tiles.stream().map(MapTile::getCollidable).collect(Collectors.toList());
 	}
 	
 	/**
@@ -146,12 +116,7 @@ public class MapPanel extends JPanel
 	 */
 	public List<Integer> getObjectLayerData()
 	{
-		ArrayList<Integer> temp = new ArrayList<Integer>();
-		
-		for (int i = 0; i < tiles.size(); i++)
-			temp.add(tiles.get(i).getObjectLayerId());
-		
-		return temp;
+		return tiles.stream().map(MapTile::getObjectLayerId).collect(Collectors.toList());
 	}
 	
 	public MapTile getTile(int index)
@@ -164,12 +129,7 @@ public class MapPanel extends JPanel
 	 */
 	public List<Integer> getTileLayerData()
 	{
-		ArrayList<Integer> temp = new ArrayList<Integer>();
-		
-		for (int i = 0; i < tiles.size(); i++)
-			temp.add(tiles.get(i).getTileLayerId());
-		
-		return temp;
+		return tiles.stream().map(MapTile::getTileLayerId).collect(Collectors.toList());
 	}
 	
 	/**
@@ -255,8 +215,9 @@ public class MapPanel extends JPanel
 	 */
 	public void repaintAllTiles()
 	{
-		for(MapTile t : tiles)
+		for(MapTile t : tiles) {
 			t.repaint();
+		}
 	}
 	
 	/**
@@ -287,21 +248,5 @@ public class MapPanel extends JPanel
 	{
 		projectedTileIndexes.add(index);
 	}
-	
-	/**
-	 * Sets the draw count for use with multi-draw
-	 * @param count - The amount of tiles to draw (count x count) at a time
-	 */
-	public void setDrawCount(int count)
-	{
-		drawCount = count;
-	}
-	
-	/** Gets the draw count for use with multi-draw
-	 * @return The amount of tiles to draw (count x count) at a time
-	 */
-	public int getDrawCount()
-	{
-		return drawCount;
-	}
+
 }
