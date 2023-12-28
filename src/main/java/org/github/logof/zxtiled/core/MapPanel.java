@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -23,12 +24,12 @@ public class MapPanel extends JPanel
     private final TilePanel objectPanel;
 	private final int xTiles;
     private final int yTiles;
-	private final List<MapTile> tiles;
-	private final List<Integer> projectedTileIndexes;
 	private final SpringLayout springLayout;
 	private boolean objectPanelSelectedLast;
 	private int drawCount;
-	
+
+	private final List<MapTile> tileList = new ArrayList<>();
+	private final List<Integer> projectedTileIndexes = new ArrayList<>();
 	/**
 	 * Constructs the panel which tiles are to be drawn to
 	 * @param xTiles - The number of horizontal tiles
@@ -39,8 +40,6 @@ public class MapPanel extends JPanel
 	{
 		// Setup initial attributes
 		this.parentFrame = parentFrame;
-		tiles = new ArrayList<>();
-		projectedTileIndexes = new ArrayList<>();
 		this.tilePanel = tilePanel;
 		this.objectPanel = objectPanel;
 		this.xTiles = xTiles;
@@ -53,16 +52,15 @@ public class MapPanel extends JPanel
 		setLayout(springLayout);
 		
 		// Load the blank tile image and create a reference to a scaled version of it
-		ImageIcon temp = new ImageIcon("img/blankTile.png");
-		Image scaledIcon = temp.getImage().getScaledInstance(tilePanel.getTileSheet().getWidthOfTiles(), tilePanel.getTileSheet().getHeightOfTiles(), 0);
-				
+		ImageIcon blankTile = new ImageIcon("img/blankTile.png");
+		Image scaledIcon = blankTile.getImage().getScaledInstance(tilePanel.getTileSheet().getWidthOfTiles(), tilePanel.getTileSheet().getHeightOfTiles(), 0);
+
 		// Add the blank tiles to the MapPanel
-		for(int i = 0; i < xTiles * yTiles; i++)
-		{
-            temp.setImage(scaledIcon);
-			MapTile tile = new MapTile(temp, this, i);
+		for(int i = 0; i < xTiles * yTiles; i++) {
+            blankTile.setImage(scaledIcon);
+			MapTile tile = new MapTile(blankTile, this, i);
 			
-			tiles.add(tile);
+			tileList.add(tile);
 			add(tile);
 		}
 		
@@ -71,16 +69,6 @@ public class MapPanel extends JPanel
                 yTiles, xTiles,
                 0, 0,  //initX, initY
                 0, 0); //xPad, yPad
-	}
-
-
-	/**
-	 * Gets all of the MapTiles stored in this map
-	 * @return The ArrayList<MapTile> stored in this MapPanel
-	 */
-	public List<MapTile> getMapTiles()
-	{
-		return tiles;
 	}
 
 	/**
@@ -105,63 +93,49 @@ public class MapPanel extends JPanel
 	 * Gets the data about which tiles are collidable and which aren't
 	 * @return The ArrayList<Byte> of collision layer data
 	 */
-	public List<Byte> getCollisionLayerData()
-	{
-		return tiles.stream().map(MapTile::getCollidable).collect(Collectors.toList());
+	public List<Byte> getCollisionLayerData() {
+		return tileList.stream().map(MapTile::getCollidable).collect(Collectors.toList());
 	}
 	
 	/**
 	 * Gets the object layer IDs of all of the MapTiles
 	 * @return The id of the object tile drawn to the MapTile
 	 */
-	public List<Integer> getObjectLayerData()
-	{
-		return tiles.stream().map(MapTile::getObjectLayerId).collect(Collectors.toList());
+	public List<Integer> getObjectLayerData() {
+		return tileList.stream().map(MapTile::getObjectLayerId).collect(Collectors.toList());
 	}
 	
 	public MapTile getTile(int index)
 	{
-		return tiles.get(index);
+		return tileList.get(index);
 	}
 	/**
 	 * Gets the tile layer IDs of all of the MapTiles
 	 * @return The id of the tile drawn to the MapTile
 	 */
-	public List<Integer> getTileLayerData()
-	{
-		return tiles.stream().map(MapTile::getTileLayerId).collect(Collectors.toList());
+	public List<Integer> getTileLayerData() {
+		return tileList.stream().map(MapTile::getTileLayerId).collect(Collectors.toList());
 	}
 	
 	/**
 	 * Used when loading maps, this sets the layer data for both the tile and object layers
 	 * and then repaints them so that the loaded map can be shown
-	 * @param tileLayer - The List<Integer> of tile data to set
-	 * @param objectLayer - The List<Integer> of object data to set
+	 * @param objectLayer - The Map<Integer, Integer> of tile data to set
+	 * @param collisionLayer - The List<Integer> of collision data to set
 	 */
-	public void setLayerData(List<Integer> tileLayer, List<Integer> objectLayer, List<Byte> collisionLayer)
-	{
-		for (int i = 0; i < tiles.size(); i++)
-		{
-			MapTile currentTile = tiles.get(i);
-			
-			// Set the object and tile layer data
-			currentTile.setObjectLayerId(objectLayer.get(i));
-			currentTile.setTileLayerId(tileLayer.get(i));
-			
-			// Set the collision layer data
-			currentTile.setCollidable(collisionLayer.get(i));
-			
-			// Redraw
-			currentTile.repaint();
-		}
+	public void setLayerData(Map<Integer, Integer> objectLayer, List<Byte> collisionLayer) {
+
+		objectLayer.forEach((key, value) -> {
+			tileList.get(key).setObjectLayerId(value);
+			tileList.get(key).repaint();
+		});
 	}
 	
 	/**
 	 * Gets the width of the currently displayed map in number of tiles
 	 * @return The number of tiles wide that this map panel displays
 	 */
-	public int getWidthInTiles()
-	{
+	public int getWidthInTiles() {
 		return xTiles;
 	}
 	
@@ -171,7 +145,7 @@ public class MapPanel extends JPanel
 	 */
 	public int getTotalNumberOfTiles()
 	{
-		return tiles.size();
+		return tileList.size();
 	}
 	
 	/**
@@ -215,7 +189,7 @@ public class MapPanel extends JPanel
 	 */
 	public void repaintAllTiles()
 	{
-		for(MapTile t : tiles) {
+		for(MapTile t : tileList) {
 			t.repaint();
 		}
 	}
@@ -227,9 +201,9 @@ public class MapPanel extends JPanel
 	public void repaintProjectedTiles()
 	{
 		for (int i : projectedTileIndexes)
-			tiles.get(i).setHovered(false);
+			tileList.get(i).setHovered(false);
 		for (int i : projectedTileIndexes)
-			tiles.get(i).repaint();
+			tileList.get(i).repaint();
 	}
 	
 	/**

@@ -1,17 +1,15 @@
 package org.github.logof.zxtiled.core;
 
-import java.awt.Color;
-import java.awt.Image;
+import lombok.Getter;
+import org.github.logof.zxtiled.entity.Tile;
+import org.github.logof.zxtiled.util.SpringUtilities;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import lombok.Getter;
-import org.github.logof.zxtiled.util.SpringUtilities;
 
 /**
  * A panel which shows all of the currently loaded tiles to select from.
@@ -21,7 +19,7 @@ public class TilePanel extends JPanel
 {
 	private int selectedTileIndex;
 	private final TileSheet tileSheet;
-	private final List<Tile> tiles;
+	private final List<Tile> tiles = new ArrayList<>();
 	private final boolean isObjectPanel;
 	private MapPanel associatedMapPanel;
 	
@@ -36,54 +34,42 @@ public class TilePanel extends JPanel
 	{	
 		// Set initial attributes
 		this.tileSheet = tileSheet;
-		selectedTileIndex = 0;
-		isObjectPanel = isObjectSheet;
-		tiles = new ArrayList<>();
-		
+		this.selectedTileIndex = 0;
+		this.isObjectPanel = isObjectSheet;
+
 		setLayout(new SpringLayout());
-		
+
 		int idIndex = 0;
-		
-		List<AbstractTile> tempSheet;
+
 		int tempSize;
 
 		// Assign the size and List<Tile> based on whether this is a object sheet or not
-		if (isObjectSheet)
-		{
+		if (isObjectSheet) {
 			setBackground(Color.LIGHT_GRAY);
-			tempSheet = tileSheet.objects;
 			tempSize = tileSheet.objects.size();
 			
 			Tile iconLabel = null;
-			try
-			{
+			try {
 				Image eraseTile = ImageIO.read(new File("img/eraseTile.png"));
 				eraseTile = eraseTile.getScaledInstance(tileSheet.getWidthOfTiles(), tileSheet.getHeightOfTiles(), 0);
 				iconLabel = new Tile(eraseTile, this, -1);
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
 			}
 			tiles.add(iconLabel);
 			idIndex++;
 			add(iconLabel);
-		}
-		else
-		{
-			tempSheet = tileSheet.tiles;
+		} else {
 			tempSize = tileSheet.tiles.size();
 			setBackground(Color.BLACK);
 		}
-		
-		// Loop through the sheet and add each tile to the panel
-		for (AbstractTile t : tempSheet)
-		{
-			Tile iconLabel = new Tile(t.getImage(), this, idIndex);
+
+		for(AbstractTile tile: (isObjectSheet ? tileSheet.objects : tileSheet.tiles)) {
+			Tile iconLabel = new Tile(tile.getImage(), this, idIndex);
 			tiles.add(iconLabel);
 			idIndex++;
 			add(iconLabel);
-		}	
+		}
 		
 		// Determine amount of tile columns needed
 		int tileColumns = calcTileColumns(200, tileSheet.getWidthOfTiles(), PADDING);
@@ -146,17 +132,7 @@ public class TilePanel extends JPanel
 		selectedTileIndex = index;
 		tiles.get(index).setSelected(true);
 	}
-	
 
-	/**
-	 * Gets the tile of the currently selected tile in this panel
-	 * @return The tile of the currently selected tile
-	 */
-	public Image getSelectedTile()
-	{
-		return tiles.get(selectedTileIndex).getImage();
-	}
-	
 	/**
 	 * Gets the image of the specified tile
 	 * @param id - The ID of the tile you want to retrieve the image from

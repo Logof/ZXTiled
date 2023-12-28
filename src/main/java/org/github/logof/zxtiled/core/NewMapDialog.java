@@ -1,24 +1,12 @@
 package org.github.logof.zxtiled.core;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * A map dialog which is displayed to help in creating a new map.
@@ -265,7 +253,7 @@ public class NewMapDialog extends JDialog
 	private void setupLayout()
 	{	
 		// Create a new TileSheet 
-		TileSheet sheet = new TileSheet(new File(selectedFilePath), (Integer)xSize.getValue(), (Integer)ySize.getValue(), transparentColor);
+		TileSheet sheet = new TileSheet(new File(selectedFilePath));
 		System.out.println("You chose to open this file: " + selectedFilePath);
 		
 		// Create the map, tile, and object panels					

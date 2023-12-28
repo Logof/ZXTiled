@@ -1,15 +1,11 @@
-package org.github.logof.zxtiled.core;
+package org.github.logof.zxtiled.entity;
+
 import lombok.Getter;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import org.github.logof.zxtiled.core.TilePanel;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.Icon;
 
 /**
  * A tile which can be selected in one of the TilePanels.
@@ -30,14 +26,13 @@ public class Tile extends JLabel
 	 * @param tilePanel - The TilePanel to which this instance of Tile belongs
 	 * @param id - A unique ID, used for the selection functionality
 	 */
-	public Tile(Image eraseTile, TilePanel tilePanel, int id)
-	{
+	public Tile(Image eraseTile, TilePanel tilePanel, int id) {
 		super(new ImageIcon(eraseTile));
-		iconImage = new ImageIcon(eraseTile);
+		this.iconImage = new ImageIcon(eraseTile);
 		this.id = id;
 		this.image = eraseTile;
-		parentTilePanel = tilePanel;
-		addMouseListener(new TileListener());
+		this.parentTilePanel = tilePanel;
+		this.addMouseListener(new TileListener());
 	}
 
 	/**
@@ -55,7 +50,7 @@ public class Tile extends JLabel
 			Graphics2D g2 = (Graphics2D) g;
 			g.setColor(Color.CYAN);
 			g2.setStroke(new BasicStroke(3.5f));
-			g2.drawRect(0, 0, iconImage.getIconWidth(), iconImage.getIconHeight());
+			g2.drawRect(0, 0, iconImage.getIconWidth()*2, iconImage.getIconHeight()*2);
 		}
 	}
 	

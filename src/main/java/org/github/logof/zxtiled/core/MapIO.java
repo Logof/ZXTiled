@@ -1,16 +1,28 @@
 package org.github.logof.zxtiled.core;
 
-import java.awt.Color;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import lombok.SneakyThrows;
+import org.github.logof.zxtiled.generated.Project;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import javax.imageio.ImageIO;
-import java.io.*;
-
-import org.jdom2.*;
-import org.jdom2.input.*;
-import org.jdom2.output.*;
+import java.util.Map;
 
 
 /**
@@ -19,120 +31,75 @@ import org.jdom2.output.*;
  */
 public class MapIO 
 {
+	private static Project PROJECT_FILE = new Project();
+
 	/**
 	 * Loads the .tmf file into the program and sets it up to be edited
 	 * @param fileName - The file path to read the project from
 	 * @param parentFrame - The MapperFrame in use
 	 */
-	public static void loadProjectAsXML(String fileName, MapperFrame parentFrame)
-	{
-		SAXBuilder parser = new SAXBuilder();
-		
-		try
-		{
-			Document doc = parser.build(new File(fileName));
-			Element root = doc.getRootElement();
-			
-			// Get tilesheet_image
-			Element tilesheet_image = root.getChild("tilesheet_image");
-			String tileSheetOriginal = tilesheet_image.getText();
-			
-			// Get map width and height
-			Element map_width = root.getChild("map_width");
-			Element map_height = root.getChild("map_height");
-			
-			int mapWidth = Integer.parseInt(map_width.getText());
-			int mapHeight = Integer.parseInt(map_height.getText());
-			
-			// Get tile width and height
-			Element tile_width = root.getChild("tile_width");
-			Element tile_height = root.getChild("tile_height");
-			
-			int tileWidth = Integer.parseInt(tile_width.getText());
-			int tileHeight = Integer.parseInt(tile_height.getText());
-			
-			// Get transparent color
-			Element transparent_color = root.getChild("transparent_color");
-			
-			Element eRed = transparent_color.getChild("red");
-			Element eGreen = transparent_color.getChild("green");
-			Element eBlue= transparent_color.getChild("blue");
-			
-			int red = Integer.parseInt(eRed.getText());
-			int green = Integer.parseInt(eGreen.getText());
-			int blue = Integer.parseInt(eBlue.getText());
-			
-			// Get tile, object, and collision layer data
-			List<Integer> tilesLayerData = new ArrayList<>();
-			List<Integer> objectsLayerData = new ArrayList<>();
-			List<Byte> collisionLayerData = new ArrayList<>();
-			
-			List<Element> list = root.getChildren("tile");
-			
-			// Iterate through each tile element
-            for (Element element : list) {
-                // Get the value of each ID
-                int tileLayerID = Integer.parseInt(element.getChild("tile_layer_id").getText());
-                int objectLayerID = Integer.parseInt(element.getChild("object_layer_id").getText());
-                byte collisionLayerID = Byte.parseByte(element.getChild("collision_layer_id").getText());
+	@SneakyThrows
+	public static void loadProjectAsXML(String fileName, MapperFrame parentFrame) throws JAXBException {
+		JAXBContext jaxbContext = JAXBContext.newInstance(Project.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		PROJECT_FILE = (Project) unmarshaller.unmarshal(new File(fileName));
 
-                // Add them to the list
-                tilesLayerData.add(tileLayerID);
-                objectsLayerData.add(objectLayerID);
-                collisionLayerData.add(collisionLayerID);
-            }
-			
-			// Convert Base64 string to the image
-			byte[] imageBytes = Base64.getDecoder().decode(tileSheetOriginal);
-			InputStream in = new ByteArrayInputStream(imageBytes);
-			BufferedImage decodedImage = ImageIO.read(in);
-						
-			// Create the tile sheet from the variables that have been read
-			TileSheet sheet = new TileSheet(decodedImage, tileWidth, tileHeight, new Color(red, green, blue));
-						
-			// Create the map, tile, and object panels					
-			TilePanel tilePanel = new TilePanel(sheet, false);
-			TilePanel objectPanel = new TilePanel(sheet, true);
-			MapPanel mapPanel = new MapPanel(parentFrame, mapWidth, mapHeight, tilePanel, objectPanel);
-						
-			// Assign the panels to the main frame
-			parentFrame.setTilePanel(tilePanel);
-			parentFrame.setObjectPanel(objectPanel);
-			parentFrame.setMapPanel(mapPanel);
-						
-			// Assign the map panel to the tile selection panels
-			tilePanel.setMapPanel(mapPanel);
-			objectPanel.setMapPanel(mapPanel);
-						
-			LayoutManager manager;
-						
-			// If a layout manager doesn't already exist, create one
-			if (parentFrame.getLayoutManager() == null)
-			{
-				manager = new LayoutManager(parentFrame, mapPanel);
-				parentFrame.setLayoutManager(manager);
-			}
-			
-			// If one does exist, clear old layout and update it with the new info
-			else
-			{
-				manager = parentFrame.getLayoutManager();
-				manager.clearExistingLayout();
-				manager.setNewInfo(parentFrame, mapPanel);
-			}
-						
-			// Initialize the new layout
-			manager.initializeLayout();
-						
-			// Set tiles and object data to the MapPanel
-			mapPanel.setLayerData(tilesLayerData, objectsLayerData, collisionLayerData);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		int mapWidth = PROJECT_FILE.getMap().getWidth() * 16;
+		int mapHeight = PROJECT_FILE.getMap().getHeight() * 10;
+
+		// Get tile, object, and collision layer data
+
+		Map<Integer, Integer> tilesLayerData = new HashMap<>();
+
+		List<Byte> collisionLayerData = new ArrayList<>();
+
+		// Iterate through each tile element
+		PROJECT_FILE.getMap().getTile().forEach(tile ->
+			tilesLayerData.put(tile.getId(), tile.getLayer())
+											   );
+
+		// Convert Base64 string to the image
+		byte[] imageBytes = Base64.getDecoder().decode(PROJECT_FILE.getGraphic().getTiles().getBase64());
+		InputStream in = new ByteArrayInputStream(imageBytes);
+		BufferedImage decodedImage = ImageIO.read(in);
+
+		// Create the tile sheet from the variables that have been read
+		TileSheet sheet = new TileSheet(decodedImage);
+
+		// Create the map, tile, and object panels
+		TilePanel tilePanel = new TilePanel(sheet, false);
+		TilePanel objectPanel = new TilePanel(sheet, true);
+
+		MapPanel mapPanel = new MapPanel(parentFrame, mapWidth, mapHeight, tilePanel, objectPanel);
+
+		// Assign the panels to the main frame
+		parentFrame.setTilePanel(tilePanel);
+		parentFrame.setObjectPanel(objectPanel);
+		parentFrame.setMapPanel(mapPanel);
+
+		// Assign the map panel to the tile selection panels
+		tilePanel.setMapPanel(mapPanel);
+		objectPanel.setMapPanel(mapPanel);
+
+		createLayoutManager(parentFrame, mapPanel);
+
+		// Set tiles and object data to the MapPanel
+		mapPanel.setLayerData(tilesLayerData, collisionLayerData);
 	}
-	
+
+	private static void createLayoutManager(MapperFrame parentFrame, MapPanel mapPanel) {
+		LayoutManager manager;
+		if (parentFrame.getLayoutManager() == null) {
+			manager = new LayoutManager(parentFrame, mapPanel);
+			parentFrame.setLayoutManager(manager);
+		} else {
+			manager = parentFrame.getLayoutManager();
+			manager.clearExistingLayout();
+			manager.setNewInfo(parentFrame, mapPanel);
+		}
+		manager.initializeLayout();
+	}
+
 	/**
 	 * Exports the currently open map to a .map file
 	 * @param filePath - The file path to write the project to
@@ -140,6 +107,7 @@ public class MapIO
 	 */
 	public static void exportProjectAsXML(String filePath, MapperFrame frame)
 	{
+
 		String xml =
                 "<map>" +
                 "   <tilesheet_image>" +
@@ -155,10 +123,12 @@ public class MapIO
                 "   </transparent_color>" +
                 "</map>";
 
-        SAXBuilder builder = new SAXBuilder();
+		SAXBuilder builder = new SAXBuilder();
         try 
         {
-        	
+
+
+
         	// Create XML document
             Document document = builder.build(new StringReader(xml));
             
@@ -188,17 +158,7 @@ public class MapIO
             Element tile_height = map.getChild("tile_height");
             tile_height.setText(frame.getTilePanel().getTileSheet().getHeightOfTiles() + "");
             
-            // Calculate transparent color
-            Element transparent_color = map.getChild("transparent_color");
-            Element red = transparent_color.getChild("red");
-            Element green = transparent_color.getChild("green");
-            Element blue = transparent_color.getChild("blue");
-            
-            Color transparent = frame.getTilePanel().getTileSheet().getTransparentColor();
-            red.setText(transparent.getRed() + "");
-            green.setText(transparent.getGreen() + "");
-            blue.setText(transparent.getBlue() + "");
-            
+
             // Get object and tile layer data
             List<Integer> tileIDs = frame.getMapPanel().getTileLayerData();
             List<Integer> objectIDs = frame.getMapPanel().getObjectLayerData();

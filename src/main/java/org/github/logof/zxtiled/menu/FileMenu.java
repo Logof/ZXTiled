@@ -1,7 +1,14 @@
 package org.github.logof.zxtiled.menu;
 
-import java.awt.Event;
-import java.awt.Graphics;
+import lombok.SneakyThrows;
+import org.github.logof.zxtiled.core.MapIO;
+import org.github.logof.zxtiled.core.MapPanel;
+import org.github.logof.zxtiled.core.MapTile;
+import org.github.logof.zxtiled.core.MapperFrame;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,16 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import org.github.logof.zxtiled.core.MapIO;
-import org.github.logof.zxtiled.core.MapTile;
-import org.github.logof.zxtiled.core.MapperFrame;
-import org.github.logof.zxtiled.core.MapPanel;
 
 /**
  * The File menu of the GUI
@@ -155,7 +152,8 @@ public class FileMenu extends Menu
 		
 		class LoadItemListener implements ActionListener
 		{
-			public void actionPerformed(ActionEvent event) 
+			@SneakyThrows
+			public void actionPerformed(ActionEvent event)
 			{
 				JFileChooser dialog = new JFileChooser();
 				FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -237,7 +235,7 @@ public class FileMenu extends Menu
 		
 		// Create a blank image
 		BufferedImage export = new BufferedImage(mapPanel.getWidth(), mapPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		List<MapTile> tiles = mapPanel.getMapTiles();
+		List<MapTile> tiles = mapPanel.getTileList();
 		
 		// Get the graphics context
 		Graphics g = export.getGraphics();

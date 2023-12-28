@@ -1,26 +1,27 @@
 package org.github.logof.zxtiled.core;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import lombok.Getter;
+import lombok.Setter;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+
+import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
 
 /**
  * This represents a tile which is drawn to the MapPanel. It stores information such as the
  * image currently drawn to it (both object and tile layers).
  */
-public class MapTile extends JLabel
-{
-	private static final long serialVersionUID = 7815646574424440259L;
+@Getter
+@Setter
+public class MapTile extends JLabel {
 	private final Color collisionColor = new Color(255, 0, 0, 145);
 	private final Color hoverColor = new Color(120, 255, 120, 145);
-	private MapPanel parentMapPanel;
+	private final MapPanel parentMapPanel;
 	private Image tileLayer, objectLayer;
-	private int index;
+	private final int index;
 	private int objectLayerID, tileLayerID;
 	private boolean collidable;
 	private boolean hovered;
@@ -72,32 +73,16 @@ public class MapTile extends JLabel
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = temp.getGraphics();
 		
-		if (tileLayer != null)
+		if (tileLayer != null) {
 			g.drawImage(tileLayer, 0, 0, this);
-		if (objectLayer != null)
+		}
+		if (objectLayer != null) {
 			g.drawImage(objectLayer, 0, 0, this);
+		}
 		
 		return temp;
 	}
-	
-	/**
-	 * Sets the object layer's image
-	 * @param image - The image to set the object layer to
-	 */
-	public void setObjectLayer(Image image)
-	{
-		objectLayer = image;
-	}
-	
-	/**
-	 * Sets the tile layer's image
-	 * @param image - The image to set the tile layer to
-	 */
-	public void setTileLayer(Image image)
-	{
-		tileLayer = image;
-	}
-	
+
 	/**
 	 * Draws the actual tile by drawing the tile layer followed by the object layer
 	 * @param g - The graphics context to draw in
@@ -107,27 +92,28 @@ public class MapTile extends JLabel
 		super.paintComponent(g);
 		
 		// Paint the two tile layers
-		if (parentMapPanel.tileModeEnabled())
+		if (parentMapPanel.tileModeEnabled()) {
 			g.drawImage(tileLayer, 0, 0, this);
+		}
 		
-		if (parentMapPanel.objectModeEnabled())
+		if (parentMapPanel.objectModeEnabled()) {
 			g.drawImage(objectLayer, 0, 0, this);
+		}
 		
 		// Draw red tile to show collision mode
-		if (parentMapPanel.collisionModeEnabled() && collidable)
-		{
+		if (parentMapPanel.collisionModeEnabled() && collidable) {
 			g.setColor(collisionColor);
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
-		else if (hovered)
-		{
+		if (hovered) {
 			g.setColor(hoverColor);
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
 		
 		// Draw grid if grid mode is enabled
-		if (parentMapPanel.gridModeEnabled())
+		if (parentMapPanel.gridModeEnabled()) {
 			g.drawRect(0, 0, getWidth(), getHeight());
+		}
 	}
 	
 	/**
@@ -137,11 +123,10 @@ public class MapTile extends JLabel
 	public void setObjectLayerId(int id)
 	{
 		objectLayerID = id;
-		
-		if (id != -1 && id != 0)
+		objectLayer = null;
+		if (id != -1 && id != 0) {
 			objectLayer = parentMapPanel.getObjectPanel().getTileImage(id);
-		else
-			objectLayer = null;
+		}
 	}
 	
 	/**
@@ -151,9 +136,9 @@ public class MapTile extends JLabel
 	public void setTileLayerId(int id)
 	{
 		tileLayerID = id;
-		
-		if (id != -1)
+		if (id != -1) {
 			tileLayer = parentMapPanel.getTilePanel().getTileImage(id);
+		}
 	}
 
 	/**
@@ -162,10 +147,11 @@ public class MapTile extends JLabel
 	private void drawTile()
 	{
 		// Determine which tile should be drawn and then draw it
-		if (parentMapPanel.objectPanelSelectedLast())
+		if (parentMapPanel.objectPanelSelectedLast()) {
 			setObjectLayerId(parentMapPanel.getObjectPanel().getSelectedTileIndex());
-		else
+		} else {
 			setTileLayerId(parentMapPanel.getTilePanel().getSelectedTileIndex());
+		}
 		
 		repaint();
 	}
@@ -189,10 +175,13 @@ public class MapTile extends JLabel
 					return;
 			
 				// Determine which tile should be drawn and then draw it
-				if (parentMapPanel.objectPanelSelectedLast())
-					parentMapPanel.getTile(currentIndex).setObjectLayerId(parentMapPanel.getObjectPanel().getSelectedTileIndex());
-				else
-					parentMapPanel.getTile(currentIndex).setTileLayerId(parentMapPanel.getTilePanel().getSelectedTileIndex());
+				if (parentMapPanel.objectPanelSelectedLast()) {
+					parentMapPanel.getTile(currentIndex)
+								  .setObjectLayerId(parentMapPanel.getObjectPanel().getSelectedTileIndex());
+				} else {
+					parentMapPanel.getTile(currentIndex)
+								  .setTileLayerId(parentMapPanel.getTilePanel().getSelectedTileIndex());
+				}
 			
 				// Redraw
 				parentMapPanel.getTile(currentIndex).repaint();
@@ -221,8 +210,7 @@ public class MapTile extends JLabel
 				// Calculate where each tile is
 				int currentIndex = index + i + (j * parentMapPanel.getWidthInTiles());
 				// Check to make sure that the tile index isn't out of bounds
-				if (!(currentIndex >= parentMapPanel.getTotalNumberOfTiles()))
-				{
+				if (!(currentIndex >= parentMapPanel.getTotalNumberOfTiles())) {
 					parentMapPanel.getTile(currentIndex).setHovered(true);
 					parentMapPanel.getTile(currentIndex).repaint();
 					parentMapPanel.addToProjectedIndexes(currentIndex);
@@ -235,105 +223,86 @@ public class MapTile extends JLabel
 	 * Simple function to determine if a tile is collidable or not
 	 * @return If 1, collidable. If 0, not collidable.
 	 */
-	public byte getCollidable()
-	{
-		if (collidable)
-			return 1;
-		else
-			return 0;
+	public byte getCollidable() {
+		return (byte)((collidable) ? 1 : 0);
 	}
-	/**
-	 * Sets whether or not a tile is collidable
-	 * @param flag - Whether or not the tile is collidable
-	 */
-	public void setCollidable(byte flag)
-	{
-		if (flag == 0)
-			collidable = false;
-		else
-			collidable = true;
-	}
-	
-	/**
-	 * Sets whether or not the tile is being hovered over
-	 * @param flag - Whether or not the tile is being hovered over
-	 */
-	public void setHovered(boolean flag)
-	{
-		hovered = flag;
-	}
-	
+
 	/**
 	 * Specialized MouseListener for this class
 	 */
 	class MapTileListener implements MouseListener
 	{
-		public void mouseEntered(MouseEvent e) 
-		{	
-			
-			if (e.getModifiers() == 16)	// If the mouse button is down as the mouse enters
-			{
+		@Override
+		public void mouseEntered(MouseEvent mouseEvent) {
+			if (mouseEvent.getModifiersEx() == BUTTON1_DOWN_MASK) {	// If the mouse button is down as the mouse enters
 				// Check to see if collision mode isn't on
-				if (!parentMapPanel.collisionModeEnabled())
-				{
+				if (!parentMapPanel.collisionModeEnabled()) {
 					// Calculate draw count
 					int drawCount = parentMapPanel.getDrawCount();
 					
 					// If it's only 1, call single tile draw method
-					if (drawCount == 1)
+					if (drawCount == 1) {
 						drawTile();
-					// Otherwise, draw multiple tiles
-					else
+					} else {
+						// Otherwise, draw multiple tiles
 						drawTiles(drawCount);
+					}
 					applyHoverColor();
 				}
 	
 				// If it is on, and clicked, toggle the collidable bool
-				else
+				else {
 					collidable = !collidable;
+				}
 				repaint();
-				
-			}
-			else
-			{
-				if (parentMapPanel.collisionModeEnabled())
-				{
+			} else {
+				if (parentMapPanel.collisionModeEnabled()) {
 					Graphics g = getGraphics();
 					g.setColor(collisionColor);
 					g.fillRect(0, 0, getWidth(), getHeight());
-				}
-				else
+				} else {
 					applyHoverColor();
+				}
 			}
 		}
 
-		public void mousePressed(MouseEvent e) 
+		@Override
+		public void mousePressed(MouseEvent mouseEvent)
 		{
 			// Only execute if it's a left click
-			if (e.getButton() == MouseEvent.BUTTON1)
-			{
+			if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
 				// Check to see if collision mode isn't on
-				if (!parentMapPanel.collisionModeEnabled())
-				{
+				if (!parentMapPanel.collisionModeEnabled()) {
 					// Calculate draw count
 					int drawCount = parentMapPanel.getDrawCount();
 					// If it's only 1, call single tile draw method
-					if (drawCount == 1)
+					if (drawCount == 1) {
 						drawTile();
-					// Otherwise, draw multiple tiles
-					else
+					} else {
+						// Otherwise, draw multiple tiles
 						drawTiles(drawCount);
-				}
-				
-				// If it is on, and clicked, toggle the collidable bool
-				else
+					}
+				} else {
+					// If it is on, and clicked, toggle the collidable bool
 					collidable = !collidable;
+				}
 				repaint();
 			}
 		}
-		
-		public void mouseClicked(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {repaint();}
-		public void mouseReleased(MouseEvent e) {}
+
+		@Override
+		public void mouseClicked(MouseEvent mouseEvent) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent mouseEvent) {
+			repaint();
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent mouseEvent) {
+
+		}
 	}
 }

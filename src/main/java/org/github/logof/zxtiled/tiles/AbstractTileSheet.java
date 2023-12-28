@@ -1,7 +1,6 @@
 package org.github.logof.zxtiled.tiles;
 
 import org.github.logof.zxtiled.core.AbstractTile;
-import org.github.logof.zxtiled.core.Tile;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;

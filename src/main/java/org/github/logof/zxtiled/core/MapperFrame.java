@@ -1,15 +1,13 @@
 package org.github.logof.zxtiled.core;
 
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.github.logof.zxtiled.menu.MenuPanel;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 
 /**
  * The JFrame which serves as the main GUI for the application.
@@ -32,6 +30,7 @@ public class MapperFrame extends JFrame
 	/**
 	 * Creates the main JFrame which is the core GUI for the map editor
 	 */
+	@SneakyThrows
 	public MapperFrame()
 	{
 		// Setup the JFrame
@@ -42,21 +41,14 @@ public class MapperFrame extends JFrame
 		setLayout(new GridBagLayout());
 		
 		// Set the IconImage
-		try 
-		{
-			setIconImage(ImageIO.read(new File("img/blankTile.png")));
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		
+		setIconImage(ImageIO.read(new File("img/blankTile.png")));
+
 		// Construct menu
 		MenuPanel menuPanel = new MenuPanel(this);
 		setJMenuBar(menuPanel);
 		
 		// Load the default map
-		MapIO.loadProjectAsXML("example_map.tmf", this);
+		MapIO.loadProjectAsXML("example_new_map.tmf", this);
 	}
 	
 	/**
