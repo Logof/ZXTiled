@@ -34,10 +34,8 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
     /**
      * Orthogonal.
      */
-    public static final int MDO_ORTHO = 1;
-    /**
-     * Isometric.
-     */
+    public static final int MDO_ORTHOGONAL = 1;
+
     private final Vector<MapLayer> specialLayers;
     @Getter
     private final Vector<TileSet> tilesets;
@@ -47,10 +45,10 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
     private int tileWidth;
     @Getter
     private int tileHeight;
-    // TODO: fire mapChangedNotification about orientation change
+
     @Setter
     @Getter
-    private int orientation = MDO_ORTHO;
+    private int orientation = MDO_ORTHOGONAL;
     @Setter
     @Getter
     private Properties properties;
@@ -72,7 +70,6 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
      */
     public Map(int width, int height) {
         super(width, height);
-
         properties = new Properties();
         tilesets = new Vector<>();
         specialLayers = new Vector<>();

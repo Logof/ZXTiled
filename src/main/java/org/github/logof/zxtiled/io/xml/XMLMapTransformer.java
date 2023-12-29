@@ -197,7 +197,7 @@ public class XMLMapTransformer implements MapReader {
 
     private void setOrientation(String o) {
         if ("orthogonal".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_ORTHO);
+            map.setOrientation(Map.MDO_ORTHOGONAL);
         } else {
             logger.warn("Unknown orientation '" + o + "'");
         }
@@ -790,10 +790,10 @@ public class XMLMapTransformer implements MapReader {
             factory.setExpandEntityReferences(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(entityResolver);
-            InputSource insrc = new InputSource(in);
-            insrc.setSystemId(xmlPath);
-            insrc.setEncoding("UTF-8");
-            doc = builder.parse(insrc);
+            InputSource inputSource = new InputSource(in);
+            inputSource.setSystemId(xmlPath);
+            inputSource.setEncoding("UTF-8");
+            doc = builder.parse(inputSource);
         } catch (SAXException e) {
             e.printStackTrace();
             throw new Exception("Error while parsing map file: " +
@@ -904,7 +904,7 @@ public class XMLMapTransformer implements MapReader {
         public InputSource resolveEntity(String publicId, String systemId) {
             if (systemId.equals("http://mapeditor.org/dtd/1.0/map.dtd")) {
                 return new InputSource(Resources.class.getResourceAsStream(
-                        "resources/map.dtd"));
+                        "/map.dtd"));
             }
             return null;
         }

@@ -116,6 +116,8 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
+import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
+
 /**
  * The main class for the Tiled Map Editor.
  */
@@ -567,8 +569,6 @@ public class MapEditor implements ActionListener, MouseListener,
         viewMenu.addSeparator();
         viewMenu.add(gridMenuItem);
         viewMenu.add(cursorMenuItem);
-        //TODO: Enable when boudary drawing code finished.
-        //viewMenu.add(boundaryMenuItem);
         viewMenu.add(coordinatesMenuItem);
 
         mapEventAdapter.addListener(layerMenu);
@@ -1489,7 +1489,7 @@ public class MapEditor implements ActionListener, MouseListener,
             pd.getProps();
         } else if (command.equals(Resources.getString("menu.view.boundaries")) ||
                 command.equals("Hide Boundaries")) {
-            mapView.toggleMode(MapView.PF_BOUNDARYMODE);
+            mapView.toggleMode(MapView.PF_BOUNDARY_MODE);
         } else if (command.equals(Resources.getString("menu.view.grid"))) {
             // Toggle grid
             Preferences displayPrefs = preferences.node("display");
@@ -1879,7 +1879,8 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
-            mapView.setShowGrid(display.getBoolean("showGrid", false));
+            mapView.setShowGrid(display.getBoolean("showGrid", true));
+            mapView.setZoomLevel(ZOOM_NORMAL_SIZE);
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);
@@ -1919,7 +1920,7 @@ public class MapEditor implements ActionListener, MouseListener,
         zoomInAction.setEnabled(mapLoaded);
         zoomOutAction.setEnabled(mapLoaded);
         zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=
-                MapView.ZOOM_NORMALSIZE);
+                ZOOM_NORMAL_SIZE);
 
         undoHandler.discardAllEdits();
         updateLayerTable();
@@ -1989,7 +1990,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
         int amount = e.getWheelRotation();
         mapView.setZoomLevel(mapView.getZoomLevel() - amount);
-        zoomNormalAction.setEnabled(mapView.getZoomLevel() != MapView.ZOOM_NORMALSIZE);
+        zoomNormalAction.setEnabled(mapView.getZoomLevel() != ZOOM_NORMAL_SIZE);
     }
 
     private class LayerTransformAction extends AbstractAction {
@@ -2160,7 +2161,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     setEnabled(false);
                 }
                 zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
-                        MapView.ZOOM_NORMALSIZE);
+                        ZOOM_NORMAL_SIZE);
             }
         }
     }
@@ -2182,7 +2183,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     setEnabled(false);
                 }
                 zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
-                        MapView.ZOOM_NORMALSIZE);
+                        ZOOM_NORMAL_SIZE);
             }
         }
     }
@@ -2201,7 +2202,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 zoomInAction.setEnabled(true);
                 zoomOutAction.setEnabled(true);
                 setEnabled(false);
-                mapView.setZoomLevel(MapView.ZOOM_NORMALSIZE);
+                mapView.setZoomLevel(ZOOM_NORMAL_SIZE);
             }
         }
     }

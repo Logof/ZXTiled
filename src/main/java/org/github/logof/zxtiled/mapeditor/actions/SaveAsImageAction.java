@@ -83,7 +83,7 @@ public class SaveAsImageAction extends AbstractAction {
     private void saveMapImage(String filename) {
         final Map currentMap = editor.getCurrentMap();
         final MapView myView = MapView.createViewforMap(currentMap);
-        myView.setMode(MapView.PF_NOSPECIAL, true);
+        myView.setMode(MapView.PF_NO_SPECIAL, true);
 
         // Take grid and zoom level from the current map view
         final MapView mapView = editor.getMapView();

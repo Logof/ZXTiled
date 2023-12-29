@@ -77,26 +77,17 @@ public class OrthoMapView extends MapView {
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tsize = getLayerTileSize(layer);
-        if (tsize.width <= 0 || tsize.height <= 0) {
+        Dimension tileSize = getLayerTileSize(layer);
+        if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
 
+        Polygon gridPoly = createGridPolygon(tileSize, 0, -tileSize.height, 0);
 
-        Polygon gridPoly = createGridPolygon(tsize, 0, -tsize.height, 0);
-
-        Point poffset = calculateParallaxOffsetZoomed(layer);
+        Point pointOffset = calculateParallaxOffsetZoomed(layer);
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-/*        clipRect.x -= poffset.x;
-        clipRect.y -= poffset.y;
-        int startX = clipRect.x / tsize.width;
-        int startY = clipRect.y / tsize.height;
-        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
-        int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
-        // (endY +2 for high tiles, could be done more properly)
-*/
         Point start = this.screenToTileCoords(layer, clipRect.x, clipRect.y);
         Point end = this.screenToTileCoords(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
         end.x += 1;
@@ -105,10 +96,10 @@ public class OrthoMapView extends MapView {
         boolean isSelectionLayer = layer instanceof SelectionLayer;
 
         // Draw this map layer
-        for (int y = start.y, gy = (start.y + 1) * tsize.height + poffset.y;
-             y < end.y; y++, gy += tsize.height) {
-            for (int x = start.x, gx = start.x * tsize.width + poffset.x;
-                 x < end.x; x++, gx += tsize.width) {
+        for (int y = start.y, gy = (start.y + 1) * tileSize.height + pointOffset.y;
+             y < end.y; y++, gy += tileSize.height) {
+            for (int x = start.x, gx = start.x * tileSize.width + pointOffset.x;
+                 x < end.x; x++, gx += tileSize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
                 if (tile == null)
@@ -352,13 +343,12 @@ public class OrthoMapView extends MapView {
                 (int) (map.getTileHeight() * zoom));
     }
 
-    protected Polygon createGridPolygon(Dimension tileDimension, int tx, int ty, int border) {
+    protected Polygon createGridPolygon(Dimension tileDimension, int tileX, int tileY, int border) {
         Polygon poly = new Polygon();
-        poly.addPoint(tx - border, ty - border);
-        poly.addPoint(tx + tileDimension.width + border, ty - border);
-        poly.addPoint(tx + tileDimension.width + border, ty + tileDimension.height + border);
-        poly.addPoint(tx - border, ty + tileDimension.height + border);
-
+        poly.addPoint(tileX - border, tileY - border);
+        poly.addPoint(tileX + tileDimension.width + border, tileY - border);
+        poly.addPoint(tileX + tileDimension.width + border, tileY + tileDimension.height + border);
+        poly.addPoint(tileX - border, tileY + tileDimension.height + border);
         return poly;
     }
 

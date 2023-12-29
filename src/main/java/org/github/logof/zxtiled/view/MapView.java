@@ -37,19 +37,18 @@ import java.util.Iterator;
  * @version $Id$
  */
 public abstract class MapView extends JPanel implements Scrollable {
-    public static final int PF_BOUNDARYMODE = 0x02;
+    public static final int PF_BOUNDARY_MODE = 0x02;
     public static final int PF_COORDINATES = 0x04;
-    public static final int PF_NOSPECIAL = 0x08;
+    public static final int PF_NO_SPECIAL = 0x08;
     /**
      * The default grid color (black).
      */
     public static final Color DEFAULT_GRID_COLOR = Color.black;
     private static final float SELECTIONRUBBERBAND_OUTER_WIDTH = 3.0f;
-    private static final float SELECTIONRUBBERBAND_INNER_WIDTH = 1.0f;
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
-    public static int ZOOM_NORMALSIZE = 5;
+    public static int ZOOM_NORMAL_SIZE = 1;
     protected static double[] zoomLevels = {
-            0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
+            1.0, 1.5, 2.0, 3.0, 4.0
     };
     protected static Image propertyFlagImage;
     protected Map map;
@@ -58,7 +57,7 @@ public abstract class MapView extends JPanel implements Scrollable {
     @Getter
     protected double zoom = 1.0;
     @Getter
-    protected int zoomLevel = ZOOM_NORMALSIZE;
+    protected int zoomLevel = ZOOM_NORMAL_SIZE;
     // these two indicate where the center of the view is. This is used for
     // rendering layers with the parallax flag enabled and needs to be set
     // by the entity controlling the view (like the editor, or the scroll
@@ -72,9 +71,10 @@ public abstract class MapView extends JPanel implements Scrollable {
     protected boolean antialiasGrid;
     protected Color gridColor;
     protected int gridOpacity;
+    @Getter
     private MapLayer currentLayer;    // the currently selected layer
     // viewport display properties
-    private boolean parallaxModeEnabled;
+
     private Rectangle selectionRubberBandRectangle;
     private MapLayer selectionRubberBandLayer;
     private SelectionSet selectionSet;
@@ -110,7 +110,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         MapView mapView = null;
 
         int orientation = p.getOrientation();
-        if (orientation == Map.MDO_ORTHO) {
+        if (orientation == Map.MDO_ORTHOGONAL) {
             mapView = new OrthoMapView(p);
         }
         return mapView;
@@ -138,9 +138,9 @@ public abstract class MapView extends JPanel implements Scrollable {
      * Used for selection rubber band and selected objects
      *
      * @param g2d
-     * @param r
+     * @param rectangle
      */
-    private void paintSelectionRectangle(Graphics2D g2d, Rectangle r) {
+    private void paintSelectionRectangle(Graphics2D g2d, Rectangle rectangle) {
         // draw selection rectangle
         Stroke previousStroke = g2d.getStroke();
         Color previousColor = g2d.getColor();
@@ -149,10 +149,10 @@ public abstract class MapView extends JPanel implements Scrollable {
 
         g2d.setStroke(new BasicStroke(3));
         g2d.setColor(Color.WHITE);
-        g2d.draw(r);
+        g2d.draw(rectangle);
         g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, new float[]{0.0f, 3.0f, 6.0f}, 0.0f));
         g2d.setColor(Color.BLACK);
-        g2d.draw(r);
+        g2d.draw(rectangle);
 
         g2d.setColor(previousColor);
         g2d.setStroke(previousStroke);
@@ -256,8 +256,6 @@ public abstract class MapView extends JPanel implements Scrollable {
         // view plane distance setting.
         // The map's coordinate system is assumed to be the same as the view
         // plane's.
-        if (!isParallaxModeEnabled())
-            return new Point(0, 0);
 
         int mapWidthPx = map.getWidth() * map.getTileWidth();
         int mapHeightPx = map.getHeight() * map.getTileHeight();
@@ -277,8 +275,8 @@ public abstract class MapView extends JPanel implements Scrollable {
             parallaxScale = layer.getViewPlaneDistance() / (map.getEyeDistance() + layer.getViewPlaneDistance());
         float layerOffsetX = viewOffsetX * parallaxScale;
         float layerOffsetY = viewOffsetY * parallaxScale;
-        float x = layerOffsetX + originPosX - layerWidthPx / 2;
-        float y = layerOffsetY + originPosY - layerHeightPx / 2;
+        float x = layerOffsetX + originPosX - (float) layerWidthPx / 2;
+        float y = layerOffsetY + originPosY - (float) layerHeightPx / 2;
 
         return new Point((int) x, (int) y);
     }
@@ -372,7 +370,6 @@ public abstract class MapView extends JPanel implements Scrollable {
     public void setZoom(double zoom) {
         if (zoom > 0) {
             this.zoom = zoom;
-            //revalidate();
             setSize(getPreferredSize());
         }
     }
@@ -425,23 +422,16 @@ public abstract class MapView extends JPanel implements Scrollable {
 
         g2d.setStroke(new BasicStroke(2.0f));
 
-        // Do an initial fill with the background color
-        // todo: make background color configurable
-        //try {
-        //    String colorString = displayPrefs.get("backgroundColor", "");
-        //    g2d.setColor(Color.decode(colorString));
-        //} catch (NumberFormatException e) {
-        //}
         g2d.setColor(DEFAULT_BACKGROUND_COLOR);
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         paintSubMap(map, g2d, 1.0f);
 
-        if (!getMode(PF_NOSPECIAL)) {
-            Iterator li = map.getLayersSpecial();
+        if (!getMode(PF_NO_SPECIAL)) {
+            Iterator<MapLayer> li = map.getLayersSpecial();
 
             while (li.hasNext()) {
-                layer = (MapLayer) li.next();
+                layer = li.next();
                 if (layer.isVisible()) {
                     if (layer instanceof SelectionLayer) {
                         g2d.setComposite(AlphaComposite.getInstance(
@@ -519,28 +509,15 @@ public abstract class MapView extends JPanel implements Scrollable {
             r = new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
             paintSelectionRectangle(g2d, r);
         }
-
-        // for parallax mode, draw the viewport rectangle around the
-        // current eye position
-        if (isParallaxModeEnabled()) {
-            g2d.setColor(viewportFrameColor);
-            float viewportCenterXPx = viewportCenterX * map.getWidth() * map.getTileWidth();
-            float viewportCenterYPx = viewportCenterY * map.getHeight() * map.getTileHeight();
-            int x = (int) ((viewportCenterXPx - map.getViewportWidth() / 2.f) * zoom);
-            int y = (int) ((viewportCenterYPx - map.getViewportHeight() / 2.f) * zoom);
-            int w = (int) (map.getViewportWidth() * zoom);
-            int h = (int) (map.getViewportHeight() * zoom);
-            g2d.drawRect(x, y, w, h);
-        }
     }
 
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
                             float mapOpacity) {
-        Iterator li = m.getLayers();
+        Iterator<MapLayer> li = m.getLayers();
         MapLayer layer;
 
         while (li.hasNext()) {
-            layer = (MapLayer) li.next();
+            layer = li.next();
             if (layer != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
                 if (layer.isVisible() && opacity > 0.0f) {
@@ -577,61 +554,6 @@ public abstract class MapView extends JPanel implements Scrollable {
      */
     protected abstract void paintObjectGroup(Graphics2D g2d, ObjectGroup og);
 
-    protected void paintEdge(Graphics2D g2d, MapLayer layer, int x, int y) {
-        /*
-        Polygon grid = createGridPolygon(x, y, 0);
-        PathIterator itr = grid.getPathIterator(null);
-        double nextPoint[] = new double[6];
-        double prevPoint[], firstPoint[];
-
-        Point p = screenToTileCoords(x, y);
-        int tx = p.x;
-        int ty = p.y;
-
-        itr.currentSegment(nextPoint);
-        firstPoint = prevPoint = nextPoint;
-
-        // Top
-        itr.next();
-        nextPoint = new double[6];
-        itr.currentSegment(nextPoint);
-        if (layer.getTileAt(tx, ty - 1) == null) {
-            g.drawLine(
-                    (int)prevPoint[0], (int)prevPoint[1],
-                    (int)nextPoint[0], (int)nextPoint[1]);
-        }
-
-        // Right
-        itr.next();
-        prevPoint = nextPoint;
-        nextPoint = new double[6];
-        itr.currentSegment(nextPoint);
-        if (layer.getTileAt(tx + 1, ty) == null) {
-            g.drawLine(
-                    (int)prevPoint[0], (int)prevPoint[1],
-                    (int)nextPoint[0], (int)nextPoint[1]);
-        }
-
-        // Left
-        itr.next();
-        prevPoint = nextPoint;
-        nextPoint = new double[6];
-        itr.currentSegment(nextPoint);
-        if (layer.getTileAt(tx, ty + 1) == null) {
-            g.drawLine(
-                    (int)prevPoint[0], (int)prevPoint[1],
-                    (int)nextPoint[0], (int)nextPoint[1]);
-        }
-
-        // Bottom
-        if (layer.getTileAt(tx - 1, ty) == null) {
-            g.drawLine(
-                    (int)nextPoint[0], (int)nextPoint[1],
-                    (int)firstPoint[0], (int)firstPoint[1]);
-        }
-        */
-    }
-
     /**
      * Tells this view a certain region of the map needs to be repainted.
      * <p>
@@ -663,12 +585,12 @@ public abstract class MapView extends JPanel implements Scrollable {
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>.
      *
-     * @param tx
-     * @param ty
+     * @param tileX
+     * @param tileY
      * @param border
      * @return the created polygon
      */
-    protected abstract Polygon createGridPolygon(Dimension tileDimension, int tx, int ty, int border);
+    protected abstract Polygon createGridPolygon(Dimension tileDimension, int tileX, int tileY, int border);
 
     // Conversion functions
 
@@ -745,10 +667,6 @@ public abstract class MapView extends JPanel implements Scrollable {
         return new Point((int) (p.x * zoom), (int) (p.y * zoom));
     }
 
-    public MapLayer getCurrentLayer() {
-        return currentLayer;
-    }
-
     public void setCurrentLayer(MapLayer layer) {
         if (this.currentLayer == layer)
             return;
@@ -757,16 +675,5 @@ public abstract class MapView extends JPanel implements Scrollable {
         // the old and the new current layer, a redraw might be required.
         if (getMode(PF_COORDINATES) || getShowGrid())
             repaint();
-    }
-
-    public boolean isParallaxModeEnabled() {
-        return parallaxModeEnabled;
-    }
-
-    public void setParallaxModeEnabled(boolean parallaxModeEnabled) {
-        if (this.parallaxModeEnabled == parallaxModeEnabled)
-            return;
-        this.parallaxModeEnabled = parallaxModeEnabled;
-        repaint();
     }
 }
