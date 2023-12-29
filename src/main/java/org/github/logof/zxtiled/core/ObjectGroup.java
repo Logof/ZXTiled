@@ -24,8 +24,7 @@ import java.util.Vector;
 /**
  * A layer containing {@link MapObject map objects}.
  */
-public class ObjectGroup extends MapLayer
-{
+public class ObjectGroup extends MapLayer {
     private LinkedList<MapObject> objects = new LinkedList<MapObject>();
 
     /**
@@ -35,7 +34,7 @@ public class ObjectGroup extends MapLayer
     }
 
     /**
-     * @param map    the map this object group is part of
+     * @param map the map this object group is part of
      */
     public ObjectGroup(Map map) {
         super(map);
@@ -45,9 +44,9 @@ public class ObjectGroup extends MapLayer
      * Creates an object group that is part of the given map and has the given
      * origin.
      *
-     * @param map    the map this object group is part of
-     * @param origx  the x origin of this layer
-     * @param origy  the y origin of this layer
+     * @param map   the map this object group is part of
+     * @param origx the x origin of this layer
+     * @param origy the y origin of this layer
      */
     public ObjectGroup(Map map, int origx, int origy) {
         super(map);
@@ -101,7 +100,7 @@ public class ObjectGroup extends MapLayer
     }
 
     /**
-     * @see MapLayer#resize(int,int,int,int)
+     * @see MapLayer#resize(int, int, int, int)
      */
     public void resize(int width, int height, int dx, int dy) {
         setBounds(new Rectangle(dx, dy, width, height));
@@ -164,14 +163,15 @@ public class ObjectGroup extends MapLayer
         }
         return null;
     }
-    
+
     /**
      * Finds the objects on this layer that intersect the given Rectangle.
      * The order in which the objects are returned is not guaranteed
-     * @param rect  Rectangle in layer pixel coordinates.
-     * @return  objects that intersect the given rectangle
+     *
+     * @param rect Rectangle in layer pixel coordinates.
+     * @return objects that intersect the given rectangle
      */
-    public MapObject[] findObjectsByOutline(Rectangle rect){
+    public MapObject[] findObjectsByOutline(Rectangle rect) {
         // FIXME: iterating over all objects is potentially very slow
         // there's room for optimization here by using some sort of space
         // partitioning for object storage
@@ -184,34 +184,35 @@ public class ObjectGroup extends MapLayer
             Rectangle b = obj.getBounds();
             float x0 = b.x;
             float y0 = b.y;
-            float x1 = b.x+b.width;
-            float y1 = b.y+b.height;
+            float x1 = b.x + b.width;
+            float y1 = b.y + b.height;
             l0.setLine(x0, y0, x1, y0);
             l1.setLine(x1, y0, x1, y1);
             l2.setLine(x1, y1, x0, y1);
             l3.setLine(x0, y1, x0, y0);
-            if(l0.intersects(rect) || l1.intersects(rect) || l2.intersects(rect) || l3.intersects(rect))
+            if (l0.intersects(rect) || l1.intersects(rect) || l2.intersects(rect) || l3.intersects(rect))
                 result.add(obj);
         }
         return result.toArray(new MapObject[result.size()]);
     }
-    
+
     /**
-     * Finds objects that are contained in the given rectangle 
-     * @param rect  Rectangle given in layer pixel coordinates that marks the
-     * area that is searched for objects
+     * Finds objects that are contained in the given rectangle
+     *
+     * @param rect Rectangle given in layer pixel coordinates that marks the
+     *             area that is searched for objects
      * @return an array of MapObjects that are fully contained within the given
      * rectangle.
      */
-    public MapObject[] findObjects(Rectangle rect){
+    public MapObject[] findObjects(Rectangle rect) {
         Vector<MapObject> result = new Vector<MapObject>();
-        for(MapObject o : objects){
-            if(rect.contains(o.getBounds()))
+        for (MapObject o : objects) {
+            if (rect.contains(o.getBounds()))
                 result.add(o);
         }
         return result.toArray(new MapObject[result.size()]);
     }
-    
+
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
         Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);

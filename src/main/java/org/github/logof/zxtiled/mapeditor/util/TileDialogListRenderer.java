@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -18,8 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class TileDialogListRenderer extends DefaultListCellRenderer
-{
+public class TileDialogListRenderer extends DefaultListCellRenderer {
     private static final String TILE = Resources.getString("general.tile.tile");
     private static final String NOTILE = Resources.getString("general.tile.notile");
 
@@ -35,11 +34,11 @@ public class TileDialogListRenderer extends DefaultListCellRenderer
     }
 
     public Component getListCellRendererComponent(JList list, Object value,
-            int index,  boolean isSelected, boolean cellHasFocus) {
+                                                  int index, boolean isSelected, boolean cellHasFocus) {
         super.getListCellRendererComponent(
                 list, value, index, isSelected, cellHasFocus);
 
-        Tile tile = (Tile)value;
+        Tile tile = (Tile) value;
 
         if (tile != null) {
             Image scaledImage = tile.getScaledImage(zoom);

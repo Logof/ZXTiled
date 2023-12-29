@@ -6,11 +6,10 @@
 package org.github.logof.zxtiled.core;
 
 /**
- *
  * @author upachler
  */
 interface MapLayerChangeListener {
 
-    public void layerChanged(MapLayer aThis, MapLayerChangeEvent e);
-    
+    void layerChanged(MapLayer aThis, MapLayerChangeEvent e);
+
 }

@@ -14,8 +14,7 @@ package org.github.logof.zxtiled.mapeditor.dungeon;
 
 import org.github.logof.zxtiled.core.Map;
 
-public class CorridorBuilder extends Builder
-{
+public class CorridorBuilder extends Builder {
     public void iterate() {
     }
 

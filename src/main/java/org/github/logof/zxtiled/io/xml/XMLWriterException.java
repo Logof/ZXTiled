@@ -15,8 +15,7 @@ package org.github.logof.zxtiled.io.xml;
 /**
  * @version $Id$
  */
-public class XMLWriterException extends RuntimeException
-{
+public class XMLWriterException extends RuntimeException {
     public XMLWriterException(String error) {
         super(error);
     }

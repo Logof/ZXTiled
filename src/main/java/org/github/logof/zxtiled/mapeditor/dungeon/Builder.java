@@ -14,8 +14,7 @@ package org.github.logof.zxtiled.mapeditor.dungeon;
 
 import org.github.logof.zxtiled.core.Map;
 
-abstract public class Builder
-{
+abstract public class Builder {
     public static final int NORTH = 1;
     public static final int EAST = 2;
     public static final int SOUTH = 3;
@@ -24,10 +23,10 @@ abstract public class Builder
     protected int movesPerIteration = 0;
     protected int direction = NORTH;
     protected int wallTileId = 0,
-              floorTileId = 0,
-              doorTileId = 0;
-    private int ttl;
+            floorTileId = 0,
+            doorTileId = 0;
     protected int mapx, mapy;
+    private int ttl;
 
     public Builder() {
     }
@@ -47,6 +46,8 @@ abstract public class Builder
     }
 
     public abstract void iterate();
+
     public abstract Builder spawn();
+
     public abstract void store(Map m);
 }

@@ -16,6 +16,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -48,12 +51,18 @@ public final class Resources {
      *
      * @param filename the filename relative from the resources directory
      * @return A BufferedImage instance of the image
-     * @throws IOException if an error occurs during reading
-     * @throws IllegalArgumentException when the resource could not be found
      */
-    public static Image getImage(String filename) throws IOException, IllegalArgumentException {
-        return ImageIO.read(Resources.class.getResourceAsStream(
-                "resources/" + filename));
+    public static Optional<Image> getImage(String filename) {
+        InputStream inputStream = Resources.class.getResourceAsStream("/" + filename);
+        if (Objects.isNull(inputStream)) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(ImageIO.read(inputStream));
+        } catch (IOException e) {
+            System.out.println("Failed to load as image: " + filename);
+            return Optional.empty();
+        }
     }
 
     /**
@@ -63,16 +72,9 @@ public final class Resources {
      * @param filename the filename of the image relative from the
      *                 <code>resources</code> directory
      * @return the loaded icon, or <code>null</code> when an error occured
-     *         while loading the image
+     * while loading the image
      */
     public static Icon getIcon(String filename) {
-        try {
-            return new ImageIcon(getImage(filename));
-        } catch (IOException e) {
-            System.out.println("Failed to load as image: " + filename);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Failed to load resource: " + filename);
-        }
-        return null;
+        return new ImageIcon(getImage(filename).orElse(null));
     }
 }

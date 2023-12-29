@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -17,8 +17,7 @@ import org.github.logof.zxtiled.view.MapView;
 import java.awt.*;
 
 
-public abstract class AbstractBrush extends MultilayerPlane implements Brush
-{
+public abstract class AbstractBrush extends MultilayerPlane implements Brush {
     protected int numLayers = 1;
     protected MultilayerPlane affectedMp;
     protected boolean paintingStarted = false;
@@ -31,19 +30,19 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
         numLayers = ab.numLayers;
     }
 
+    public int getAffectedLayers() {
+        return numLayers;
+    }
+
     /**
      * This will set the number of layers to affect, the default is 1 - the
      * layer specified in commitPaint.
      *
+     * @param num the number of layers to affect.
      * @see Brush#doPaint(int, int)
-     * @param num   the number of layers to affect.
      */
     public void setAffectedLayers(int num) {
         numLayers = num;
-    }
-
-    public int getAffectedLayers() {
-        return numLayers;
     }
 
     public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {

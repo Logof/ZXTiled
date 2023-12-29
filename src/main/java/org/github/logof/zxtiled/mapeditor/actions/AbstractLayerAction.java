@@ -24,7 +24,7 @@ import java.util.Vector;
  * Provides a common abstract class for actions that modify the layer
  * configuration. It makes sure the undo/redo information is properly
  * maintained.
- *
+ * <p>
  * todo: These actions will need to listen to changing of the current selected
  * todo: layer index as well as changes to the opened map. Action should always
  * todo: be disabled when no map is opened. More specific checks should be
@@ -32,13 +32,11 @@ import java.util.Vector;
  *
  * @version $Id$
  */
-public abstract class AbstractLayerAction extends AbstractAction
-{
+public abstract class AbstractLayerAction extends AbstractAction {
     protected final MapEditor editor;
 
     protected AbstractLayerAction(MapEditor editor,
-                                  String name, String description)
-    {
+                                  String name, String description) {
         super(name);
         putValue(SHORT_DESCRIPTION, description);
         putValue(ACTION_COMMAND_KEY, name);
@@ -46,8 +44,7 @@ public abstract class AbstractLayerAction extends AbstractAction
     }
 
     protected AbstractLayerAction(MapEditor editor,
-                                  String name, String description, Icon icon)
-    {
+                                  String name, String description, Icon icon) {
         this(editor, name, description);
         putValue(SMALL_ICON, icon);
     }
@@ -68,7 +65,7 @@ public abstract class AbstractLayerAction extends AbstractAction
         Vector<MapLayer> layersAfter = new Vector<MapLayer>(map.getLayerVector());
         MapLayerStateEdit mapLayerStateEdit =
                 new MapLayerStateEdit(map, layersBefore, layersAfter,
-                                      e.getActionCommand());
+                        e.getActionCommand());
         editor.getUndoSupport().postEdit(mapLayerStateEdit);
     }
 

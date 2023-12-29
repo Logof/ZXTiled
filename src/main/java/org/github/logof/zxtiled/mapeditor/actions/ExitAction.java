@@ -21,12 +21,11 @@ import javax.swing.*;
  *
  * @version $Id$
  */
-public class ExitAction extends AbstractFileAction
-{
+public class ExitAction extends AbstractFileAction {
     public ExitAction(MapEditor editor, SaveAction saveAction) {
         super(editor, saveAction,
-              Resources.getString("action.main.exit.name"),
-              Resources.getString("action.main.exit.tooltip"));
+                Resources.getString("action.main.exit.name"),
+                Resources.getString("action.main.exit.tooltip"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control Q"));
     }

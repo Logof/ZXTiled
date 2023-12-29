@@ -26,21 +26,19 @@ import java.util.Objects;
 /**
  * The model used to display the layer stack.
  */
-public class LayerTableModel extends AbstractTableModel
-{
-    private MultilayerPlane map;
+public class LayerTableModel extends AbstractTableModel {
     private static final String[] columnNames = {
             Resources.getString("dialog.main.locked.column"),
             Resources.getString("dialog.main.show.column"),
             Resources.getString("dialog.main.layername.column")
     };
-
-    private final MapChangeListener listener = new MapChangeAdapter(){
+    private MultilayerPlane map;
+    private final MapChangeListener listener = new MapChangeAdapter() {
         @Override
         public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
-            if(e.getMap() != map)
+            if (e.getMap() != map)
                 return;
-            int row = getRowCount()-e.getLayerIndex()-1;
+            int row = getRowCount() - e.getLayerIndex() - 1;
             fireTableRowsUpdated(row, row);
         }
     };
@@ -55,24 +53,24 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public void setMap(MultilayerPlane map) {
-        if(this.map == map) {
+        if (this.map == map) {
             return;
         }
-        if(this.map != null){
+        if (this.map != null) {
             try {
-                ((Map)map).removeMapChangeListener(listener);
-            }catch(ClassCastException ignored){
+                ((Map) map).removeMapChangeListener(listener);
+            } catch (ClassCastException ignored) {
 
             }
         }
 
         this.map = map;
-        if(Objects.nonNull(map)) {
+        if (Objects.nonNull(map)) {
             ((Map) map).addMapChangeListener(listener);
         }
         fireTableDataChanged();
     }
-    
+
     public String getColumnName(int col) {
         return columnNames[col];
     }
@@ -102,9 +100,12 @@ public class LayerTableModel extends AbstractTableModel
 
     public Class getColumnClass(int col) {
         switch (col) {
-            case 0: return Boolean.class;
-            case 1: return Boolean.class;
-            case 2: return String.class;
+            case 0:
+                return Boolean.class;
+            case 1:
+                return Boolean.class;
+            case 2:
+                return String.class;
         }
         return null;
     }
@@ -137,9 +138,9 @@ public class LayerTableModel extends AbstractTableModel
         MapLayer layer = map.getLayer(getRowCount() - row - 1);
         if (layer != null) {
             if (col == 0) {
-                layer.setLocked((Boolean)value);
+                layer.setLocked((Boolean) value);
             } else if (col == 1) {
-                layer.setVisible((Boolean)value);
+                layer.setVisible((Boolean) value);
             } else if (col == 2) {
                 layer.setName(value.toString());
             }

@@ -26,13 +26,12 @@ import java.util.prefs.Preferences;
  * Achieve this, the SelectionLayer keeps a reference to a parent layer
  * which it uses to determine tile dimensions and other things
  */
-public class SelectionLayer extends TileLayer
-{
+public class SelectionLayer extends TileLayer {
     private Color highlightColor;
     private Tile selTile;
     private Area selection;
     private MapLayer parentLayer;
-        
+
     public SelectionLayer(MapLayer parent) {
         super(parent.getWidth(), parent.getHeight(), parent.getTileWidth(), parent.getTileHeight());
         parentLayer = parent;
@@ -44,11 +43,11 @@ public class SelectionLayer extends TileLayer
         parentLayer = null;
         init();
     }
-    
-    public void setParent(MapLayer layer){
+
+    public void setParent(MapLayer layer) {
         this.parentLayer = layer;
     }
-    
+
     private void init() {
         Preferences prefs = TiledConfiguration.root();
         try {
@@ -63,22 +62,22 @@ public class SelectionLayer extends TileLayer
 
     @Override
     public boolean isViewPlaneInfinitelyFarAway() {
-        if(parentLayer == null)
+        if (parentLayer == null)
             return super.isViewPlaneInfinitelyFarAway();
         else
             return parentLayer.isViewPlaneInfinitelyFarAway();
     }
-    
-    public float getViewPlaneDistance(){
-        if(parentLayer == null)
+
+    public float getViewPlaneDistance() {
+        if (parentLayer == null)
             return super.getViewPlaneDistance();
         else
             return parentLayer.getViewPlaneDistance();
     }
-    
+
     @Override
     public int getTileHeight() {
-        if(parentLayer == null)
+        if (parentLayer == null)
             return super.getTileHeight();
         else
             return parentLayer.getTileHeight();
@@ -86,7 +85,7 @@ public class SelectionLayer extends TileLayer
 
     @Override
     public int getTileWidth() {
-        if(parentLayer == null)
+        if (parentLayer == null)
             return super.getTileWidth();
         else
             return parentLayer.getTileWidth();
@@ -94,7 +93,7 @@ public class SelectionLayer extends TileLayer
 
     @Override
     public int getHeight() {
-        if(parentLayer == null)
+        if (parentLayer == null)
             return super.getHeight();
         else
             return parentLayer.getHeight();
@@ -102,7 +101,7 @@ public class SelectionLayer extends TileLayer
 
     @Override
     public int getWidth() {
-        if(parentLayer == null)
+        if (parentLayer == null)
             return super.getWidth();
         else
             return parentLayer.getWidth();
@@ -182,21 +181,21 @@ public class SelectionLayer extends TileLayer
     }
 
     /**
-     * Sets the highlight color.
-     *
-     * @param c the new highlight color to use when drawing this selection
-     */
-    public void setHighlightColor(Color c) {
-        highlightColor = c;
-    }
-
-    /**
      * Returns the highlight color.
      *
      * @return A Color instance of the highlight color
      */
     public Color getHighlightColor() {
         return highlightColor;
+    }
+
+    /**
+     * Sets the highlight color.
+     *
+     * @param c the new highlight color to use when drawing this selection
+     */
+    public void setHighlightColor(Color c) {
+        highlightColor = c;
     }
 
     private void fillRegion(Area region, Tile fill) {

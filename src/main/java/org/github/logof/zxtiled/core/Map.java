@@ -28,27 +28,27 @@ import java.util.Vector;
  *
  * @version $Id$
  */
-public class Map extends MultilayerPlane implements MapLayerChangeListener
-{
-    /** Orthogonal. */
-    public static final int MDO_ORTHO   = 1;
-    /** Isometric. */
+public class Map extends MultilayerPlane implements MapLayerChangeListener {
+    /**
+     * Orthogonal.
+     */
+    public static final int MDO_ORTHO = 1;
+    /**
+     * Isometric.
+     */
     private final Vector<MapLayer> specialLayers;
     @Getter
     private final Vector<TileSet> tilesets;
     private final LinkedList<MapObject> objects;
-
+    private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
     @Getter
     private int tileWidth;
     @Getter
     private int tileHeight;
-
     // TODO: fire mapChangedNotification about orientation change
     @Setter
     @Getter
     private int orientation = MDO_ORTHO;
-    private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
-
     @Setter
     @Getter
     private Properties properties;
@@ -56,14 +56,14 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
     @Setter
     private String filename;
     @Getter
-    private float eyeDistance = 100;
+    private final float eyeDistance = 100;
     @Setter
     @Getter
     private int viewportWidth = 640;
     @Setter
     @Getter
     private int viewportHeight = 480;
-        
+
     /**
      * @param width  the map width in tiles.
      * @param height the map height in tiles.
@@ -90,6 +90,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
 
     /**
      * Removes a change listener.
+     *
      * @param listener the listener to remove
      */
     public void removeMapChangeListener(MapChangeListener listener) {
@@ -106,39 +107,40 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
         // that add or removes listeners
         Iterable<MapChangeListener> mapChangeListenersClone = new Vector<>(mapChangeListeners);
 
-        for(MapChangeListener l : mapChangeListenersClone) {
+        for (MapChangeListener l : mapChangeListenersClone) {
             if (event == null)
                 event = new MapChangedEvent(this);
             l.mapChanged(event);
         }
     }
-    
-    protected void fireLayerRemoved(int layerIndex){
-        MapChangedEvent e = new MapChangedEvent(this, layerIndex); 
-        for(MapChangeListener l : mapChangeListeners){
+
+    protected void fireLayerRemoved(int layerIndex) {
+        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
+        for (MapChangeListener l : mapChangeListeners) {
             l.layerRemoved(e);
         }
     }
 
-    protected void fireLayerAdded(int layerIndex){
-        MapChangedEvent e = new MapChangedEvent(this, layerIndex); 
-        for(MapChangeListener l : mapChangeListeners){
+    protected void fireLayerAdded(int layerIndex) {
+        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
+        for (MapChangeListener l : mapChangeListeners) {
             l.layerAdded(e);
         }
     }
-    
-    protected void fireLayerMoved(int oldLayerIndex, int newLayerIndex){
+
+    protected void fireLayerMoved(int oldLayerIndex, int newLayerIndex) {
         MapChangedEvent e = new MapChangedEvent(this, newLayerIndex, oldLayerIndex);
-        for(MapChangeListener l : mapChangeListeners){
+        for (MapChangeListener l : mapChangeListeners) {
             l.layerMoved(e);
         }
     }
-    
-    protected void fireLayerChanged(int layerIndex, MapLayerChangeEvent mlce){
+
+    protected void fireLayerChanged(int layerIndex, MapLayerChangeEvent mlce) {
         MapChangedEvent e = new MapChangedEvent(this, layerIndex);
-        for(MapChangeListener l : mapChangeListeners)
+        for (MapChangeListener l : mapChangeListeners)
             l.layerChanged(e, mlce);
     }
+
     /**
      * Notifies all registered map change listeners about the removal of a
      * tileset.
@@ -215,7 +217,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
     public void addLayer() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
         layer.setName(Resources.getString("general.layer.layer") +
-                      " " + super.getTotalLayers());
+                " " + super.getTotalLayers());
         insertLayer(getTotalLayers(), layer);
     }
 
@@ -241,7 +243,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
     public void addObjectGroup() {
         MapLayer layer = new ObjectGroup(this);
         layer.setName(Resources.getString("general.objectgroup.objectgroup") +
-                      " " + super.getTotalLayers());
+                " " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
     }
@@ -281,7 +283,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      *
      * @param tileset TileSet to remove
      * @throws LayerLockedException when the tileset is in use on a locked
-     *         layer
+     *                              layer
      */
     public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
@@ -292,7 +294,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
         // Go through the map and remove any instances of the tiles in the set
         Iterator<Object> tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
-            Tile tile = (Tile)tileIterator.next();
+            Tile tile = (Tile) tileIterator.next();
             Iterator<MapLayer> layerIterator = getLayers();
             while (layerIterator.hasNext()) {
                 MapLayer ml = layerIterator.next();
@@ -341,7 +343,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      * @see MultilayerPlane#removeAllLayers
      */
     public void removeAllLayers() {
-        while(getTotalLayers() > 0){
+        while (getTotalLayers() > 0) {
             getLayer(0).removeMapLayerChangeListener(this);
             removeLayer(0);
             fireLayerRemoved(0);
@@ -366,7 +368,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
     public void swapLayerUp(int index) {
         super.swapLayerUp(index);
         fireMapChanged();
-        fireLayerMoved(index, index+1);
+        fireLayerMoved(index, index + 1);
     }
 
     /**
@@ -377,7 +379,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
     public void swapLayerDown(int index) {
         super.swapLayerDown(index);
         fireMapChanged();
-        fireLayerMoved(index, index-1);
+        fireLayerMoved(index, index - 1);
     }
 
     /**
@@ -430,7 +432,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      *
      * @param gid a global tile id
      * @return the tileset containing the tile with the given global tile id,
-     *         or <code>null</code> when no such tileset exists
+     * or <code>null</code> when no such tileset exists
      */
     public TileSet findTileSetForTileGID(int gid) {
         TileSet has = null;
@@ -467,7 +469,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      * @param x The tile-space x-coordinate
      * @param y The tile-space y-coordinate
      * @return <code>true</code> if the point is within the map boundaries,
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean contains(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
@@ -519,13 +521,13 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      */
     public String toString() {
         return "Map[" + bounds.width + "x" + bounds.height + "x" +
-            getTotalLayers() + "][" + tileWidth + "x" +
-            tileHeight + "]";
+                getTotalLayers() + "][" + tileWidth + "x" +
+                tileHeight + "]";
     }
 
 
     public void layerChanged(MapLayer layerIndex, MapLayerChangeEvent e) {
         fireLayerChanged(findLayerIndex(layerIndex), e);
     }
-    
+
 }

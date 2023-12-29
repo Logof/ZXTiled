@@ -24,11 +24,10 @@ import java.util.Vector;
 /**
  * This class facilitates physically merging tiles.
  */
-public class TileMergeHelper
-{
-    private Map myMap;
-    private TileSet myTs;
-    private Vector<Cell> cells;
+public class TileMergeHelper {
+    private final Map myMap;
+    private final TileSet myTs;
+    private final Vector<Cell> cells;
 
     public TileMergeHelper(Map map) {
         myMap = map;
@@ -36,23 +35,23 @@ public class TileMergeHelper
         myTs = new TileSet();
         myTs.setName("Merged Set");
     }
-    
-    public static boolean areTileSizesUniform(Map map){
-        for(MapLayer l : map.getLayerVector()){
-            if(l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()){
+
+    public static boolean areTileSizesUniform(Map map) {
+        for (MapLayer l : map.getLayerVector()) {
+            if (l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()) {
                 return false;
             }
         }
         return true;
     }
-    
+
     public TileLayer merge(int start, int len, boolean all) {
         Rectangle r = myMap.getBounds();
         TileLayer mergedLayer = new TileLayer(r, myMap.getTileWidth(), myMap.getTileHeight());
-        
+
         // make sure all tile sizes are the same as the map's default tile size, otherwise the result will be a large mess..
         assert areTileSizesUniform(myMap);
-        
+
         for (int i = 0; i < r.height; i++) {
             for (int j = 0; j < r.width; j++) {
                 mergedLayer.setTileAt(j, i, createCell(j, i, start, len, all));
@@ -86,7 +85,7 @@ public class TileMergeHelper
         //GENERATE MERGED TILE IMAGE
         //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
         GraphicsConfiguration config =
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());
         c.render(tileImg.getGraphics());
         tile.setImage(tileImg);
@@ -97,13 +96,13 @@ public class TileMergeHelper
     }
 
     private class Cell {
-        private Vector<Tile> sandwich;
+        private final Vector<Tile> sandwich;
         private Tile myTile;
 
         public Cell(Map map, int posx, int posy, int start, int len, boolean all) {
             sandwich = new Vector<Tile>();
             for (int i = 0; i < len; i++) {
-                MapLayer ml = map.getLayer(start+i);
+                MapLayer ml = map.getLayer(start + i);
                 if (ml instanceof TileLayer) {
                     TileLayer l = (TileLayer) ml;
                     if (l.isVisible() || all) {
@@ -115,12 +114,12 @@ public class TileMergeHelper
             }
         }
 
-        public void setTile(Tile t) {
-            myTile = t;
-        }
-
         public Tile getTile() {
             return myTile;
+        }
+
+        public void setTile(Tile t) {
+            myTile = t;
         }
 
         public void render(Graphics g) {

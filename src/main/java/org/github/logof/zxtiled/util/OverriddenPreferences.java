@@ -7,6 +7,7 @@ package org.github.logof.zxtiled.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,33 +18,32 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
 /**
- *
  * @author upachler
  */
-public class OverriddenPreferences extends Preferences{
-    
-    private Preferences shadow;
-    private Map<String,String> store = new HashMap<String,String>();
-    private Set<String> removed = new HashSet<String>();
-    
-    public OverriddenPreferences(Preferences shadow){
+public class OverriddenPreferences extends Preferences {
+
+    private final Preferences shadow;
+    private final Map<String, String> store = new HashMap<String, String>();
+    private final Set<String> removed = new HashSet<String>();
+
+    public OverriddenPreferences(Preferences shadow) {
         this.shadow = shadow;
     }
-    
+
     @Override
     public void put(String key, String value) {
-        store.put(key,value);
+        store.put(key, value);
         removed.remove(key);
     }
 
     @Override
     public String get(String key, String defaultValue) {
-        if(removed.contains(key))
+        if (removed.contains(key))
             return defaultValue;
-        if(!store.containsKey(key))
+        if (!store.containsKey(key))
             return shadow.get(key, defaultValue);
         return store.get(key);
-        
+
     }
 
     @Override
@@ -55,10 +55,9 @@ public class OverriddenPreferences extends Preferences{
     @Override
     public String[] keys() throws BackingStoreException {
         Set<String> keySet = new HashSet();
-        for(String key : store.keySet())
+        for (String key : store.keySet())
             keySet.add(key);
-        for(String key : shadow.keys())
-            keySet.add(key);
+        Collections.addAll(keySet, shadow.keys());
         return keySet.toArray(new String[keySet.size()]);
     }
 

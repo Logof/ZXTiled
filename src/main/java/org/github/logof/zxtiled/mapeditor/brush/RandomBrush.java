@@ -20,8 +20,7 @@ import java.awt.geom.Area;
 /**
  * @version $Id$
  */
-public class RandomBrush extends ShapeBrush
-{
+public class RandomBrush extends ShapeBrush {
     private final MersenneTwister mt;
     private double ratio = 0.5;
 
@@ -34,16 +33,16 @@ public class RandomBrush extends ShapeBrush
         super(sb);
         mt = new MersenneTwister(System.currentTimeMillis());
         if (sb instanceof RandomBrush) {
-            ratio = ((RandomBrush)sb).ratio;
+            ratio = ((RandomBrush) sb).ratio;
         }
-    }
-
-    public void setRatio(double r) {
-        ratio = r;
     }
 
     public double getRatio() {
         return ratio;
+    }
+
+    public void setRatio(double r) {
+        ratio = r;
     }
 
     /**
@@ -52,13 +51,12 @@ public class RandomBrush extends ShapeBrush
      * is a random number, to determine if a specific tile should be
      * painted or not
      *
-     * @see ShapeBrush#doPaint
+     * @param x The x-coordinate where the click occurred.
+     * @param y The y-coordinate where the click occurred.
      * @return a Rectangle of the bounds of the area that was modified
-     * @param x  The x-coordinate where the click occurred.
-     * @param y  The y-coordinate where the click occurred.
+     * @see ShapeBrush#doPaint
      */
-    public Rectangle doPaint(int x, int y)
-    {
+    public Rectangle doPaint(int x, int y) {
         Rectangle shapeBounds = shape.getBounds();
         int centerx = x - shapeBounds.width / 2;
         int centery = y - shapeBounds.height / 2;
@@ -69,8 +67,7 @@ public class RandomBrush extends ShapeBrush
                 for (int cy = 0; cy <= shapeBounds.height; cy++) {
                     for (int cx = 0; cx < shapeBounds.width; cx++) {
                         if (shape.contains(cx, cy) &&
-                                mt.genrand() % 101 <= 100 * ratio)
-                        {
+                                mt.genrand() % 101 <= 100 * ratio) {
                             tl.setTileAt(
                                     cx + centerx, cy + centery, paintTile);
                         }

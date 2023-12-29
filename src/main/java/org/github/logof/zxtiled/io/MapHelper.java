@@ -28,10 +28,9 @@ import java.util.prefs.Preferences;
  * A handler for saving and loading maps.
  */
 public class MapHelper {
-    private static PluginClassLoader pluginLoader;
-
     public static final String ERROR_LOAD_MAP = Resources.getString("general.file.noload.map");
     public static final String ERROR_LOAD_TILESET = Resources.getString("general.file.noload.tileset");
+    private static PluginClassLoader pluginLoader;
 
     /**
      * Called to tell the MapHelper which {@link PluginClassLoader} to use when
@@ -49,20 +48,19 @@ public class MapHelper {
      * when the extension is not supported by either the TMX writer or a
      * plugin. (Unlikely)
      *
-     * @param filename filename to save the current map to
+     * @param filename   filename to save the current map to
      * @param currentMap {@link Map} instance to save to the file
+     * @throws Exception
      * @see MapWriter#writeMap(Map, String)
-     * @exception Exception
      */
     public static void saveMap(Map currentMap, String filename)
-        throws Exception
-    {
+            throws Exception {
         MapWriter mw;
         if (filename.endsWith(".tmx") || filename.endsWith(".tmx.gz")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
         } else {
-            mw = (MapWriter)pluginLoader.getWriterFor(filename);
+            mw = (MapWriter) pluginLoader.getWriterFor(filename);
         }
 
         if (mw != null) {
@@ -82,19 +80,18 @@ public class MapHelper {
      * extension is not supported by either the TMX writer or a plugin.
      *
      * @param filename Filename to save the tileset to.
-     * @param set The TileSet instance to save to the file
+     * @param set      The TileSet instance to save to the file
+     * @throws Exception
      * @see MapWriter#writeTileset(TileSet, String)
-     * @exception Exception
      */
     public static void saveTileset(TileSet set, String filename)
-        throws Exception
-    {
+            throws Exception {
         MapWriter mw;
         if (filename.endsWith(".tsx")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
         } else {
-            mw = (MapWriter)pluginLoader.getWriterFor(filename);
+            mw = (MapWriter) pluginLoader.getWriterFor(filename);
         }
 
         if (mw != null) {
@@ -119,8 +116,8 @@ public class MapHelper {
      * @throws Exception
      */
     public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename)
-        throws Exception {
-        MapWriter mw = (MapWriter)pmio;
+            throws Exception {
+        MapWriter mw = (MapWriter) pmio;
 
         PluginLogger logger = new PluginLogger();
         mw.setLogger(logger);
@@ -147,7 +144,7 @@ public class MapHelper {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
             } else {
-                mr = (MapReader)pluginLoader.getReaderFor(file);
+                mr = (MapReader) pluginLoader.getReaderFor(file);
             }
 
             if (mr != null) {
@@ -162,16 +159,16 @@ public class MapHelper {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                        ERROR_LOAD_MAP,
+                            e.getCause().getMessage() : ""),
+                    ERROR_LOAD_MAP,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                     "Error while loading " + file + ": " +
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                        ERROR_LOAD_MAP,
+                            e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                            e.getCause().getMessage() : ""),
+                    ERROR_LOAD_MAP,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -197,7 +194,7 @@ public class MapHelper {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
             } else {
-                mr = (MapReader)pluginLoader.getReaderFor(file);
+                mr = (MapReader) pluginLoader.getReaderFor(file);
             }
 
             if (mr != null) {
@@ -212,16 +209,16 @@ public class MapHelper {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                        ERROR_LOAD_TILESET,
+                            e.getCause().getMessage() : ""),
+                    ERROR_LOAD_TILESET,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                     "Error while loading " + file + ": " +
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                        ERROR_LOAD_TILESET,
+                            e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                            e.getCause().getMessage() : ""),
+                    ERROR_LOAD_TILESET,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }

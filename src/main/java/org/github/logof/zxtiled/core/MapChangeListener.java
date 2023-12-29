@@ -20,20 +20,19 @@ import java.util.EventListener;
  *
  * @version $Id$
  */
-public interface MapChangeListener extends EventListener
-{
-    public void mapChanged(MapChangedEvent e);
-    
+public interface MapChangeListener extends EventListener {
+    void mapChanged(MapChangedEvent e);
+
     /// called after a layer has been added. the getLayerIndex() method
     /// of the supplied MapChangedEvent will yield the index of the new layer
     /// (where it has been inserted)
-    public void layerAdded(MapChangedEvent e);
-    
+    void layerAdded(MapChangedEvent e);
+
     /// called after a layer has been removed. the getLayerIndex() method
     /// of the supplied MapChangedEvent will yield the index of the layer that
     /// was removed.
-    public void layerRemoved(MapChangedEvent e);
-    
+    void layerRemoved(MapChangedEvent e);
+
     /// called after a layer has been moved around in the map's list of
     /// layers. This changes which layer is on top of which other layer. A move
     /// is basically the
@@ -45,14 +44,14 @@ public interface MapChangeListener extends EventListener
     /// cause all subsequent layers to move one position down. After that, 
     /// add(M) will add the layer at position M (counted from the state of the
     /// sequence after remove(N)
-    public void layerMoved(MapChangedEvent e);
-    
+    void layerMoved(MapChangedEvent e);
+
     /// This event is fired every time the name of a layer is changed.
-    public void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent);
-    
-    public void tilesetAdded(MapChangedEvent e, TileSet tileset);
+    void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent);
 
-    public void tilesetRemoved(MapChangedEvent e, int index);
+    void tilesetAdded(MapChangedEvent e, TileSet tileset);
 
-    public void tilesetsSwapped(MapChangedEvent e, int index0, int index1);
+    void tilesetRemoved(MapChangedEvent e, int index);
+
+    void tilesetsSwapped(MapChangedEvent e, int index0, int index1);
 }

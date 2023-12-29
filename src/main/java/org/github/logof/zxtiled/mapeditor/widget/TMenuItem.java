@@ -12,9 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.widget;
 
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
+import javax.swing.*;
 
 /**
  * Tiled menu item extends on JMenuItem in that it allows for not accepting
@@ -22,8 +20,7 @@ import javax.swing.JMenuItem;
  *
  * @version $Id$
  */
-public class TMenuItem extends JMenuItem
-{
+public class TMenuItem extends JMenuItem {
     private boolean showIcon;
 
     public TMenuItem(boolean showIcon) {

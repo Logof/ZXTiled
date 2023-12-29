@@ -15,8 +15,7 @@ package org.github.logof.zxtiled.util;
 /**
  * @version $Id$
  */
-public class TiledProperty
-{
+public class TiledProperty {
     private String value;
     private String min;
     private String max;

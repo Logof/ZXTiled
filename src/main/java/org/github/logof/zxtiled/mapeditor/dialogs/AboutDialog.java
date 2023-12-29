@@ -27,8 +27,7 @@ import java.util.TimerTask;
  *
  * @version $Id$
  */
-public class AboutDialog extends JDialog
-{
+public class AboutDialog extends JDialog {
     private final JFrame parent;
     private JProgressBar memoryBar;
 
@@ -72,7 +71,7 @@ public class AboutDialog extends JDialog
         barPanel.setLayout(new BoxLayout(barPanel, BoxLayout.X_AXIS));
         barPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         barPanel.setMaximumSize(new Dimension(logo.getPreferredSize().width,
-                                              Short.MAX_VALUE));
+                Short.MAX_VALUE));
         barPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         barPanel.add(memoryBar);
         barPanel.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -106,8 +105,7 @@ public class AboutDialog extends JDialog
     /**
      * Used for updating the memory bar in intervals.
      */
-    private class UpdateTimerTask extends TimerTask
-    {
+    private class UpdateTimerTask extends TimerTask {
         public void run() {
             if (isVisible()) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -122,8 +120,7 @@ public class AboutDialog extends JDialog
     /**
      * Collects garbage.
      */
-    private class GarbageCollectAction extends AbstractAction
-    {
+    private class GarbageCollectAction extends AbstractAction {
         public GarbageCollectAction() {
             putValue(Action.SMALL_ICON, Resources.getIcon("icon/gnome-delete.png"));
         }

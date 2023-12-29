@@ -22,13 +22,12 @@ import javax.swing.*;
  *
  * @version $Id$
  */
-public class MoveLayerDownAction extends AbstractLayerAction
-{
+public class MoveLayerDownAction extends AbstractLayerAction {
     public MoveLayerDownAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.layer.movedown.name"),
-              Resources.getString("action.layer.movedown.tooltip"),
-              Resources.getIcon("icon/gnome-down.png"));
+                Resources.getString("action.layer.movedown.name"),
+                Resources.getString("action.layer.movedown.tooltip"),
+                Resources.getIcon("icon/gnome-down.png"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_DOWN"));
     }

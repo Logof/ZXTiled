@@ -28,16 +28,14 @@ import java.awt.event.ActionListener;
  * @version $Id$
  */
 public class PluginDialog extends JDialog implements ActionListener,
-       ListSelectionListener
-{
-    private final PluginClassLoader pluginLoader;
-    private JList pluginList;
-    private JButton closeButton, infoButton, removeButton;
-
+                                                     ListSelectionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.plugins.title");
     private static final String INFO_BUTTON = Resources.getString("dialog.plugins.info.button");
     private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private final PluginClassLoader pluginLoader;
+    private JList pluginList;
+    private JButton closeButton, infoButton, removeButton;
 
     public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
         super(parent, DIALOG_TITLE, true);
@@ -152,6 +150,6 @@ public class PluginDialog extends JDialog implements ActionListener,
         boolean validSelection = pluginList.getSelectedIndex() >= 0;
         infoButton.setEnabled(validSelection);
         // TODO: Enable "Remove" button when functional
-        removeButton.setEnabled(validSelection && false);
+        removeButton.setEnabled(false);
     }
 }

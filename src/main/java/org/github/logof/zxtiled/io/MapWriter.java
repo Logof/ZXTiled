@@ -21,11 +21,10 @@ import java.io.OutputStream;
  * Used by Tiled to denote a plugin for writing maps. The map file
  * can have any format, as long as the MapWriter implementor accepts
  * instances of {@link Map} and {@link TileSet}.
- *
+ * <p>
  * $Id$
  */
-public interface MapWriter extends PluggableMapIO, FileFilter
-{
+public interface MapWriter extends PluggableMapIO, FileFilter {
     /**
      * Saves a map to a file.
      *
@@ -33,7 +32,7 @@ public interface MapWriter extends PluggableMapIO, FileFilter
      * @param filename the filename of the map file
      * @throws Exception
      */
-    public void writeMap(Map map, String filename) throws Exception;
+    void writeMap(Map map, String filename) throws Exception;
 
     /**
      * Saves a tileset to a file.
@@ -42,7 +41,7 @@ public interface MapWriter extends PluggableMapIO, FileFilter
      * @param filename the filename of the tileset file
      * @throws Exception
      */
-    public void writeTileset(TileSet set, String filename) throws Exception;
+    void writeTileset(TileSet set, String filename) throws Exception;
 
     /**
      * Writes a map to an already opened stream. Useful
@@ -52,7 +51,7 @@ public interface MapWriter extends PluggableMapIO, FileFilter
      * @param out
      * @throws Exception
      */
-    public void writeMap(Map map, OutputStream out) throws Exception;
+    void writeMap(Map map, OutputStream out) throws Exception;
 
     /**
      * Overload this to write a tileset to an open stream.
@@ -61,5 +60,5 @@ public interface MapWriter extends PluggableMapIO, FileFilter
      * @param out
      * @throws Exception
      */
-    public void writeTileset(TileSet set, OutputStream out) throws Exception;
+    void writeTileset(TileSet set, OutputStream out) throws Exception;
 }

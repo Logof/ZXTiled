@@ -24,31 +24,40 @@ import java.util.Vector;
  * @see Map
  * @see MultilayerPlane
  */
-public abstract class MapLayer implements Cloneable
-{
-    /** MIRROR_HORIZONTAL */
+public abstract class MapLayer implements Cloneable {
+    /**
+     * MIRROR_HORIZONTAL
+     */
     public static final int MIRROR_HORIZONTAL = 1;
-    /** MIRROR_VERTICAL */
-    public static final int MIRROR_VERTICAL   = 2;
+    /**
+     * MIRROR_VERTICAL
+     */
+    public static final int MIRROR_VERTICAL = 2;
 
-    /** ROTATE_90 */
-    public static final int ROTATE_90  = 90;
-    /** ROTATE_180 */
+    /**
+     * ROTATE_90
+     */
+    public static final int ROTATE_90 = 90;
+    /**
+     * ROTATE_180
+     */
     public static final int ROTATE_180 = 180;
-    /** ROTATE_270 */
+    /**
+     * ROTATE_270
+     */
     public static final int ROTATE_270 = 270;
 
     protected String name;
     protected boolean isVisible = true;
     protected boolean bLocked = false;
+    protected float opacity = 1.0f;
+    protected Rectangle bounds;
     private float viewPlaneDistance = 0.0f;
     @Getter
     private boolean viewPlaneInfinitelyFarAway = false;
     private Map myMap;
-    protected float opacity = 1.0f;
-    protected Rectangle bounds;
     private Properties properties = new Properties();
-    private Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
+    private final Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
 
     public MapLayer() {
         bounds = new Rectangle();
@@ -71,6 +80,7 @@ public abstract class MapLayer implements Cloneable
     /**
      * Creates a new MapLayer instance for the given map.
      * The width and height are set to the width and height of the map.
+     *
      * @param map the map this layer is part of
      */
     MapLayer(Map map) {
@@ -80,9 +90,10 @@ public abstract class MapLayer implements Cloneable
 
     /**
      * Creates a new MapLayer instance for the given map.
+     *
      * @param map the map this layer is part of
-     * @param w width in tiles
-     * @param h height in tiles
+     * @param w   width in tiles
+     * @param h   height in tiles
      */
     public MapLayer(Map map, int w, int h) {
         this(w, h);
@@ -104,13 +115,38 @@ public abstract class MapLayer implements Cloneable
 
     public abstract void mirror(int dir);
 
+    public Map getMap() {
+        return myMap;
+    }
+
     /**
-     * Sets the bounds (in tiles) to the specified Rectangle.
+     * Sets the map this layer is part of.
      *
-     * @param bounds
+     * @param map the Map object
      */
-    protected void setBounds(Rectangle bounds) {
-        this.bounds = new Rectangle(bounds);
+    public void setMap(Map map) {
+        myMap = map;
+    }
+
+    /**
+     * Sets the offset of this map layer. The offset is a distance by which to
+     * shift this layer from the origin of the map.
+     *
+     * @param xOff x offset in tiles
+     * @param yOff y offset in tiles
+     */
+    public void setOffset(int xOff, int yOff) {
+        bounds.x = xOff;
+        bounds.y = yOff;
+    }
+
+    /**
+     * Returns the name of this layer.
+     *
+     * @return the name of the layer
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -125,16 +161,70 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-     * Sets the map this layer is part of.
+     * Returns layer width in tiles.
      *
-     * @param map the Map object
+     * @return layer width in tiles.
      */
-    public void setMap(Map map) {
-        myMap = map;
+    public int getWidth() {
+        return bounds.width;
     }
 
-    public Map getMap() {
-        return myMap;
+    /**
+     * Returns layer height in tiles.
+     *
+     * @return layer height in tiles.
+     */
+    public int getHeight() {
+        return bounds.height;
+    }
+
+    /**
+     * Returns the layer bounds in tiles.
+     *
+     * @return the layer bounds in tiles
+     */
+    public Rectangle getBounds() {
+        return new Rectangle(bounds);
+    }
+
+    /**
+     * Sets the bounds (in tiles) to the specified Rectangle.
+     *
+     * @param bounds
+     */
+    protected void setBounds(Rectangle bounds) {
+        this.bounds = new Rectangle(bounds);
+    }
+
+    /**
+     * Assigns the layer bounds in tiles to the given rectangle.
+     *
+     * @param rect the rectangle to which the layer bounds are assigned
+     */
+    public void getBounds(Rectangle rect) {
+        rect.setBounds(bounds);
+    }
+
+    /**
+     * A convenience method to check if a point in tile-space is within
+     * the layer boundaries.
+     *
+     * @param x the x-coordinate of the point
+     * @param y the y-coordinate of the point
+     * @return <code>true</code> if the point (x,y) is within the layer
+     * boundaries, <code>false</code> otherwise.
+     */
+    public boolean contains(int x, int y) {
+        return bounds.contains(x, y);
+    }
+
+    /**
+     * Returns layer opacity.
+     *
+     * @return layer opacity, ranging from 0.0 to 1.0
+     */
+    public float getOpacity() {
+        return opacity;
     }
 
     /**
@@ -154,6 +244,16 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
+     * Returns whether this layer is visible.
+     *
+     * @return <code>true</code> if the layer is visible, <code>false</code>
+     * otherwise.
+     */
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    /**
      * Sets the visibility of this map layer. If it changes from its current
      * value, a MapChangedEvent is fired.
      *
@@ -167,90 +267,6 @@ public abstract class MapLayer implements Cloneable
                 getMap().fireMapChanged();
             }
         }
-    }
-
-    /**
-     * Sets the offset of this map layer. The offset is a distance by which to
-     * shift this layer from the origin of the map.
-     *
-     * @param xOff x offset in tiles
-     * @param yOff y offset in tiles
-     */
-    public void setOffset(int xOff, int yOff) {
-        bounds.x = xOff;
-        bounds.y = yOff;
-    }
-
-    /**
-     * Returns the name of this layer.
-     * @return the name of the layer
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns layer width in tiles.
-     * @return layer width in tiles.
-     */
-    public int getWidth() {
-        return bounds.width;
-    }
-
-    /**
-     * Returns layer height in tiles.
-     * @return layer height in tiles.
-     */
-    public int getHeight() {
-        return bounds.height;
-    }
-
-    /**
-     * Returns the layer bounds in tiles.
-     * @return the layer bounds in tiles
-     */
-    public Rectangle getBounds() {
-        return new Rectangle(bounds);
-    }
-
-    /**
-     * Assigns the layer bounds in tiles to the given rectangle.
-     * @param rect the rectangle to which the layer bounds are assigned
-     */
-    public void getBounds(Rectangle rect) {
-        rect.setBounds(bounds);
-    }
-
-    /**
-     * A convenience method to check if a point in tile-space is within
-     * the layer boundaries.
-     *
-     * @param x the x-coordinate of the point
-     * @param y the y-coordinate of the point
-     * @return <code>true</code> if the point (x,y) is within the layer
-     *         boundaries, <code>false</code> otherwise.
-     */
-    public boolean contains(int x, int y) {
-        return bounds.contains(x, y);
-    }
-
-    /**
-     * Returns layer opacity.
-     *
-     * @return layer opacity, ranging from 0.0 to 1.0
-     */
-    public float getOpacity() {
-        return opacity;
-    }
-
-    /**
-     * Returns whether this layer is visible.
-     *
-     * @return <code>true</code> if the layer is visible, <code>false</code>
-     * otherwise.
-     */
-    public boolean isVisible() {
-        return isVisible;
     }
 
     /**
@@ -274,12 +290,12 @@ public abstract class MapLayer implements Cloneable
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *
+     * @param other the layer to copy this layer to
      * @see MapLayer#copyFrom
      * @see MapLayer#mergeOnto
-     * @param other the layer to copy this layer to
      */
-    public void copyTo(MapLayer other){
-        
+    public void copyTo(MapLayer other) {
+
         // undo/redo is using this, so it better be accurate...
         other.setName(name);
         other.setVisible(isVisible);
@@ -289,7 +305,7 @@ public abstract class MapLayer implements Cloneable
         other.myMap = myMap;
         other.setOpacity(opacity);
         other.bounds.setBounds(bounds);
-        if(other.properties != properties){
+        if (other.properties != properties) {
             other.properties.clear();
             other.properties.putAll(properties);
         }
@@ -300,9 +316,9 @@ public abstract class MapLayer implements Cloneable
     /**
      * Creates a copy of this layer.
      *
-     * @see Object#clone
      * @return a clone of this layer, as complete as possible
-     * @exception CloneNotSupportedException
+     * @throws CloneNotSupportedException
+     * @see Object#clone
      */
     public Object clone() throws CloneNotSupportedException {
         MapLayer clone = (MapLayer) super.clone();
@@ -315,15 +331,14 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-     * @see MultilayerPlane#resize
-     *
      * @param width  the new width of the layer
      * @param height the new height of the layer
      * @param dx     the shift in x direction
      * @param dy     the shift in y direction
+     * @see MultilayerPlane#resize
      */
     public abstract void resize(int width, int height, int dx, int dy);
-    
+
     /**
      * Get the locked status of the layer.
      *
@@ -344,19 +359,19 @@ public abstract class MapLayer implements Cloneable
         bLocked = lock;
     }
 
+    public Properties getProperties() {
+        return properties;
+    }
+
     public void setProperties(Properties p) {
         properties.clear();
         properties.putAll(p);
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
     public boolean canEdit() {
         return !getLocked() && isVisible();
     }
-    
+
     /// returns the tile height that applies to this layer. To layers of this
     /// type, the map's own tile height will apply. However, subtypes may
     /// implement their own tile width and tile height settings that differ
@@ -373,41 +388,39 @@ public abstract class MapLayer implements Cloneable
         return getMap().getTileWidth();
     }
 
-    public void setViewPlaneDistance(float viewPlaneDistance) {
-        if(this.viewPlaneDistance == viewPlaneDistance) {
-            return;
-        }
-        this.viewPlaneDistance = viewPlaneDistance;
-        if(getMap()==null) {
-            return;
-        }
-    }
-
     public float getViewPlaneDistance() {
         return viewPlaneDistance;
     }
-    
-    public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway){
-        if(inifitelyFarAway == this.viewPlaneInfinitelyFarAway) {
+
+    public void setViewPlaneDistance(float viewPlaneDistance) {
+        if (this.viewPlaneDistance == viewPlaneDistance) {
+            return;
+        }
+        this.viewPlaneDistance = viewPlaneDistance;
+        if (getMap() == null) {
+        }
+    }
+
+    public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway) {
+        if (inifitelyFarAway == this.viewPlaneInfinitelyFarAway) {
             return;
         }
         this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
-        if(getMap()==null) {
-            return;
+        if (getMap() == null) {
         }
     }
 
     private void fireRenamed(String newName, String oldName) {
         MapLayerChangeEvent e = MapLayerChangeEvent.createNameChangeEvent(oldName, newName);
-        for(MapLayerChangeListener l : listeners)
+        for (MapLayerChangeListener l : listeners)
             l.layerChanged(this, e);
     }
-    
-    void addMapLayerChangeListener(MapLayerChangeListener l){
+
+    void addMapLayerChangeListener(MapLayerChangeListener l) {
         listeners.add(l);
     }
-    
-    void removeMapLayerChangeListener(MapLayerChangeListener l){
+
+    void removeMapLayerChangeListener(MapLayerChangeListener l) {
         listeners.remove(l);
     }
 }

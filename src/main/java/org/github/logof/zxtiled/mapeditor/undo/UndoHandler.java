@@ -12,28 +12,25 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
-import java.util.Iterator;
-import java.awt.event.ActionEvent;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CannotRedoException;
+import org.github.logof.zxtiled.mapeditor.MapEditor;
+import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
-
-import org.github.logof.zxtiled.util.TiledConfiguration;
-import org.github.logof.zxtiled.mapeditor.MapEditor;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
 
 /**
  * @version $Id$
  */
-public class UndoHandler extends UndoManager
-{
-    UndoableEdit savedAt;
-
+public class UndoHandler extends UndoManager {
     private final Action undoAction = new UndoAction();
     private final Action redoAction = new RedoAction();
     private final MapEditor editor;
+    UndoableEdit savedAt;
 
     public UndoHandler(MapEditor editor) {
         this.editor = editor;
@@ -43,18 +40,19 @@ public class UndoHandler extends UndoManager
 
     /**
      * Overridden to update the undo/redo actions.
+     *
      * @see UndoManager#discardAllEdits()
      */
-    public synchronized void discardAllEdits()
-    {
+    public synchronized void discardAllEdits() {
         super.discardAllEdits();
         updateActions();
     }
 
     /**
      * Overridden to update the undo/redo actions.
-     * @see UndoManager#undo()
+     *
      * @throws CannotUndoException
+     * @see UndoManager#undo()
      */
     public synchronized void undo() throws CannotUndoException {
         super.undo();
@@ -68,8 +66,9 @@ public class UndoHandler extends UndoManager
 
     /**
      * Overridden to update the undo/redo actions.
-     * @see UndoManager#redo()
+     *
      * @throws CannotRedoException
+     * @see UndoManager#redo()
      */
     public synchronized void redo() throws CannotRedoException {
         super.redo();
@@ -107,6 +106,7 @@ public class UndoHandler extends UndoManager
 
     /**
      * Returns the redo action.
+     *
      * @return the redo action.
      */
     public Action getRedoAction() {
@@ -115,6 +115,7 @@ public class UndoHandler extends UndoManager
 
     /**
      * Returns the undo action.
+     *
      * @return the undo action
      */
     public Action getUndoAction() {
@@ -134,6 +135,7 @@ public class UndoHandler extends UndoManager
             putValue(SHORT_DESCRIPTION, "Undo one action");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control Z"));
         }
+
         public void actionPerformed(ActionEvent evt) {
             undo();
         }
@@ -145,6 +147,7 @@ public class UndoHandler extends UndoManager
             putValue(SHORT_DESCRIPTION, "Redo one action");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control Y"));
         }
+
         public void actionPerformed(ActionEvent evt) {
             redo();
         }

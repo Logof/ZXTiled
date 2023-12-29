@@ -36,8 +36,7 @@ import java.util.List;
  *
  * @version $Id$
  */
-public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionListener
-{
+public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionListener {
     /**
      * Map of tile sets to tile palette panels
      */
@@ -59,12 +58,13 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
     /**
      * Sets the tiles panes to the the ones from this map.
+     *
      * @param map the map of which to display the tilesets
      */
     public void setMap(Map map) {
-        if(this.map == map)
+        if (this.map == map)
             return;
-        
+
         if (this.map != null) {
             this.map.removeMapChangeListener(listener);
         }
@@ -81,6 +81,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
     /**
      * Creates the panels for the tilesets.
+     *
      * @param tilesets the list of tilesets to create panels for
      */
     private void recreateTabs(List<TileSet> tilesets) {
@@ -136,8 +137,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
-    private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener
-    {
+    private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener {
         @Override
         public void mapChanged(MapChangedEvent e) {
         }
@@ -198,7 +198,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
         public void layerRemoved(MapChangedEvent e) {
         }
-        
+
         public void layerMoved(MapChangedEvent e) {
         }
     }

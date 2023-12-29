@@ -23,15 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
 
-public class NewMapDialog extends JDialog implements ActionListener
-{
-    private Map newMap;
-    private IntegerSpinner mapWidth, mapHeight;
-    private IntegerSpinner tileWidth, tileHeight;
-    private JComboBox mapTypeChooser;
-
-    private final Preferences prefs = TiledConfiguration.node("dialog/newmap");
-
+public class NewMapDialog extends JDialog implements ActionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.newmap.title");
     private static final String MAPSIZE_TITLE = Resources.getString("dialog.newmap.mapsize.title");
     private static final String TILESIZE_TITLE = Resources.getString("dialog.newmap.tilesize.title");
@@ -44,6 +36,11 @@ public class NewMapDialog extends JDialog implements ActionListener
     private static final String HEXAGONAL_MAPTYPE = Resources.getString("general.maptype.hexagonal");
     private static final String SHIFTED_MAPTYPE = Resources.getString("general.maptype.shifted");
     private static final String ORTHOGONAL_MAPTYPE = Resources.getString("general.maptype.orthogonal");
+    private final Preferences prefs = TiledConfiguration.node("dialog/newmap");
+    private Map newMap;
+    private IntegerSpinner mapWidth, mapHeight;
+    private IntegerSpinner tileWidth, tileHeight;
+    private JComboBox mapTypeChooser;
 
     public NewMapDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
@@ -73,8 +70,8 @@ public class NewMapDialog extends JDialog implements ActionListener
         JPanel mapSize = new VerticalStaticJPanel();
         mapSize.setLayout(new GridBagLayout());
         mapSize.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(MAPSIZE_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+                BorderFactory.createTitledBorder(MAPSIZE_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.NONE;
@@ -84,7 +81,9 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapSize.add(new JLabel(HEIGHT_LABEL), c);
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         mapSize.add(mapWidth, c);
         c.gridy = 1;
         mapSize.add(mapHeight, c);
@@ -94,9 +93,11 @@ public class NewMapDialog extends JDialog implements ActionListener
         JPanel tileSize = new VerticalStaticJPanel();
         tileSize.setLayout(new GridBagLayout());
         tileSize.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(TILESIZE_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        c.gridx = 0; c.gridy = 0; c.weightx = 0;
+                BorderFactory.createTitledBorder(TILESIZE_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(5, 0, 0, 5);
         tileSize.add(new JLabel(WIDTH_LABEL), c);
@@ -104,7 +105,9 @@ public class NewMapDialog extends JDialog implements ActionListener
         tileSize.add(new JLabel(HEIGHT_LABEL), c);
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         tileSize.add(tileWidth, c);
         c.gridy = 1;
         tileSize.add(tileHeight, c);
@@ -135,13 +138,17 @@ public class NewMapDialog extends JDialog implements ActionListener
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        c.gridx = 0; c.gridy = 0; c.weightx = 0;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(new JLabel(MAPTYPE_LABEL), c);
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         miscPropPanel.add(mapTypeChooser, c);
 
         // Putting two size panels next to eachother

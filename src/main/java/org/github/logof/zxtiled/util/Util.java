@@ -18,8 +18,7 @@ import java.io.IOException;
 /**
  * Various utility functions.
  */
-public class Util
-{
+public class Util {
     /**
      * This function converts an <code>int</code> integer array to a
      * <code>byte</code> array. Each integer element is broken into 4 bytes and
@@ -27,16 +26,16 @@ public class Util
      *
      * @param integers an integer array
      * @return a byte array containing the values of the int array. The byte
-     *         array is 4x the length of the integer array.
+     * array is 4x the length of the integer array.
      */
-    public static byte[] convertIntegersToBytes (int[] integers) {
+    public static byte[] convertIntegersToBytes(int[] integers) {
         if (integers != null) {
             byte[] outputBytes = new byte[integers.length * 4];
 
-            for(int i = 0, k = 0; i < integers.length; i++) {
+            for (int i = 0, k = 0; i < integers.length; i++) {
                 int integerTemp = integers[i];
-                for(int j = 0; j < 4; j++, k++) {
-                    outputBytes[k] = (byte)((integerTemp >> (8 * j)) & 0xFF);
+                for (int j = 0; j < 4; j++, k++) {
+                    outputBytes[k] = (byte) ((integerTemp >> (8 * j)) & 0xFF);
                 }
             }
             return outputBytes;
@@ -52,7 +51,7 @@ public class Util
      *
      * @param filename a filename to check for absolute or relative path
      * @return <code>true</code> if the specified filename starts with a
-     *         filesystem root, <code>false</code> otherwise.
+     * filesystem root, <code>false</code> otherwise.
      */
     public static boolean checkRoot(String filename) {
         File[] roots = File.listRoots();

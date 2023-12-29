@@ -29,12 +29,11 @@ import java.util.Iterator;
  *
  * @see Sprite
  */
-public class AnimationDialog extends JDialog implements ActionListener
-{
+public class AnimationDialog extends JDialog implements ActionListener {
     private static final int PLAYING = 1;
     private static final int STOPPED = 0;
 
-    private Sprite currentSprite;
+    private final Sprite currentSprite;
     private SpriteCanvas canvas;
     private int state = STOPPED;
     private JButton playstop;
@@ -43,7 +42,8 @@ public class AnimationDialog extends JDialog implements ActionListener
     private JLabel lFrameRate;
     private JLabel lFrameRange;
 
-    private Icon playIcon, stopIcon;
+    private final Icon playIcon;
+    private final Icon stopIcon;
 
     public AnimationDialog(Dialog parent, Sprite sprite) {
         super(parent, "Animation", true);
@@ -160,9 +160,9 @@ public class AnimationDialog extends JDialog implements ActionListener
             if (currentSprite != null) {
                 if (currentSprite.getCurrentKey() == null) {
                     JOptionPane.showMessageDialog(this,
-                                                  "There are no keys defined!",
-                                                  "No Keys",
-                                                  JOptionPane.ERROR_MESSAGE);
+                            "There are no keys defined!",
+                            "No Keys",
+                            JOptionPane.ERROR_MESSAGE);
                     state = STOPPED;
                     return;
                 }
@@ -185,10 +185,9 @@ public class AnimationDialog extends JDialog implements ActionListener
             try {
                 Iterator<KeyFrame> itr = currentSprite.getKeys();
                 while (itr.hasNext()) {
-                    keyframe.addItem(((Sprite.KeyFrame) itr.next()).getName());
+                    keyframe.addItem(itr.next().getName());
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
     }
@@ -209,21 +208,18 @@ public class AnimationDialog extends JDialog implements ActionListener
                 e.getActionCommand().equalsIgnoreCase("Modify Key...")) {
             KeyDialog kd = new KeyDialog(this, currentSprite);
             kd.doKeys();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Delete Key")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("Delete Key")) {
             if (currentSprite != null) {
                 currentSprite.removeKey((String) keyframe.getSelectedItem());
             }
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("comboBoxChanged")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("comboBoxChanged")) {
             if (currentSprite != null) {
                 currentSprite
                         .setKeyFrameTo((String) keyframe.getSelectedItem());
                 updateStats();
                 canvas.repaint();
             }
-        }
-        else {
+        } else {
             handleFrames(e);
         }
         updateList();
@@ -238,68 +234,58 @@ public class AnimationDialog extends JDialog implements ActionListener
         if (e.getActionCommand().equalsIgnoreCase("startframe")) {
             if (currentSprite.getCurrentKey() == null) {
                 JOptionPane.showMessageDialog(this,
-                                              "There are no keys defined!",
-                                              "No Keys",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+                        "There are no keys defined!",
+                        "No Keys",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
                 currentSprite.keySetFrame(0);
                 canvas.repaint();
             }
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("back")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("back")) {
             if (currentSprite.getCurrentKey() == null) {
                 JOptionPane.showMessageDialog(this,
-                                              "There are no keys defined!",
-                                              "No Keys",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+                        "There are no keys defined!",
+                        "No Keys",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
                 currentSprite.keyStepBack(1);
                 canvas.repaint();
             }
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("playstop")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("playstop")) {
             if (currentSprite.getCurrentKey() == null) {
                 JOptionPane.showMessageDialog(this,
-                                              "There are no keys defined!",
-                                              "No Keys",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+                        "There are no keys defined!",
+                        "No Keys",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
                 if (state == PLAYING) {
                     state = STOPPED;
                     currentSprite.stop();
                     playstop.setIcon(playIcon);
-                }
-                else {
+                } else {
                     state = PLAYING;
                     currentSprite.play();
                     playstop.setIcon(stopIcon);
                 }
                 canvas.repaint();
             }
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("forward")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("forward")) {
             if (currentSprite.getCurrentKey() == null) {
                 JOptionPane.showMessageDialog(this,
-                                              "There are no keys defined!",
-                                              "No Keys",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+                        "There are no keys defined!",
+                        "No Keys",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
                 currentSprite.keyStepForward(1);
                 canvas.repaint();
             }
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("lastframe")) {
+        } else if (e.getActionCommand().equalsIgnoreCase("lastframe")) {
             if (currentSprite.getCurrentKey() == null) {
                 JOptionPane.showMessageDialog(this,
-                                              "There are no keys defined!",
-                                              "No Keys",
-                                              JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+                        "There are no keys defined!",
+                        "No Keys",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
                 currentSprite.keyStepForward(10000);
                 canvas.repaint();
             }
@@ -307,9 +293,8 @@ public class AnimationDialog extends JDialog implements ActionListener
     }
 }
 
-class SpriteCanvas extends JPanel
-{
-    private AnimationDialog owner;
+class SpriteCanvas extends JPanel {
+    private final AnimationDialog owner;
     private Image buffer;
     private Dimension osd;
 
@@ -361,8 +346,7 @@ class SpriteCanvas extends JPanel
                 Graphics osg = buffer.getGraphics();
                 owner.paintSprite(osg);
                 g.drawImage(buffer, 0, 0, null);
-            }
-            else {
+            } else {
                 owner.paintSprite(g);
             }
         }

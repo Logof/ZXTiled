@@ -21,8 +21,7 @@ import java.awt.*;
  *
  * @version $Id$
  */
-public class TButton extends JButton
-{
+public class TButton extends JButton {
     private boolean showText;
 
     public TButton() {

@@ -25,17 +25,15 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.PixelGrabber;
 
 public class ImageColorDialog extends JDialog implements MouseListener,
-       MouseMotionListener
-{
-    private Image image;
-    private JButton cancelButton;
-    private Color color;
-    private JPanel colorPanel;
-    private int[] pixels;
-
+                                                         MouseMotionListener {
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.imagecolor.title");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private final Image image;
+    private JButton cancelButton;
+    private Color color;
+    private JPanel colorPanel;
+    private final int[] pixels;
     /* -- */
 
     public ImageColorDialog(Image image) {
@@ -44,8 +42,7 @@ public class ImageColorDialog extends JDialog implements MouseListener,
 
         try {
             pg.grabPixels();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

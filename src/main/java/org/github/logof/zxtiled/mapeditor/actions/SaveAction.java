@@ -25,8 +25,7 @@ import java.awt.event.ActionEvent;
  *
  * @version $Id$
  */
-public class SaveAction extends SaveAsAction
-{
+public class SaveAction extends SaveAsAction {
     public SaveAction(MapEditor editor) {
         super(editor);
         putValue(NAME, Resources.getString("action.map.save.name"));
@@ -34,8 +33,7 @@ public class SaveAction extends SaveAsAction
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control S"));
     }
 
-    public void actionPerformed (ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Map currentMap = editor.getCurrentMap();
         String filePath = currentMap.getFilename();
 
@@ -45,9 +43,8 @@ public class SaveAction extends SaveAsAction
         if (filePath != null) {
             // The plugin is determined by the extention.
             saveFile(new TiledFileFilter(TiledFileFilter.FILTER_EXT),
-                     filePath);
-        }
-        else {
+                    filePath);
+        } else {
             super.actionPerformed(e);
         }
     }

@@ -20,10 +20,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class KeyDialog extends JDialog implements ActionListener, MouseListener
-{
-    private Sprite sprite;
-    private JDialog owner;
+public class KeyDialog extends JDialog implements ActionListener, MouseListener {
+    private final Sprite sprite;
+    private final JDialog owner;
     private JList keysList;
     private JTextField tName, tStart, tFinish, tRate;
     private JRadioButton rbLoop, rbStop, rbReverse, rbAuto;
@@ -39,7 +38,7 @@ public class KeyDialog extends JDialog implements ActionListener, MouseListener
         setSize(380, 180);
         GridBagConstraints c = new GridBagConstraints();
         JScrollPane sp = new JScrollPane();
-        c.fill=GridBagConstraints.BOTH;
+        c.fill = GridBagConstraints.BOTH;
         getContentPane().setLayout(new GridBagLayout());
         sp.setSize(50, 200);
         keysList = new JList();
@@ -52,79 +51,79 @@ public class KeyDialog extends JDialog implements ActionListener, MouseListener
         c.gridheight = 6;
         c.gridwidth = 2;
         sp.getViewport().setView(keysList);
-        getContentPane().add(sp,c);
+        getContentPane().add(sp, c);
         c.gridwidth = 1;
         c.gridheight = 1;
         c.weightx = .5;
         c.weighty = .5;
         c.gridx = 2;
         tName = new JTextField(32);
-        tName.setToolTipText("The key name ("+Sprite.KeyFrame.KEY_NAME_LENGTH_MAX+") max");
-        getContentPane().add(tName,c);
+        tName.setToolTipText("The key name (" + Sprite.KeyFrame.KEY_NAME_LENGTH_MAX + ") max");
+        getContentPane().add(tName, c);
         c.gridy = 1;
         tStart = new JTextField(4);
         tStart.setToolTipText("The first frame");
-        getContentPane().add(tStart,c);
+        getContentPane().add(tStart, c);
         c.gridy = 2;
         tFinish = new JTextField(4);
         tFinish.setToolTipText("The last frame");
-        getContentPane().add(tFinish,c);
+        getContentPane().add(tFinish, c);
         c.gridy = 3;
         tRate = new JTextField(4);
         tRate.setToolTipText("The frame rate");
-        getContentPane().add(tRate,c);
+        getContentPane().add(tRate, c);
         c.gridy = 6;
         c.gridx = 0;
         b = new JButton("New Key");
         b.addActionListener(this);
         getContentPane().add(b, c);
-        c.gridx=1;
+        c.gridx = 1;
         b = new JButton("Delete Key");
         b.addActionListener(this);
-        getContentPane().add(b,c);
-        c.gridx=2;
+        getContentPane().add(b, c);
+        c.gridx = 2;
         b = new JButton("Apply");
         b.addActionListener(this);
-        getContentPane().add(b,c);
-        c.gridx=3;
+        getContentPane().add(b, c);
+        c.gridx = 3;
         b = new JButton("OK");
         b.addActionListener(this);
-        getContentPane().add(b,c);
+        getContentPane().add(b, c);
 
-        c.gridheight=1;
-        c.gridwidth=1;
-        c.gridx=3;
-        c.gridy=0;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        c.gridx = 3;
+        c.gridy = 0;
 
         rbLoop = new JRadioButton("Looping");
         rbLoop.setActionCommand("loop");
         rbLoop.addActionListener(this);
-        getContentPane().add(rbLoop,c);
+        getContentPane().add(rbLoop, c);
         bg.add(rbLoop);
         rbStop = new JRadioButton("Stop");
         rbStop.setActionCommand("stop");
         rbStop.addActionListener(this);
         c.gridy = 1;
-        getContentPane().add(rbStop,c);
+        getContentPane().add(rbStop, c);
         bg.add(rbStop);
         rbReverse = new JRadioButton("Reverse");
         rbReverse.setActionCommand("reverse");
         rbReverse.addActionListener(this);
         c.gridy = 2;
-        getContentPane().add(rbReverse,c);
+        getContentPane().add(rbReverse, c);
         bg.add(rbReverse);
         rbAuto = new JRadioButton("Auto Jump");
         rbAuto.setActionCommand("auto");
         rbAuto.addActionListener(this);
         c.gridy = 3;
-        getContentPane().add(rbAuto,c);
+        getContentPane().add(rbAuto, c);
         bg.add(rbAuto);
 
     }
 
     private void updateFields() {
-        Sprite.KeyFrame key = sprite.getKey((String)keysList.getSelectedValue());
-        if (key != null){
+        Sprite.KeyFrame key = sprite.getKey((String) keysList.getSelectedValue());
+        if (key != null) {
             tName.setText(key.getName());
             //tStart.setText(""+key.getStartFrame());
             //tFinish.setText(""+key.getFinishFrame());
@@ -133,7 +132,7 @@ public class KeyDialog extends JDialog implements ActionListener, MouseListener
             rbStop.setSelected(false);
             rbReverse.setSelected(false);
             rbAuto.setSelected(false);
-            switch (key.getFlags()&Sprite.KeyFrame.MASK_ANIMATION) {
+            switch (key.getFlags() & Sprite.KeyFrame.MASK_ANIMATION) {
                 case Sprite.KeyFrame.KEY_LOOP:
                     rbLoop.setSelected(true);
                     break;
@@ -151,10 +150,10 @@ public class KeyDialog extends JDialog implements ActionListener, MouseListener
     }
 
     private void queryKeys() {
-        try{
+        try {
             //keysList.setListData(sprite.getKeys());
             repaint();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("Message: " + e.getMessage());
         }
     }
@@ -177,22 +176,22 @@ public class KeyDialog extends JDialog implements ActionListener, MouseListener
         } else if (e.getActionCommand().equalsIgnoreCase("OK")) {
             dispose();
         } else if (e.getActionCommand().equalsIgnoreCase("Apply")) {
-            Sprite.KeyFrame k = sprite.getKey((String)keysList.getSelectedValue());
+            Sprite.KeyFrame k = sprite.getKey((String) keysList.getSelectedValue());
             if (k != null) {
                 k.setName(tName.getText());
                 //k.setStartFinish(Integer.parseInt(tStart.getText()),Integer.parseInt(tFinish.getText()));
                 k.setFrameRate(Float.parseFloat(tRate.getText()));
-                if (rbLoop.isSelected()){
+                if (rbLoop.isSelected()) {
                     k.setFlags(Sprite.KeyFrame.KEY_LOOP);
-                } else if (rbStop.isSelected()){
+                } else if (rbStop.isSelected()) {
                     k.setFlags(Sprite.KeyFrame.KEY_STOP);
-                } else if (rbReverse.isSelected()){
+                } else if (rbReverse.isSelected()) {
                     k.setFlags(Sprite.KeyFrame.KEY_REVERSE);
-                } else if (rbAuto.isSelected()){
+                } else if (rbAuto.isSelected()) {
                     k.setFlags(Sprite.KeyFrame.KEY_AUTO);
                 }
-            }else{
-                JOptionPane.showMessageDialog(this,"Selected key not found!","No Key",JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selected key not found!", "No Key", JOptionPane.ERROR_MESSAGE);
             }
             owner.repaint();
             queryKeys();

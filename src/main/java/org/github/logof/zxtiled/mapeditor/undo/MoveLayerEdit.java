@@ -22,8 +22,7 @@ import java.awt.*;
 /**
  * @version $Id$
  */
-public class MoveLayerEdit extends AbstractUndoableEdit
-{
+public class MoveLayerEdit extends AbstractUndoableEdit {
     private final MapLayer layer;
     private final Point moveDist;
 

@@ -42,26 +42,7 @@ import java.util.Vector;
  * @version $Id$
  */
 public class TileDialog extends JDialog
-    implements ActionListener, ListSelectionListener
-{
-    private Tile currentTile;
-    private TileSet tileset;
-    private Map map;
-    private JList tileList;
-    private JList imageList;
-    private JTable tileProperties;
-    private JButton okButton;
-    private JButton addImagesButton;
-    private JButton deleteTileButton;
-    private JButton changeImageButton;
-    private JButton duplicateTileButton;
-    private JButton createTileButton;
-    //private JButton animationButton;
-    private String location;
-    private JTextField tilesetNameEntry;
-    private JTabbedPane tabs;
-    private int currentImageIndex = -1;
-
+        implements ActionListener, ListSelectionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.tile.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("dialog.tile.button.deletetile");
@@ -77,6 +58,23 @@ public class TileDialog extends JDialog
     private static final String ERROR_LOADING_IMAGE = Resources.getString("dialog.tile.image.load.error");
     private static final String TILES_CREATED_MESSAGE = Resources.getString("action.tile.create.done.message");
     private static final String TILES_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
+    private Tile currentTile;
+    private TileSet tileset;
+    private final Map map;
+    private JList tileList;
+    private JList imageList;
+    private JTable tileProperties;
+    private JButton okButton;
+    private JButton addImagesButton;
+    private JButton deleteTileButton;
+    private JButton changeImageButton;
+    private JButton duplicateTileButton;
+    private JButton createTileButton;
+    //private JButton animationButton;
+    private String location;
+    private JTextField tilesetNameEntry;
+    private JTabbedPane tabs;
+    private int currentImageIndex = -1;
 
 
     public TileDialog(Dialog parent, TileSet tileset, Map map) {
@@ -145,16 +143,18 @@ public class TileDialog extends JDialog
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1; c.weighty = 1;
+        c.weightx = 1;
+        c.weighty = 1;
         mainPanel.add(splitPane, c);
-        c.weightx = 0; c.weighty = 0; c.gridy = 1;
+        c.weightx = 0;
+        c.weighty = 0;
+        c.gridy = 1;
         mainPanel.add(buttons, c);
 
         return mainPanel;
     }
 
-    private JPanel createImagePanel()
-    {
+    private JPanel createImagePanel() {
         imageList = new JList();
         imageList.setCellRenderer(new ImageCellRenderer());
         imageList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -179,9 +179,12 @@ public class TileDialog extends JDialog
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1; c.weighty = 1;
+        c.weightx = 1;
+        c.weighty = 1;
         mainPanel.add(sp, c);
-        c.weightx = 0; c.weighty = 0; c.gridy = 1;
+        c.weightx = 0;
+        c.weighty = 0;
+        c.gridy = 1;
         mainPanel.add(buttons, c);
         return mainPanel;
     }
@@ -235,7 +238,7 @@ public class TileDialog extends JDialog
         }
 
         TileImageDialog dialog = new TileImageDialog(this, tileset,
-            currentTile.getImageId());
+                currentTile.getImageId());
         dialog.setVisible(true);
         if (dialog.getImageId() >= 0) {
             currentTile.setImage(dialog.getImageId());
@@ -318,7 +321,7 @@ public class TileDialog extends JDialog
         Vector<Image> listData = new Vector<Image>();
 
         Enumeration<String> ids = tileset.getImageIds();
-        while(ids.hasMoreElements()) {
+        while (ids.hasMoreElements()) {
             Image img = tileset.getImageById(Integer.parseInt(ids.nextElement()));
             if (img != null)
                 listData.add(img);
@@ -375,7 +378,7 @@ public class TileDialog extends JDialog
 
         deleteTileButton.setEnabled(!tilebmp && tileSelected);
         changeImageButton.setEnabled(atLeastOneSharedImage && !tilebmp
-            && tileSelected);
+                && tileSelected);
         duplicateTileButton.setEnabled(!tilebmp && tileSelected);
         //animationButton.setEnabled(!tilebmp && tileSelected &&
         //        currentTile instanceof AnimatedTile);
@@ -393,8 +396,7 @@ public class TileDialog extends JDialog
 
         if (currentTile == null) {
             model.setProperties(new Properties());
-        }
-        else {
+        } else {
             model.setProperties(currentTile.getProperties());
         }
     }
@@ -410,7 +412,7 @@ public class TileDialog extends JDialog
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-                Tile tile = (Tile)tileList.getSelectedValue();
+                Tile tile = (Tile) tileList.getSelectedValue();
                 if (tile != null) {
                     tileset.removeTile(tile.getId());
                 }
@@ -427,9 +429,9 @@ public class TileDialog extends JDialog
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);
-        //} else if (source == animationButton) {
-        //    AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
-        //    ad.setVisible(true);
+            //} else if (source == animationButton) {
+            //    AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
+            //    ad.setVisible(true);
         }
         /*
         else if (source == setImagesCheck) {

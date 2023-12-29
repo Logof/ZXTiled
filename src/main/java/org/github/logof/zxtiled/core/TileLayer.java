@@ -23,28 +23,12 @@ import java.util.Properties;
  *
  * @version $Id$
  */
-public class TileLayer extends MapLayer
-{
+public class TileLayer extends MapLayer {
     protected Tile[][] map;
     protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<Object, Properties>();
-    
+
     private int tileWidth;
     private int tileHeight;
-    
-    public Properties getTileInstancePropertiesAt(int x, int y) {
-        if (!bounds.contains(x, y)) {
-            return null;
-        }
-        Object key = new Point(x, y);
-        return (Properties) tileInstanceProperties.get(key);
-    }
-
-    public void setTileInstancePropertiesAt(int x, int y, Properties tip) {
-        if (bounds.contains(x, y)) {
-            Object key = new Point(x, y);
-            tileInstanceProperties.put(key, tip);
-        }
-    }
 
     /**
      * Default contructor.
@@ -84,6 +68,21 @@ public class TileLayer extends MapLayer
         setMap(m);
     }
 
+    public Properties getTileInstancePropertiesAt(int x, int y) {
+        if (!bounds.contains(x, y)) {
+            return null;
+        }
+        Object key = new Point(x, y);
+        return tileInstanceProperties.get(key);
+    }
+
+    public void setTileInstancePropertiesAt(int x, int y, Properties tip) {
+        if (bounds.contains(x, y)) {
+            Object key = new Point(x, y);
+            tileInstanceProperties.put(key, tip);
+        }
+    }
+
     /**
      * Rotates the layer by the given Euler angle.
      *
@@ -117,14 +116,14 @@ public class TileLayer extends MapLayer
         }
 
         double ra = Math.toRadians(angle);
-        int cos_angle = (int)Math.round(Math.cos(ra));
-        int sin_angle = (int)Math.round(Math.sin(ra));
+        int cos_angle = (int) Math.round(Math.cos(ra));
+        int sin_angle = (int) Math.round(Math.sin(ra));
 
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
                 int xrot = x * cos_angle - y * sin_angle;
                 int yrot = x * sin_angle + y * cos_angle;
-                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x+bounds.x, y+bounds.y);
+                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x + bounds.x, y + bounds.y);
             }
         }
 
@@ -136,7 +135,7 @@ public class TileLayer extends MapLayer
     /**
      * Performs a mirroring function on the layer data. Two orientations are
      * allowed: vertical and horizontal.
-     *
+     * <p>
      * Example: <code>layer.mirror(MapLayer.MIRROR_VERTICAL);</code> will
      * mirror the layer data around a horizontal axis.
      *
@@ -164,7 +163,7 @@ public class TileLayer extends MapLayer
      *
      * @param t a Tile object to check for
      * @return <code>true</code> if the Tile is used at least once,
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     public boolean isUsed(Tile t) {
         for (int y = 0; y < bounds.height; y++) {
@@ -207,24 +206,26 @@ public class TileLayer extends MapLayer
             tileInstanceProperties.clear();
         }
     }
-    
+
     /**
      * Creates a diff of the two layers, <code>ml</code> is considered the
      * significant difference.
      *
      * @param ml
      * @return A new MapLayer that represents the difference between this
-     *         layer, and the argument, or <b>null</b> if no difference exists.
+     * layer, and the argument, or <b>null</b> if no difference exists.
      */
     public MapLayer createDiff(MapLayer ml) {
-        if (ml == null) { return null; }
+        if (ml == null) {
+            return null;
+        }
 
         if (ml instanceof TileLayer) {
             Rectangle r = null;
 
             for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
                 for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
-                    if (((TileLayer)ml).getTileAt(x, y) != getTileAt(x, y)) {
+                    if (((TileLayer) ml).getTileAt(x, y) != getTileAt(x, y)) {
                         if (r != null) {
                             r.add(x, y);
                         } else {
@@ -246,7 +247,7 @@ public class TileLayer extends MapLayer
             return null;
         }
     }
-    
+
     /// gets the tile width specific for this layer. The tile width and height
     /// can be specified individually for layers of this type using
     /// setTileDimensions().
@@ -257,6 +258,10 @@ public class TileLayer extends MapLayer
         return tileHeight;
     }
 
+    public void setTileHeight(int tileHeight) {
+        this.tileHeight = tileHeight;
+    }
+
     /// gets the tile height specific for this layer. The tile width and height
     /// can be specified individually for layers of this type using
     /// setTileDimensions().
@@ -265,6 +270,10 @@ public class TileLayer extends MapLayer
     @Override
     public int getTileWidth() {
         return tileWidth;
+    }
+
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
     }
 
     /**
@@ -302,14 +311,14 @@ public class TileLayer extends MapLayer
             map[ty - bounds.y][tx - bounds.x] = ti;
         }
     }
-    
+
     /**
      * Returns the tile at the specified position.
      *
      * @param tx Tile-space x coordinate
      * @param ty Tile-space y coordinate
      * @return tile at position (tx, ty) or <code>null</code> when (tx, ty) is
-     *         outside this layer
+     * outside this layer
      */
     public Tile getTileAt(int tx, int ty) {
         return (bounds.contains(tx, ty)) ?
@@ -322,7 +331,7 @@ public class TileLayer extends MapLayer
      *
      * @param t the {@link Tile} to look for
      * @return A java.awt.Point instance of the first instance of t, or
-     *         <code>null</code> if it is not found
+     * <code>null</code> if it is not found
      */
     public Point locationOf(Tile t) {
         for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
@@ -348,7 +357,7 @@ public class TileLayer extends MapLayer
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                if(getTileAt(x,y) == find) {
+                if (getTileAt(x, y) == find) {
                     setTileAt(x, y, replace);
                 }
             }
@@ -375,9 +384,9 @@ public class TileLayer extends MapLayer
     /**
      * Like mergeOnto, but will only copy the area specified.
      *
-     * @see TileLayer#mergeOnto(MapLayer)
      * @param other
      * @param mask
+     * @see TileLayer#mergeOnto(MapLayer)
      */
     public void maskedMergeOnto(MapLayer other, Area mask) {
         if (!canEdit())
@@ -399,13 +408,13 @@ public class TileLayer extends MapLayer
      * Copy data from another layer onto this layer. Unlike mergeOnto,
      * copyFrom() copies the empty cells as well.
      *
-     * @see MapLayer#mergeOnto
      * @param other
+     * @see MapLayer#mergeOnto
      */
     public void copyFrom(MapLayer other) {
         if (!canEdit())
             return;
-            
+
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 setTileAt(x, y, ((TileLayer) other).getTileAt(x, y));
@@ -416,9 +425,9 @@ public class TileLayer extends MapLayer
     /**
      * Like copyFrom, but will only copy the area specified.
      *
-     * @see TileLayer#copyFrom(MapLayer)
      * @param other
      * @param mask
+     * @see TileLayer#copyFrom(MapLayer)
      */
     public void maskedCopyFrom(MapLayer other, Area mask) {
         if (!canEdit())
@@ -428,7 +437,7 @@ public class TileLayer extends MapLayer
 
         for (int y = boundBox.y; y < boundBox.y + boundBox.height; y++) {
             for (int x = boundBox.x; x < boundBox.x + boundBox.width; x++) {
-                if (mask.contains(x,y)) {
+                if (mask.contains(x, y)) {
                     setTileAt(x, y, ((TileLayer) other).getTileAt(x, y));
                 }
             }
@@ -438,23 +447,23 @@ public class TileLayer extends MapLayer
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging.
      *
+     * @param other the layer to copy this layer to
      * @see MapLayer#copyFrom
      * @see MapLayer#mergeOnto
-     * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
         if (!other.canEdit())
             return;
-        
+
         TileLayer tl;
-        try{
-            tl = (TileLayer)other;
-        }catch(ClassCastException ccx){
+        try {
+            tl = (TileLayer) other;
+        } catch (ClassCastException ccx) {
             return;    // can't copy to this layer
         }
-        
+
         super.copyTo(other);
-        
+
         tl.tileWidth = tileWidth;
         tl.tileHeight = tileHeight;
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -462,15 +471,15 @@ public class TileLayer extends MapLayer
                 tl.setTileAt(x, y, getTileAt(x, y));
             }
         }
-        
+
     }
 
     /**
      * Creates a copy of this layer.
      *
-     * @see Object#clone
      * @return a clone of this layer, as complete as possible
-     * @exception CloneNotSupportedException
+     * @throws CloneNotSupportedException
+     * @see Object#clone
      */
     public Object clone() throws CloneNotSupportedException {
         TileLayer clone = (TileLayer) super.clone();
@@ -497,12 +506,11 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * @see MultilayerPlane#resize
-     *
      * @param width  the new width of the layer
      * @param height the new height of the layer
      * @param dx     the shift in x direction
      * @param dy     the shift in y direction
+     * @see MultilayerPlane#resize
      */
     public void resize(int width, int height, int dx, int dy) {
         if (getLocked())
@@ -530,19 +538,11 @@ public class TileLayer extends MapLayer
         bounds.width = width;
         bounds.height = height;
     }
-    
+
     /// sets both tile width and tile height for this layer. Equivalent to
     /// calling setTileWidth() and setTileHeight()
     public void setTileDimensions(int tileWidth, int tileHeight) {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
     }
-    
-    public void setTileWidth(int tileWidth){
-        this.tileWidth = tileWidth;
-    }
-
-    public void setTileHeight(int tileHeight) {
-        this.tileHeight = tileHeight;
-    }    
 }

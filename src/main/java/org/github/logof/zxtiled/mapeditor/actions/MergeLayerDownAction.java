@@ -22,12 +22,11 @@ import javax.swing.*;
  *
  * @version $Id$
  */
-public class MergeLayerDownAction extends AbstractLayerAction
-{
+public class MergeLayerDownAction extends AbstractLayerAction {
     public MergeLayerDownAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.layer.mergedown.name"),
-              Resources.getString("action.layer.mergedown.tooltip"));
+                Resources.getString("action.layer.mergedown.name"),
+                Resources.getString("action.layer.mergedown.tooltip"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift control M"));
     }

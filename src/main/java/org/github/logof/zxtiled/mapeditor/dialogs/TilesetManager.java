@@ -13,17 +13,6 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.github.logof.zxtiled.core.LayerLockedException;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
@@ -37,18 +26,19 @@ import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
 import org.github.logof.zxtiled.mapeditor.util.TilesetTableModel;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * The tileset manager manages the tilesets of the loaded map.
  */
 public class TilesetManager extends JDialog implements ActionListener, ListSelectionListener {
-    private final Map map;
-
-    private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
-    private JButton moveUpButton, moveDownButton, closeButton;
-    private TilesetTableModel tilesetTableModel;
-    private JTable tilesetTable;
-
     private static final String DIALOG_TITLE = Resources.getString("dialog.tilesetmanager.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
     private static final String MOVE_UP_BUTTON = Resources.getString("dialog.tilesetmanager.button.moveup");
@@ -58,12 +48,16 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     private static final String SAVE_AS_BUTTON = Resources.getString("action.map.saveas.name");
     private static final String EDIT_BUTTON = Resources.getString("dialog.tilesetmanager.edit.button");
     private static final String SAVE_BUTTON = Resources.getString("action.map.save.name");
-
     private static final Icon REMOVE_BUTTON_ICON = Resources.getIcon("icon/gnome-delete.png");
     private static final Icon EMBED_BUTTON_ICON = Resources.getIcon("icon/insert-object.png");
     private static final Icon SAVE_AS_BUTTON_ICON = Resources.getIcon("icon/document-save-as.png");
     private static final Icon EDIT_BUTTON_ICON = Resources.getIcon("icon/gtk-edit.png");
     private static final Icon SAVE_BUTTON_ICON = Resources.getIcon("icon/document-save.png");
+    private final Map map;
+    private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
+    private JButton moveUpButton, moveDownButton, closeButton;
+    private TilesetTableModel tilesetTableModel;
+    private JTable tilesetTable;
 
     public TilesetManager(JFrame parent, Map map) {
         super(parent, DIALOG_TITLE, true);
@@ -162,7 +156,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         Vector tilesets = map.getTilesets();
         TileSet set = null;
         try {
-            set = (TileSet)tilesets.get(selectedRow);
+            set = (TileSet) tilesets.get(selectedRow);
         } catch (IndexOutOfBoundsException e) {
         }
 
@@ -206,7 +200,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
                 }
             }
             ch.addChoosableFileFilter
-              (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+                      (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
@@ -284,7 +278,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         Vector tilesets = map.getTilesets();
         TileSet set = null;
         try {
-            set = (TileSet)tilesets.get(selectedRow);
+            set = (TileSet) tilesets.get(selectedRow);
         } catch (IndexOutOfBoundsException e) {
         }
 

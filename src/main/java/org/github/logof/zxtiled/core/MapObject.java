@@ -21,8 +21,7 @@ import java.util.Properties;
 /**
  * An object occupying an {@link ObjectGroup}.
  */
-public class MapObject implements Cloneable
-{
+public class MapObject implements Cloneable {
     private Properties properties = new Properties();
     private ObjectGroup objectGroup;
     private Rectangle bounds = new Rectangle();
@@ -107,8 +106,7 @@ public class MapObject implements Cloneable
         final int zoomedHeight = (int) (getHeight() * zoom);
 
         if (scaledImage == null || scaledImage.getWidth(null) != zoomedWidth
-                || scaledImage.getHeight(null) != zoomedHeight)
-        {
+                || scaledImage.getHeight(null) != zoomedHeight) {
             scaledImage = image.getScaledInstance(zoomedWidth, zoomedHeight,
                     Image.SCALE_SMOOTH);
         }
@@ -160,12 +158,12 @@ public class MapObject implements Cloneable
         bounds.width = width;
     }
 
-    public void setHeight(int height) {
-        bounds.height = height;
-    }
-
     public int getHeight() {
         return bounds.height;
+    }
+
+    public void setHeight(int height) {
+        bounds.height = height;
     }
 
     public Properties getProperties() {

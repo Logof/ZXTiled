@@ -22,23 +22,20 @@ import java.util.LinkedList;
 /**
  * @version $Id$
  */
-public class TiledFileFilter extends ConfirmableFileFilter
-{
-    public static final int FILTER_EXT  = 0;
-    public static final int FILTER_TMX  = 1;
-    public static final int FILTER_TSX  = 2;
+public class TiledFileFilter extends ConfirmableFileFilter {
+    public static final int FILTER_EXT = 0;
+    public static final int FILTER_TMX = 1;
+    public static final int FILTER_TSX = 2;
     public static final int FILTER_BOTH = 3;
     public static final int FILTER_PLUG = 4;
-
-    private String desc;
-    private LinkedList<String> exts;
-    private PluggableMapIO pmio;
-    private int type = FILTER_EXT;
-
     private static final String FILETYPE_TILED = Resources.getString("general.filetype.tiled");
     private static final String FILETYPE_TMX = Resources.getString("general.filetype.tiledmap");
     private static final String FILETYPE_TSX = Resources.getString("general.filetype.tiledtileset");
     private static final String FILETYPE_EXT = Resources.getString("general.filetype.byextension");
+    private String desc;
+    private final LinkedList<String> exts;
+    private PluggableMapIO pmio;
+    private int type = FILTER_EXT;
 
     public TiledFileFilter() {
         desc = FILETYPE_TILED;
@@ -93,10 +90,6 @@ public class TiledFileFilter extends ConfirmableFileFilter
         }
     }
 
-    public void setDescription(String description) {
-        desc = description;
-    }
-
     public void addExtention(String extension) {
         exts.add(extension);
     }
@@ -108,8 +101,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
     public String getDefaultExtension() {
         if (!exts.isEmpty()) {
             return exts.getFirst();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -150,5 +142,9 @@ public class TiledFileFilter extends ConfirmableFileFilter
         }
 
         return desc + filter;
+    }
+
+    public void setDescription(String description) {
+        desc = description;
     }
 }

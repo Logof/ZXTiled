@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -21,8 +21,7 @@ import javax.swing.undo.UndoableEdit;
 /**
  * @version $Id$
  */
-public class MapLayerEdit extends AbstractUndoableEdit
-{
+public class MapLayerEdit extends AbstractUndoableEdit {
     private final MapLayer editedLayer;
     private MapLayer layerUndo, layerRedo;
     private String name;
@@ -94,11 +93,11 @@ public class MapLayerEdit extends AbstractUndoableEdit
         return false;
     }
 
-    public void setPresentationName(String s) {
-        name = s;
-    }
-
     public String getPresentationName() {
         return name;
+    }
+
+    public void setPresentationName(String s) {
+        name = s;
     }
 }

@@ -18,8 +18,7 @@ import java.awt.image.BufferedImage;
 /**
  * @version $Id$
  */
-public class BorderTileCutter implements TileCutter
-{
+public class BorderTileCutter implements TileCutter {
     public String getName() {
         return "Border";
     }

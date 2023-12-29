@@ -35,20 +35,19 @@ import java.util.Properties;
  * @version $Id$
  */
 public class TileInstancePropertiesDialog extends JDialog
-    implements TableModelListener
-{
-    private JTable propertiesTable;
-    private PropertiesTableModel tableModel = new PropertiesTableModel();
-
+        implements TableModelListener {
     private static final String DIALOG_TITLE = "Tile Properties"; // todo: Resource this
     private static final String APPLY_BUTTON = Resources.getString("general.button.apply");
     private static final String APPLY_TOOLTIP = "Apply properties to selected tiles"; // todo: Resource this
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
-
     private final MapEditor editor;
-    /** Holds all currently selected Properties. */
+    /**
+     * Holds all currently selected Properties.
+     */
     private final LinkedList<Point> propertiesCoordinates = new LinkedList<Point>();
     private final Properties mergedProperties = new Properties();
+    private JTable propertiesTable;
+    private final PropertiesTableModel tableModel = new PropertiesTableModel();
 
     public TileInstancePropertiesDialog(MapEditor editor) {
         super(editor.getAppFrame(), DIALOG_TITLE, false);
@@ -77,7 +76,7 @@ public class TileInstancePropertiesDialog extends JDialog
         }
 
         ((TileLayer) ml).setTileInstancePropertiesAt(point.x, point.y,
-                                                     properties);
+                properties);
     }
 
     private void init() {
@@ -167,7 +166,7 @@ public class TileInstancePropertiesDialog extends JDialog
                         p = tl.getTileInstancePropertiesAt(point.x, point.y);
 
                         if (p != null) {
-                            for (Enumeration<Object> e = mergedProperties.keys(); e.hasMoreElements();) {
+                            for (Enumeration<Object> e = mergedProperties.keys(); e.hasMoreElements(); ) {
                                 // We only care for properties that are already "known"...
                                 String key = (String) e.nextElement();
                                 String val = mergedProperties.getProperty(key);
@@ -238,7 +237,7 @@ public class TileInstancePropertiesDialog extends JDialog
             Properties tp = getPropertiesAt(point);
             if (tp != null) {
                 for (Enumeration<Object> e = mergedProperties.keys();
-                     e.hasMoreElements();) {
+                     e.hasMoreElements(); ) {
 
                     String key = (String) e.nextElement();
                     String val = (String) properties.get(key);
@@ -260,7 +259,7 @@ public class TileInstancePropertiesDialog extends JDialog
                 setPropertiesAt(point, tp);
             }
 
-            for (Enumeration<Object> e = properties.keys(); e.hasMoreElements();) {
+            for (Enumeration<Object> e = properties.keys(); e.hasMoreElements(); ) {
                 String key = (String) e.nextElement();
                 String val = properties.getProperty(key);
                 if (!"?".equals(val)) {

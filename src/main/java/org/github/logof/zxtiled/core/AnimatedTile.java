@@ -48,10 +48,6 @@ public class AnimatedTile extends Tile {
         setSprite(s);
     }
 
-    public void setSprite(Sprite s) {
-        sprite = s;
-    }
-
     public int countAnimationFrames() {
         return sprite.getTotalFrames();
     }
@@ -62,6 +58,10 @@ public class AnimatedTile extends Tile {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public void setSprite(Sprite s) {
+        sprite = s;
     }
 
     /**
@@ -77,11 +77,12 @@ public class AnimatedTile extends Tile {
 
             while (itr.hasNext()) {
                 KeyFrame key = itr.next();
-                for (int i = 0;i < key.getTotalFrames(); i++) {
+                for (int i = 0; i < key.getTotalFrames(); i++) {
                     key.getFrame(i).getScaledImage(zoom);
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return sprite.getCurrentFrame().getScaledImage(zoom);
     }
 

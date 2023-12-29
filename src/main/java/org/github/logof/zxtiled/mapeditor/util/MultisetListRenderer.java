@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -23,20 +23,25 @@ import java.util.HashMap;
  * This list renderer is used for rendering a list of tiles associated with a
  * certain map. The list renderer produces {@link ImageIcon} instances on
  * demand and caches them in a {@link HashMap}.
- *
+ * <p>
  * todo: check whether assuming all tiles have an image is safe
  *
  * @version $Id$
  */
-public class MultisetListRenderer extends DefaultListCellRenderer
-{
-    /** The icon to show for tilesets. */
+public class MultisetListRenderer extends DefaultListCellRenderer {
+    /**
+     * The icon to show for tilesets.
+     */
     private final Icon setIcon = Resources.getIcon("icon/source.png");
 
-    /** The hash map used to match indexes to icons. */
+    /**
+     * The hash map used to match indexes to icons.
+     */
     private final HashMap<Integer, Icon> tileImages = new HashMap<Integer, Icon>();
 
-    /** The zoom level used for the tile image icons. */
+    /**
+     * The zoom level used for the tile image icons.
+     */
     private final double zoom;
 
     /**

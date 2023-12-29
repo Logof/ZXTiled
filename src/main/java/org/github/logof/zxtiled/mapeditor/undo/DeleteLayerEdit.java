@@ -14,16 +14,15 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- *
  * @author upachler
  */
 public class DeleteLayerEdit extends AbstractUndoableEdit {
-    private MapEditor editor;
-    
-    private Map map;
-    private int index;
+    private final MapEditor editor;
+
+    private final Map map;
+    private final int index;
     private MapLayer layer = null;
-    
+
     public DeleteLayerEdit(MapEditor editor, Map map, int index) {
         this.editor = editor;
         this.map = map;
@@ -35,8 +34,8 @@ public class DeleteLayerEdit extends AbstractUndoableEdit {
         assert layer != null;
         super.undo();
         map.insertLayer(index, layer);
-        if(editor.getCurrentLayerIndex() >= map.getTotalLayers())
-            editor.setCurrentLayerIndex(map.getTotalLayers()-1);
+        if (editor.getCurrentLayerIndex() >= map.getTotalLayers())
+            editor.setCurrentLayerIndex(map.getTotalLayers() - 1);
         layer = null;
     }
 
@@ -51,5 +50,5 @@ public class DeleteLayerEdit extends AbstractUndoableEdit {
         return Resources.getString("action.layer.delete.name");
     }
 
-    
+
 }

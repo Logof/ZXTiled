@@ -21,15 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author upachler
  */
 public class LayerPropertiesDialog extends PropertiesDialog {
-    private JTextField layerName;
-    private IntegerSpinner layerWidth, layerHeight, layerTileWidth, layerTileHeight;
-    private final MapLayer layer;
-    private final boolean isTileLayer;
-    
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.layerproperites.title");
     private static final String NAME_LABEL = Resources.getString("dialog.layerproperites.name.label");
@@ -38,6 +32,10 @@ public class LayerPropertiesDialog extends PropertiesDialog {
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.layerproperties.tilewidth.label");
     private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.layerproperties.tileheight.label");
     private static final String UNTITLED_LAYER = "";
+    private final MapLayer layer;
+    private final boolean isTileLayer;
+    private JTextField layerName;
+    private IntegerSpinner layerWidth, layerHeight, layerTileWidth, layerTileHeight;
 
     public LayerPropertiesDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {
         super(parent, layer.getProperties(), undoSupport, false);
@@ -56,9 +54,9 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         JLabel heightLabel = new JLabel(HEIGHT_LABEL);
         JLabel tileWidthLabel = new JLabel(TILE_WIDTH_LABEL);
         JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
-        
+
         layerName = new JTextField(UNTITLED_LAYER);
-        
+
         layerWidth = new IntegerSpinner(0, 0, 1024);
         layerHeight = new IntegerSpinner(0, 0, 1024);
         layerTileWidth = new IntegerSpinner(0, 0, 1024);
@@ -97,16 +95,16 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         miscPropPanel.add(layerTileWidth, c);
         c.gridy++;
         miscPropPanel.add(layerTileHeight, c);
-        
+
         // for layers that are not TileLayer instances, the tile width cannot
         // be set and the controls are therefore disabled
-        if(!isTileLayer){
+        if (!isTileLayer) {
             tileWidthLabel.setEnabled(false);
             tileHeightLabel.setEnabled(false);
             layerTileWidth.setEnabled(false);
             layerTileHeight.setEnabled(false);
         }
-        
+
         mainPanel.add(miscPropPanel, 0);
     }
 
@@ -121,56 +119,53 @@ public class LayerPropertiesDialog extends PropertiesDialog {
 
     protected UndoableEdit commit() {
         // Make sure the changes to the object can be undone
-        
+
         UndoableEdit propertyEdit = super.commit();
-        
+
         boolean miscLayerSettingsChanged =
-            !layer.getName().equals(layerName.getText())
-        ||    layer.getWidth() != layerWidth.intValue()
-        ||    layer.getHeight() != layerHeight.intValue()
-        ;
-        if(isTileLayer){
+                !layer.getName().equals(layerName.getText())
+                        || layer.getWidth() != layerWidth.intValue()
+                        || layer.getHeight() != layerHeight.intValue();
+        if (isTileLayer) {
             miscLayerSettingsChanged = miscLayerSettingsChanged
-            ||    layer.getTileWidth() != layerTileWidth.intValue()
-            ||    layer.getTileHeight() != layerTileHeight.intValue()
+                    || layer.getTileWidth() != layerTileWidth.intValue()
+                    || layer.getTileHeight() != layerTileHeight.intValue()
             ;
         }
-        
+
         // if nothing changed, here, simply return what the superclass changed
-        if(!miscLayerSettingsChanged)
+        if (!miscLayerSettingsChanged)
             return propertyEdit;
-        
+
         CompoundEdit ce = new CompoundEdit();
-        if(propertyEdit != null)
+        if (propertyEdit != null)
             ce.addEdit(propertyEdit);
-        
+
         try {
             // determine changes
             boolean layerResized =
-                layerHeight.intValue() != layer.getHeight()
-            ||  layerWidth.intValue() != layer.getWidth()
-            ;
+                    layerHeight.intValue() != layer.getHeight()
+                            || layerWidth.intValue() != layer.getWidth();
 
-            boolean layerSettingsChanged = 
-                !layer.getName().equals(layerName.getText())
-            ||  layer.getTileWidth() != layerTileWidth.intValue()
-            ||  layer.getTileHeight() != layerTileHeight.intValue()
-            ;
-            
+            boolean layerSettingsChanged =
+                    !layer.getName().equals(layerName.getText())
+                            || layer.getTileWidth() != layerTileWidth.intValue()
+                            || layer.getTileHeight() != layerTileHeight.intValue();
+
             // apply changes and record edits for undo
-            if(layerResized){
+            if (layerResized) {
                 LayerResizeEdit lre = new LayerResizeEdit(layer, 0, 0, layerWidth.intValue(), layerHeight.intValue());
 
                 layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
-                
+
                 ce.addEdit(lre);
             }
-                    
-            
-            if(layerSettingsChanged){
+
+
+            if (layerSettingsChanged) {
                 MapLayer before = (MapLayer) layer.clone();
 
-                layer.setName(layerName.getText());            
+                layer.setName(layerName.getText());
                 if (isTileLayer) {
                     ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
                 }
@@ -182,9 +177,9 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(LayerPropertiesDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         ce.end();
-        
+
         return ce;
     }
 

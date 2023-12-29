@@ -20,20 +20,21 @@ import java.awt.image.BufferedImage;
  *
  * @version $Id$
  */
-public interface TileCutter
-{
+public interface TileCutter {
     /**
      * Sets the image that this cutter should cut in tile images.
+     *
      * @param image the image that this cutter should cut
      */
-    public void setImage(BufferedImage image);
+    void setImage(BufferedImage image);
 
     /**
      * Retrieves the next tile image.
+     *
      * @return the next tile image, or <code>null</code> when no more tile
-     *         images are available
+     * images are available
      */
-    public Image getNextTile();
+    Image getNextTile();
 
     /**
      * Resets the tile cutter so that the next call to <code>getNextTile</code>
@@ -43,13 +44,15 @@ public interface TileCutter
 
     /**
      * Returns the default tile dimensions of tiles cut by this cutter.
+     *
      * @return the default tile dimensions of tiles cut by this cutter.
      */
-    public Dimension getTileDimensions();
+    Dimension getTileDimensions();
 
     /**
      * Returns the name of this tile cutter.
+     *
      * @return the name of this tile cutter
      */
-    public String getName();
+    String getName();
 }

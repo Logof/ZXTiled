@@ -23,8 +23,7 @@ import java.util.prefs.Preferences;
  *
  * @version $Id$
  */
-public final class TiledConfiguration
-{
+public final class TiledConfiguration {
     public static final int RECENT_FILE_COUNT = 8;
 
     private static final Preferences prefs = Preferences.userRoot().node("tiled");
@@ -80,8 +79,7 @@ public final class TiledConfiguration
 
         // Store the new recent file listing
         Preferences recentNode = prefs.node("recent");
-        for (int i = 0; i < RECENT_FILE_COUNT && i < recent.size(); i++)
-        {
+        for (int i = 0; i < RECENT_FILE_COUNT && i < recent.size(); i++) {
             String recentFile = recent.get(i);
             recentNode.put("file" + i, recentFile);
         }
@@ -95,8 +93,7 @@ public final class TiledConfiguration
     public static List<String> getRecentFiles() {
         List<String> recent = new ArrayList<String>(RECENT_FILE_COUNT);
         Preferences recentNode = prefs.node("recent");
-        for (int i = 0; i < RECENT_FILE_COUNT; i++)
-        {
+        for (int i = 0; i < RECENT_FILE_COUNT; i++) {
             String recentFile = recentNode.get("file" + i, "");
             if (recentFile.length() > 0) {
                 recent.add(recentFile);

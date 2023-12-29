@@ -31,18 +31,16 @@ import java.util.Vector;
  * Dialog for picking a tile image. Used by the edit tileset dialog for
  * changing the image of a tile.
  */
-public class TileImageDialog extends JDialog implements ListSelectionListener
-{
-    private JList imageList;
-    private JButton okButton, cancelButton;
-    private int imageId;
-    private final TileSet tileset;
-    private JLabel imageLabel;
-    private int[] imageIds;
-
+public class TileImageDialog extends JDialog implements ListSelectionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.tileimage.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private final TileSet tileset;
+    private JList imageList;
+    private JButton okButton, cancelButton;
+    private int imageId;
+    private JLabel imageLabel;
+    private int[] imageIds;
 
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0);
@@ -91,11 +89,16 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1; c.weighty = 1;
+        c.weightx = 1;
+        c.weighty = 1;
         mainPanel.add(sp, c);
-        c.weightx = 0; c.gridx = 1;
+        c.weightx = 0;
+        c.gridx = 1;
         mainPanel.add(image_panel, c);
-        c.gridx = 0; c.weighty = 0; c.gridy = 1; c.gridwidth = 2;
+        c.gridx = 0;
+        c.weighty = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
         mainPanel.add(buttons, c);
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(okButton);

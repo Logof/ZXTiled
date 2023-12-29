@@ -8,7 +8,6 @@ package org.github.logof.zxtiled.mapeditor.brush;
 import org.github.logof.zxtiled.core.MapLayer;
 
 /**
- *
  * @author upachler
  */
 public class LayerLockedBrushException extends BrushException {

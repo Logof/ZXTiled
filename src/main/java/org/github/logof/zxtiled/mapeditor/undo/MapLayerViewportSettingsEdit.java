@@ -13,67 +13,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author upachler
  */
-public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit  {
-    private boolean significant;
-
-    private static class ViewportState implements Cloneable{
-        public float viewPlaneDistance;
-        public boolean viewPlaneInfinitelyFarAway;
-        public void readFrom(MapLayer map){
-            viewPlaneDistance = map.getViewPlaneDistance();
-            viewPlaneInfinitelyFarAway = map.isViewPlaneInfinitelyFarAway();
-        }
-        public void writeTo(MapLayer map){
-            map.setViewPlaneDistance(viewPlaneDistance);
-            map.setViewPlaneInfinitelyFarAway(viewPlaneInfinitelyFarAway);
-        }
-        public ViewportState duplicate(){
-            try {
-                return (ViewportState) clone();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(MapViewportSettingsEdit.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-        }
-        public boolean equals(Object o){
-            try {
-                ViewportState rhs = (ViewportState)o;
-                return viewPlaneDistance == rhs.viewPlaneDistance
-                    &&  viewPlaneInfinitelyFarAway == rhs.viewPlaneInfinitelyFarAway;
-            }catch(ClassCastException ccx){
-                return false;
-            }
-            
-        }
-    }
-
+public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
+    private final boolean significant;
     private ViewportState backupState;
     private boolean undone = false;
-    private MapLayer layer;
-    
-    
+    private final MapLayer layer;
     public MapLayerViewportSettingsEdit(MapLayer layer) {
         this(layer, true);
     }
-    
+
+
     public MapLayerViewportSettingsEdit(MapLayer layer, boolean significant) {
         backupState = new ViewportState();
         backupState.readFrom(layer);
         this.layer = layer;
         this.significant = significant;
     }
-    
-    public void undo(){
+
+    public void undo() {
         super.undo();
         assert !undone;
         swapViewportState();
         undone = true;
     }
-    
-    public void redo(){
+
+    public void redo() {
         super.redo();
         assert undone;
         swapViewportState();
@@ -83,30 +49,30 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit  {
     @Override
     public boolean addEdit(UndoableEdit anEdit) {
         assert !undone;
-        
-        if(!anEdit.getClass().equals(getClass()))
+
+        if (!anEdit.getClass().equals(getClass()))
             return super.addEdit(anEdit);
-        
-        MapLayerViewportSettingsEdit other = (MapLayerViewportSettingsEdit)anEdit;
-        
+
+        MapLayerViewportSettingsEdit other = (MapLayerViewportSettingsEdit) anEdit;
+
         // edits of different layers can't be merged
-        if(layer != other.layer)
+        if (layer != other.layer)
             return false;
-        
+
         // edits with the same state are merged
-        if(other.backupState.equals(backupState))
+        if (other.backupState.equals(backupState))
             return true;
-        
+
         // inisignificant changes are merged
-        return !other.isSignificant();        
+        return !other.isSignificant();
     }
-    
-    public boolean isSignificant(){
+
+    public boolean isSignificant() {
         return significant;
     }
-    
+
     private void swapViewportState() {
-        ViewportState s = (ViewportState)backupState.duplicate();
+        ViewportState s = backupState.duplicate();
         s.readFrom(layer);
         backupState.writeTo(layer);
         backupState = s;
@@ -116,5 +82,40 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit  {
     public String getPresentationName() {
         return Resources.getString("edit.change.layer.viewport.name");
     }
-    
+
+    private static class ViewportState implements Cloneable {
+        public float viewPlaneDistance;
+        public boolean viewPlaneInfinitelyFarAway;
+
+        public void readFrom(MapLayer map) {
+            viewPlaneDistance = map.getViewPlaneDistance();
+            viewPlaneInfinitelyFarAway = map.isViewPlaneInfinitelyFarAway();
+        }
+
+        public void writeTo(MapLayer map) {
+            map.setViewPlaneDistance(viewPlaneDistance);
+            map.setViewPlaneInfinitelyFarAway(viewPlaneInfinitelyFarAway);
+        }
+
+        public ViewportState duplicate() {
+            try {
+                return (ViewportState) clone();
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(MapViewportSettingsEdit.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        }
+
+        public boolean equals(Object o) {
+            try {
+                ViewportState rhs = (ViewportState) o;
+                return viewPlaneDistance == rhs.viewPlaneDistance
+                        && viewPlaneInfinitelyFarAway == rhs.viewPlaneInfinitelyFarAway;
+            } catch (ClassCastException ccx) {
+                return false;
+            }
+
+        }
+    }
+
 }

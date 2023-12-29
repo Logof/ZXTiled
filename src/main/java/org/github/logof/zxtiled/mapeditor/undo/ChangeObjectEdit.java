@@ -23,37 +23,10 @@ import java.util.Properties;
 /**
  * Changes the attributes and properties of an object.
  */
-public class ChangeObjectEdit extends AbstractUndoableEdit
-{
+public class ChangeObjectEdit extends AbstractUndoableEdit {
     private final MapObject mapObject;
     private State state;
 
-    class State{
-        private String name;
-        private String type;
-        private String imageSource;
-        private Rectangle bounds;
-        private final Properties properties = new Properties();
-        
-        public void retreive(MapObject o){
-            name = mapObject.getName();
-            type = mapObject.getType();
-            imageSource = mapObject.getImageSource();
-            bounds = new Rectangle(mapObject.getBounds());
-            properties.clear();
-            properties.putAll(mapObject.getProperties());
-        }
-        
-        public void apply(MapObject mapObject){
-            mapObject.setName(name);
-            mapObject.setType(type);
-            mapObject.setImageSource(imageSource);
-            mapObject.setBounds(new Rectangle(bounds));
-            mapObject.getProperties().clear();
-            mapObject.getProperties().putAll(properties);
-        }
-    };
-    
     public ChangeObjectEdit(MapObject mapObject) {
         this.mapObject = mapObject;
 
@@ -81,8 +54,34 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
         state.apply(mapObject);
         state = s;
     }
-    
+
     public String getPresentationName() {
         return Resources.getString("action.object.change.name");
+    }
+
+    class State {
+        private final Properties properties = new Properties();
+        private String name;
+        private String type;
+        private String imageSource;
+        private Rectangle bounds;
+
+        public void retreive(MapObject o) {
+            name = mapObject.getName();
+            type = mapObject.getType();
+            imageSource = mapObject.getImageSource();
+            bounds = new Rectangle(mapObject.getBounds());
+            properties.clear();
+            properties.putAll(mapObject.getProperties());
+        }
+
+        public void apply(MapObject mapObject) {
+            mapObject.setName(name);
+            mapObject.setType(type);
+            mapObject.setImageSource(imageSource);
+            mapObject.setBounds(new Rectangle(bounds));
+            mapObject.getProperties().clear();
+            mapObject.getProperties().putAll(properties);
+        }
     }
 }

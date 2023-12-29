@@ -25,8 +25,7 @@ import java.awt.event.MouseEvent;
  *
  * @version $Id$
  */
-public class ResizePanel extends JPanel
-{
+public class ResizePanel extends JPanel {
     private MapView inner;
     private Map currentMap;
     private Dimension oldDim, newDim;
@@ -68,8 +67,8 @@ public class ResizePanel extends JPanel
     public void moveMap(int x, int y) {
         // snap!
         inner.setLocation(
-                (int)(x * (currentMap.getTileWidth() * zoom)),
-                (int)(y * (currentMap.getTileHeight() * zoom)));
+                (int) (x * (currentMap.getTileWidth() * zoom)),
+                (int) (y * (currentMap.getTileHeight() * zoom)));
     }
 
     public void setNewDimensions(Dimension n) {

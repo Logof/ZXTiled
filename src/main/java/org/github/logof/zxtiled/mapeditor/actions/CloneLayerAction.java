@@ -24,13 +24,12 @@ import java.text.MessageFormat;
  *
  * @version $Id$
  */
-public class CloneLayerAction extends AbstractLayerAction
-{
+public class CloneLayerAction extends AbstractLayerAction {
     public CloneLayerAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.layer.duplicate.name"),
-              Resources.getString("action.layer.duplicate.tooltip"),
-              Resources.getIcon("icon/gimp-duplicate-16.png"));
+                Resources.getString("action.layer.duplicate.name"),
+                Resources.getString("action.layer.duplicate.tooltip"),
+                Resources.getIcon("icon/gimp-duplicate-16.png"));
     }
 
     protected void doPerformAction() {
@@ -42,7 +41,7 @@ public class CloneLayerAction extends AbstractLayerAction
                 MapLayer clone = (MapLayer) currentLayer.clone();
                 String newName = Resources.getString(
                         "action.layer.duplicate.newlayer.name");
-                clone.setName(MessageFormat.format(newName, new Object[]{clone.getName()}));
+                clone.setName(MessageFormat.format(newName, clone.getName()));
                 currentMap.addLayer(clone);
                 editor.setCurrentLayerIndex(currentMap.getTotalLayers() - 1);
             } catch (CloneNotSupportedException ex) {

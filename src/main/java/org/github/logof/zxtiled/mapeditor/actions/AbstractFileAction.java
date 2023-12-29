@@ -24,18 +24,15 @@ import java.awt.event.ActionEvent;
  *
  * @version $Id$
  */
-public abstract class AbstractFileAction extends AbstractAction
-{
+public abstract class AbstractFileAction extends AbstractAction {
+    private static final String SAVE_CHANGES_TEXT = Resources.getString("action.map.save.changes.text");
+    private static final String SAVE_CHANGES_TITLE = Resources.getString("action.map.save.changes.title");
     protected final MapEditor editor;
     private final SaveAsAction saveAction;
 
-    private static final String SAVE_CHANGES_TEXT = Resources.getString("action.map.save.changes.text");
-    private static final String SAVE_CHANGES_TITLE = Resources.getString("action.map.save.changes.title");
-
     protected AbstractFileAction(MapEditor editor,
                                  SaveAction saveAction,
-                                 String name, String description)
-    {
+                                 String name, String description) {
         super(name);
         this.editor = editor;
         this.saveAction = saveAction;
@@ -45,9 +42,9 @@ public abstract class AbstractFileAction extends AbstractAction
     public final void actionPerformed(ActionEvent e) {
         if (editor.unsavedChanges()) {
             int ret = JOptionPane.showConfirmDialog(editor.getAppFrame(),
-                                                    SAVE_CHANGES_TEXT,
-                                                    SAVE_CHANGES_TITLE,
-                                                    JOptionPane.YES_NO_CANCEL_OPTION);
+                    SAVE_CHANGES_TEXT,
+                    SAVE_CHANGES_TITLE,
+                    JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (ret == JOptionPane.YES_OPTION) {
                 saveAction.actionPerformed(e);
@@ -55,15 +52,13 @@ public abstract class AbstractFileAction extends AbstractAction
                 // If saving was not cancelled and there are not still unsaved
                 // changes (which would indicate an error occured), continue
                 // to perform the action.
-                if (!saveAction.isSavingCancelled() && !editor.unsavedChanges())
-                {
+                if (!saveAction.isSavingCancelled() && !editor.unsavedChanges()) {
                     doPerformAction();
                 }
-            } else if (ret == JOptionPane.NO_OPTION){
+            } else if (ret == JOptionPane.NO_OPTION) {
                 doPerformAction();
             }
-        }
-        else {
+        } else {
             doPerformAction();
         }
     }

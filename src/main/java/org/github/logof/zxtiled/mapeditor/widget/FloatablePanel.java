@@ -25,29 +25,28 @@ import java.util.prefs.Preferences;
  * A floatable panel. The panel has a titlebar which displays the panel title
  * plus a small button which can be used to turn the panel into a frame. When
  * the frame is closed the panel is restored.
- *
+ * <p>
  * // todo: Prettify the user interface
  *
  * @version $Id$
  */
-public class FloatablePanel
-{
+public class FloatablePanel {
     private final JLabel titleLabel;
-    private JDialog frame;
     private final JComponent child;
     private final Frame parent;
     private final Preferences prefs;
-    private JPanel contentPane = new JPanel();
+    private JDialog frame;
+    private final JPanel contentPane = new JPanel();
     private boolean visible = true;
-    
+
     /**
      * Constructs a floatable panel with the given title. When the panel is
      * floated, it is placed in a {@link JDialog} with <code>parent</code> as
      * its parent.
      *
-     * @param parent the parent of the child
-     * @param child the child component
-     * @param title the title of this panel
+     * @param parent        the parent of the child
+     * @param child         the child component
+     * @param title         the title of this panel
      * @param preferencesId the unique identifier for this panel
      */
     public FloatablePanel(Frame parent, JComponent child, String title,
@@ -75,11 +74,11 @@ public class FloatablePanel
         contentPane.add(child, BorderLayout.CENTER);
         frame = null;
     }
-    
-    public JPanel getContentPane(){
+
+    public JPanel getContentPane() {
         return contentPane;
     }
-    
+
     public void setFloating(boolean floating) {
         if (frame != null && !floating) {
             // Store the floating frame position and size
@@ -95,9 +94,7 @@ public class FloatablePanel
             child.setBorder(null);
             contentPane.add(child, BorderLayout.CENTER);
             contentPane.setVisible(visible);
-        }
-        else if (frame == null && floating)
-        {
+        } else if (frame == null && floating) {
             // Hide this panel and remove our child panel
             contentPane.setVisible(false);
             contentPane.remove(child);
@@ -119,42 +116,39 @@ public class FloatablePanel
             final int lastFrameX = prefs.getInt("x", 0);
             final int lastFrameY = prefs.getInt("y", 0);
 
-            if (lastFrameWidth > 0)
-            {
+            if (lastFrameWidth > 0) {
                 frame.setSize(lastFrameWidth, lastFrameHeight);
                 frame.setLocation(lastFrameX, lastFrameY);
-            }
-            else
-            {
+            } else {
                 frame.pack();
                 frame.setLocationRelativeTo(parent);
             }
             frame.setVisible(visible);
         }
     }
-    
-    public void setVisible(boolean visible){
-        if(this.visible == visible)
+
+    public void setVisible(boolean visible) {
+        if (this.visible == visible)
             return;
         this.visible = visible;
-        if(frame != null)
+        if (frame != null)
             frame.setVisible(visible);
-        else{
+        else {
             contentPane.setVisible(visible);
-            if(visible)
+            if (visible)
                 contentPane.add(child);
             else
                 contentPane.remove(child);
         }
         prefs.putBoolean("visible", visible);
     }
-    
+
     /**
      * Restore the state from the preferences.
      */
     public void restore() {
         final boolean floating = prefs.getBoolean("floating", false);
-        
+
         if (floating) {
             setFloating(true);
         }
@@ -177,13 +171,13 @@ public class FloatablePanel
 
     /**
      * Sets a new title for this panel.
+     *
      * @param title the new title
      */
     public void setTitle(String title) {
         titleLabel.setText(title);
 
-        if (frame != null)
-        {
+        if (frame != null) {
             frame.setTitle(title);
         }
     }
@@ -191,8 +185,7 @@ public class FloatablePanel
     /**
      * The panel that holds the title label and float button.
      */
-    private class HeaderPanel extends JPanel
-    {
+    private class HeaderPanel extends JPanel {
         public HeaderPanel(BorderLayout borderLayout) {
             super(borderLayout);
             setBorder(BorderFactory.createEmptyBorder(1, 4, 2, 1));

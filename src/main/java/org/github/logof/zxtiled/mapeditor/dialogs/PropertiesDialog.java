@@ -28,18 +28,16 @@ import java.util.Properties;
 /**
  * @version $Id$
  */
-public class PropertiesDialog extends JDialog
-{
-    protected JTable propertiesTable;
-    protected final Properties properties;
-    protected final PropertiesTableModel tableModel = new PropertiesTableModel();
-    protected JPanel mainPanel;
-    private UndoableEditSupport undoSupport;
-    
+public class PropertiesDialog extends JDialog {
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    protected final Properties properties;
+    protected final PropertiesTableModel tableModel = new PropertiesTableModel();
+    protected JTable propertiesTable;
+    protected JPanel mainPanel;
+    private final UndoableEditSupport undoSupport;
 
 
     /// Creates a new PropertiesDialog instance
@@ -49,7 +47,7 @@ public class PropertiesDialog extends JDialog
     public PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport) {
         this(parent, p, undoSupport, true);
     }
-    
+
     /// Creates a new PropertiesDialog instance
     /// @param    parent    the parent frame that will become the owner of this
     ///    dialog
@@ -61,7 +59,7 @@ public class PropertiesDialog extends JDialog
         super(parent, DIALOG_TITLE, true);
         properties = p;
         this.undoSupport = undoSupport;
-        if(doInit){
+        if (doInit) {
             init();
             pack();
             setLocationRelativeTo(getOwner());
@@ -107,7 +105,7 @@ public class PropertiesDialog extends JDialog
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 UndoableEdit ue = commit();
-                if(ue != null)
+                if (ue != null)
                     undoSupport.postEdit(ue);
                 dispose();
             }
@@ -134,31 +132,31 @@ public class PropertiesDialog extends JDialog
         updateInfo();
         setVisible(true);
     }
-    
-    public boolean havePropertiesChanged(){
+
+    public boolean havePropertiesChanged() {
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null)
             editor.stopCellEditing();
-        
+
         return !properties.equals(tableModel.getProperties());
     }
-    
+
     protected UndoableEdit commit() {
         // Make sure there is no active cell editor anymore
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null) {
             editor.stopCellEditing();
         }
-        
-        if(havePropertiesChanged()){
-            Properties backup = (Properties)properties.clone();
-            
+
+        if (havePropertiesChanged()) {
+            Properties backup = (Properties) properties.clone();
+
             // Apply possibly changed properties.
             properties.clear();
             properties.putAll(tableModel.getProperties());
-            
+
             return new ChangePropertiesEdit(properties, backup);
-        } else 
+        } else
             return null;
     }
 
@@ -167,7 +165,7 @@ public class PropertiesDialog extends JDialog
         Object[] keys = new Object[total];
         int[] selRows = propertiesTable.getSelectedRows();
 
-        for(int i = 0; i < total; i++) {
+        for (int i = 0; i < total; i++) {
             keys[i] = propertiesTable.getValueAt(selRows[i], 0);
         }
 

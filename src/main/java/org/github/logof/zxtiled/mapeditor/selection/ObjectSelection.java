@@ -9,23 +9,22 @@ import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectGroup;
 
 /**
- *
  * @author upachler
  */
-public class ObjectSelection implements Selection{
-    private ObjectGroup layer;
-    private MapObject object;
-    
+public class ObjectSelection implements Selection {
+    private final ObjectGroup layer;
+    private final MapObject object;
+
     public ObjectSelection(ObjectGroup layer, MapObject o) {
         this.layer = layer;
         this.object = o;
     }
-    
+
     @Override
-    public boolean equals(Object o){
-        if(!(o instanceof ObjectSelection))
+    public boolean equals(Object o) {
+        if (!(o instanceof ObjectSelection))
             return false;
-        ObjectSelection os = (ObjectSelection)o;
+        ObjectSelection os = (ObjectSelection) o;
         return os.getLayer() == layer && os.getObject() == object;
     }
 
@@ -36,13 +35,13 @@ public class ObjectSelection implements Selection{
         hash = 97 * hash + (this.object != null ? this.object.hashCode() : 0);
         return hash;
     }
-    
-    public ObjectGroup getLayer(){
+
+    public ObjectGroup getLayer() {
         return layer;
     }
-    
-    public MapObject getObject(){
+
+    public MapObject getObject() {
         return object;
     }
-    
+
 }

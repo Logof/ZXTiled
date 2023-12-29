@@ -17,8 +17,7 @@ package org.github.logof.zxtiled.io;
  * both. The PluginClassLoader also uses this to check the supported file
  * extensions.
  */
-public interface PluggableMapIO
-{
+public interface PluggableMapIO {
     /**
      * Lists supported file extensions. This function is used by the editor to
      * find the plugin to use for a specific file extension.
@@ -26,7 +25,7 @@ public interface PluggableMapIO
      * @return a comma delimited string of supported file extensions
      * @throws Exception
      */
-    public String getFilter() throws Exception;
+    String getFilter() throws Exception;
 
     /**
      * Returns a short description of the plugin, or the plugin name. This
@@ -35,7 +34,7 @@ public interface PluggableMapIO
      *
      * @return a short name or description
      */
-    public String getName();
+    String getName();
 
     /**
      * Returns a long description (no limit) that details the plugin's
@@ -43,14 +42,14 @@ public interface PluggableMapIO
      *
      * @return a long description of the plugin
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * Returns the base Java package string for the plugin
      *
      * @return String the base package of the plugin
      */
-    public String getPluginPackage();
+    String getPluginPackage();
 
     /**
      * The PluginLogger object passed by the editor when the plugin is called to load
@@ -59,5 +58,5 @@ public interface PluggableMapIO
      *
      * @param logger
      */
-    public void setLogger(PluginLogger logger);
+    void setLogger(PluginLogger logger);
 }

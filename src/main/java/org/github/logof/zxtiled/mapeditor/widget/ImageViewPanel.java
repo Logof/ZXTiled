@@ -15,8 +15,7 @@ package org.github.logof.zxtiled.mapeditor.widget;
 import javax.swing.*;
 import java.awt.*;
 
-public class ImageViewPanel extends JPanel
-{
+public class ImageViewPanel extends JPanel {
     private final Image image;
 
     public ImageViewPanel(Image image) {

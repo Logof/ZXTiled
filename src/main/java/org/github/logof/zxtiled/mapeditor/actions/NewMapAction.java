@@ -21,18 +21,17 @@ import javax.swing.*;
 /**
  * Creates a new map.
  */
-public class NewMapAction extends AbstractFileAction
-{
+public class NewMapAction extends AbstractFileAction {
     public NewMapAction(MapEditor editor, SaveAction saveAction) {
         super(editor, saveAction,
-              Resources.getString("action.map.new.name"),
-              Resources.getString("action.map.new.tooltip"));
+                Resources.getString("action.map.new.name"),
+                Resources.getString("action.map.new.tooltip"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control N"));
     }
 
     protected void doPerformAction() {
-        NewMapDialog nmd = new NewMapDialog((JFrame)editor.getAppFrame());
+        NewMapDialog nmd = new NewMapDialog(editor.getAppFrame());
         Map newMap = nmd.create();
         if (newMap != null) {
             editor.setCurrentMap(newMap);

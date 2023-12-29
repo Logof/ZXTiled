@@ -21,11 +21,10 @@ import java.util.Properties;
  *
  * @version $Id$
  */
-public class Tile
-{
+public class Tile {
+    protected int tileImageId = -1;
     private Image internalImage, scaledImage;
     private int id = -1;
-    protected int tileImageId = -1;
     private int groundHeight;          // Height above/below "ground"
     private int tileOrientation;
     private double myZoom = 1.0;
@@ -47,13 +46,30 @@ public class Tile
      * @param t
      */
     public Tile(Tile t) {
-        properties = (Properties)t.properties.clone();
+        properties = (Properties) t.properties.clone();
         tileImageId = t.tileImageId;
         tileset = t.tileset;
         if (tileset != null) {
             scaledImage = getImage().getScaledInstance(
                     -1, -1, Image.SCALE_DEFAULT);
         }
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties p) {
+        properties = p;
+    }
+
+    /**
+     * Returns the tile id of this tile, relative to tileset.
+     *
+     * @return id
+     */
+    public int getId() {
+        return id;
     }
 
     /**
@@ -65,67 +81,6 @@ public class Tile
         if (i >= 0) {
             id = i;
         }
-    }
-
-    /**
-     * Changes the image of the tile as long as it is not null.
-     *
-     * @param i the new image of the tile
-     */
-    public void setImage(Image i) {
-        if (tileset != null) {
-            tileset.overlayImage(tileImageId, i);
-        } else {
-            internalImage = i;
-        }
-    }
-
-    public void setImage(int id) {
-        tileImageId = id;
-    }
-
-    /**
-     * @deprecated
-     * @param orientation
-     */
-    public void setImageOrientation(int orientation) {
-        tileOrientation = orientation;
-    }
-
-    /**
-     * Sets the parent tileset for a tile. If the tile is already
-     * a member of a set, and this method is called with a different
-     * set as argument, the tile image is transferred to the new set.
-     *
-     * @param set
-     */
-    public void setTileSet(TileSet set) {
-        if (tileset != null && tileset != set) {
-            setImage(set.addImage(getImage()));
-        } else {
-            if (internalImage != null) {
-                setImage(set.addImage(internalImage));
-                internalImage = null;
-            }
-        }
-        tileset = set;
-    }
-
-    public void setProperties(Properties p) {
-        properties = p;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    /**
-     * Returns the tile id of this tile, relative to tileset.
-     *
-     * @return id
-     */
-    public int getId() {
-        return id;
     }
 
     /**
@@ -150,14 +105,33 @@ public class Tile
     }
 
     /**
+     * Sets the parent tileset for a tile. If the tile is already
+     * a member of a set, and this method is called with a different
+     * set as argument, the tile image is transferred to the new set.
+     *
+     * @param set
+     */
+    public void setTileSet(TileSet set) {
+        if (tileset != null && tileset != set) {
+            setImage(set.addImage(getImage()));
+        } else {
+            if (internalImage != null) {
+                setImage(set.addImage(internalImage));
+                internalImage = null;
+            }
+        }
+        tileset = set;
+    }
+
+    /**
      * This drawing function handles drawing the tile image at the
      * specified zoom level. It will attempt to use a cached copy,
      * but will rescale if the requested zoom does not equal the
      * current cache zoom.
      *
-     * @param g Graphics instance to draw to
-     * @param x x-coord to draw tile at
-     * @param y y-coord to draw tile at
+     * @param g    Graphics instance to draw to
+     * @param x    x-coord to draw tile at
+     * @param y    y-coord to draw tile at
      * @param zoom Zoom level to draw the tile
      */
     public void drawRaw(Graphics g, int x, int y, double zoom) {
@@ -181,7 +155,7 @@ public class Tile
      */
     public void draw(Graphics g, int x, int y, double zoom) {
         // Invoke raw draw function
-        int gnd_h = (int)(groundHeight * zoom);
+        int gnd_h = (int) (groundHeight * zoom);
         drawRaw(g, x, y - gnd_h, zoom);
     }
 
@@ -189,7 +163,7 @@ public class Tile
         if (tileset != null) {
             Dimension d = tileset.getImageDimensions(tileImageId);
             return d.width;
-        } else if (internalImage != null){
+        } else if (internalImage != null) {
             return internalImage.getWidth(null);
         }
         return 0;
@@ -210,11 +184,19 @@ public class Tile
     }
 
     /**
-     * @deprecated
      * @return int
+     * @deprecated
      */
     public int getImageOrientation() {
         return tileOrientation;
+    }
+
+    /**
+     * @param orientation
+     * @deprecated
+     */
+    public void setImageOrientation(int orientation) {
+        tileOrientation = orientation;
     }
 
     /**
@@ -228,6 +210,23 @@ public class Tile
         } else {
             return internalImage;
         }
+    }
+
+    /**
+     * Changes the image of the tile as long as it is not null.
+     *
+     * @param i the new image of the tile
+     */
+    public void setImage(Image i) {
+        if (tileset != null) {
+            tileset.overlayImage(tileImageId, i);
+        } else {
+            internalImage = i;
+        }
+    }
+
+    public void setImage(int id) {
+        tileImageId = id;
     }
 
     /**
@@ -247,18 +246,16 @@ public class Tile
             return scaledImage;
         } else {
             Image img = getImage();
-            if (img != null)
-            {
+            if (img != null) {
                 scaledImage = img.getScaledInstance(
-                        (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                        (int) (getWidth() * zoom), (int) (getHeight() * zoom),
                         BufferedImage.SCALE_SMOOTH);
 
                 MediaTracker mediaTracker = new MediaTracker(new Canvas());
                 mediaTracker.addImage(scaledImage, 0);
                 try {
                     mediaTracker.waitForID(0);
-                }
-                catch (InterruptedException ie) {
+                } catch (InterruptedException ie) {
                     System.err.println(ie);
                 }
                 mediaTracker.removeImage(scaledImage);

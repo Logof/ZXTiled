@@ -24,14 +24,13 @@ import javax.swing.*;
  *
  * @version $Id$
  */
-public class OpenMapAction extends AbstractFileAction
-{
+public class OpenMapAction extends AbstractFileAction {
     private static final String OPEN_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
 
     public OpenMapAction(MapEditor editor, SaveAction saveAction) {
         super(editor, saveAction,
-              Resources.getString("action.map.open.name"),
-              Resources.getString("action.map.open.tooltip"));
+                Resources.getString("action.map.open.name"),
+                Resources.getString("action.map.open.tooltip"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
     }

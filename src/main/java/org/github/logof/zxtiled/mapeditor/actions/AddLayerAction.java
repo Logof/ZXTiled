@@ -21,13 +21,12 @@ import org.github.logof.zxtiled.mapeditor.Resources;
  *
  * @version $Id$
  */
-public class AddLayerAction extends AbstractLayerAction
-{
+public class AddLayerAction extends AbstractLayerAction {
     public AddLayerAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.layer.add.name"),
-              Resources.getString("action.layer.add.tooltip"),
-              Resources.getIcon("icon/gnome-new.png"));
+                Resources.getString("action.layer.add.name"),
+                Resources.getString("action.layer.add.tooltip"),
+                Resources.getIcon("icon/gnome-new.png"));
     }
 
     protected void doPerformAction() {

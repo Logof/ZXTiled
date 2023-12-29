@@ -17,8 +17,7 @@ import java.util.LinkedList;
 /**
  * @version $Id$
  */
-public class PluginLogger
-{
+public class PluginLogger {
     private final LinkedList<Object> messages = new LinkedList<Object>();
 
     public void error(Object message) {
@@ -37,8 +36,7 @@ public class PluginLogger
         return messages.isEmpty();
     }
 
-    public class PluginMessage
-    {
+    public class PluginMessage {
         private int type;
         private Object message;
     }

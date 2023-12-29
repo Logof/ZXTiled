@@ -36,7 +36,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                                                         TilesetChangeListener {
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
-    private List<TileSelectionListener> tileSelectionListeners;
+    private final List<TileSelectionListener> tileSelectionListeners;
     private Vector<Tile> tilesetMap;
     private Rectangle selection;
 
@@ -73,6 +73,35 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         };
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
+    }
+
+    /**
+     * Draws checkerboard background.
+     *
+     * @param g the {@link Graphics} instance to draw on
+     */
+    private static void paintBackground(Graphics g) {
+        Rectangle clip = g.getClipBounds();
+        int side = 10;
+
+        int startX = clip.x / side;
+        int startY = clip.y / side;
+        int endX = (clip.x + clip.width) / side + 1;
+        int endY = (clip.y + clip.height) / side + 1;
+
+        // Fill with white background
+        g.setColor(Color.WHITE);
+        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+
+        // Draw darker squares
+        g.setColor(Color.LIGHT_GRAY);
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
+                if ((y + x) % 2 == 1) {
+                    g.fillRect(x * side, y * side, side, side);
+                }
+            }
+        }
     }
 
     /**
@@ -128,6 +157,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         return layer;
     }
 
+    public TileSet getTileset() {
+        return tileset;
+    }
+
     /**
      * Change the tileset displayed by this palette panel.
      *
@@ -149,10 +182,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         if (tileset != null) tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
-    }
-
-    public TileSet getTileset() {
-        return tileset;
     }
 
     public void tilesetChanged(TilesetChangedEvent event) {
@@ -197,7 +226,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * @param x x tile coordinate
      * @param y y tile coordinate
      * @return the tile at the given tile coordinates, or <code>null</code>
-     *         if the index is out of range
+     * if the index is out of range
      */
     private Tile getTileAt(int x, int y) {
         int tilesPerRow = getTilesPerRow();
@@ -276,8 +305,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
                 for (int x = 0;
                      x < tilesPerRow && tileAt < tilesetMap.size();
-                     x++, tileAt++)
-                {
+                     x++, tileAt++) {
                     Tile tile = tilesetMap.get(tileAt);
 
                     if (tile != null) {
@@ -306,40 +334,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         }
     }
 
-    /**
-     * Draws checkerboard background.
-     *
-     * @param g the {@link Graphics} instance to draw on
-     */
-    private static void paintBackground(Graphics g) {
-        Rectangle clip = g.getClipBounds();
-        int side = 10;
-
-        int startX = clip.x / side;
-        int startY = clip.y / side;
-        int endX = (clip.x + clip.width) / side + 1;
-        int endY = (clip.y + clip.height) / side + 1;
-
-        // Fill with white background
-        g.setColor(Color.WHITE);
-        g.fillRect(clip.x, clip.y, clip.width, clip.height);
-
-        // Draw darker squares
-        g.setColor(Color.LIGHT_GRAY);
-        for (int y = startY; y < endY; y++) {
-            for (int x = startX; x < endX; x++) {
-                if ((y + x) % 2 == 1) {
-                    g.fillRect(x * side, y * side, side, side);
-                }
-            }
-        }
-    }
-
     public Dimension getPreferredSize() {
         if (tileset == null) {
             return new Dimension(0, 0);
-        }
-        else {
+        } else {
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
             int tileCount = tilesetMap.size();
@@ -364,7 +362,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+                                          int orientation, int direction) {
         if (tileset != null) {
             return tileset.getTileWidth();
         } else {
@@ -373,7 +371,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation, int direction) {
+                                           int orientation, int direction) {
         if (tileset != null) {
             return tileset.getTileWidth();
         } else {

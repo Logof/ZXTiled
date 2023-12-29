@@ -23,8 +23,7 @@ import java.util.Vector;
  * A change in the layer state. Used for adding, removing and rearranging
  * the layer stack of a map.
  */
-public class MapLayerStateEdit extends AbstractUndoableEdit
-{
+public class MapLayerStateEdit extends AbstractUndoableEdit {
     private final Map map;
     private final Vector<MapLayer> layersBefore;
     private final Vector<MapLayer> layersAfter;

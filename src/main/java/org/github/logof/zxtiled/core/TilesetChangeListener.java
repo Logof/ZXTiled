@@ -20,8 +20,7 @@ import java.util.EventListener;
  *
  * @version $Id$
  */
-public interface TilesetChangeListener extends EventListener
-{
+public interface TilesetChangeListener extends EventListener {
     void tilesetChanged(TilesetChangedEvent event);
 
     void nameChanged(TilesetChangedEvent event, String oldName, String newName);

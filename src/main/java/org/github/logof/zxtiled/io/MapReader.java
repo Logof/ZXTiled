@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -23,16 +23,15 @@ import java.io.InputStream;
  * can have any format, as long as the MapReader implementor returns
  * instances of {@link Map} and {@link TileSet}.
  */
-public interface MapReader extends PluggableMapIO, FileFilter
-{
+public interface MapReader extends PluggableMapIO, FileFilter {
     /**
-     * Loads a map from a file. 
+     * Loads a map from a file.
      *
      * @param filename the filename of the map file
      * @return A {@link Map} instance with the relevant data
      * @throws Exception
      */
-    public Map readMap(String filename) throws Exception;
+    Map readMap(String filename) throws Exception;
 
     /**
      * Loads a tileset from a file.
@@ -41,24 +40,24 @@ public interface MapReader extends PluggableMapIO, FileFilter
      * @return A {@link TileSet} instance with the relevant data
      * @throws Exception
      */
-    public TileSet readTileset(String filename) throws Exception;
-    
+    TileSet readTileset(String filename) throws Exception;
+
     /**
      * Overload this to load a map from an already opened stream. Useful
      * for maps which are part of a larger binary dataset
-     * 
+     *
      * @param in
      * @return A {@link Map} object with the relevant data
      * @throws Exception
      */
-    public Map readMap(InputStream in) throws Exception;
-    
+    Map readMap(InputStream in) throws Exception;
+
     /**
      * Overload this to load a tileset from an open stream.
-     * 
+     *
      * @param in
      * @return A (@link TileSet} instance
      * @throws Exception
      */
-    public TileSet readTileset(InputStream in) throws Exception;
+    TileSet readTileset(InputStream in) throws Exception;
 }

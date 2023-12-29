@@ -19,8 +19,7 @@ import org.github.logof.zxtiled.view.MapView;
 import java.awt.*;
 import java.util.ListIterator;
 
-public class CustomBrush extends AbstractBrush
-{
+public class CustomBrush extends AbstractBrush {
     public CustomBrush(MultilayerPlane mlp) {
         addAllLayers(mlp.getLayerVector());
         fitBoundsToLayers();
@@ -31,11 +30,11 @@ public class CustomBrush extends AbstractBrush
         fitBoundsToLayers();
     }
 
-    public void setAffectedLayers(int num) {
-    }
-
     public int getAffectedLayers() {
         return getTotalLayers();
+    }
+
+    public void setAffectedLayers(int num) {
     }
 
     public Shape getShape() {
@@ -63,12 +62,11 @@ public class CustomBrush extends AbstractBrush
      * The custom brush will merge its internal layers onto the layers of the
      * specified MultilayerPlane.
      *
+     * @throws Exception
      * @see TileLayer#mergeOnto(MapLayer)
      * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
-     * @throws Exception
      */
-    public Rectangle doPaint(int x, int y) throws Exception
-    {
+    public Rectangle doPaint(int x, int y) throws Exception {
         int layer = initLayer;
         int centerx = x - bounds.width / 2;
         int centery = y - bounds.height / 2;
@@ -77,8 +75,8 @@ public class CustomBrush extends AbstractBrush
 
         ListIterator<MapLayer> itr = getLayers();
         while (itr.hasNext()) {
-            TileLayer tl = (TileLayer)itr.next();
-            TileLayer tm = (TileLayer)affectedMp.getLayer(layer++);
+            TileLayer tl = (TileLayer) itr.next();
+            TileLayer tm = (TileLayer) affectedMp.getLayer(layer++);
             if (tm != null && tm.isVisible()) {
                 tl.setOffset(centerx, centery);
                 tl.mergeOnto(tm);

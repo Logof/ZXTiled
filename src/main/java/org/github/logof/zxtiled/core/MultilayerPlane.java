@@ -22,10 +22,9 @@ import java.util.Vector;
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
  */
-public class MultilayerPlane implements Iterable<MapLayer>
-{
-    private Vector<MapLayer> layers;
+public class MultilayerPlane implements Iterable<MapLayer> {
     protected Rectangle bounds;          //in tiles
+    private Vector<MapLayer> layers;
 
     /**
      * Default constructor.
@@ -78,6 +77,7 @@ public class MultilayerPlane implements Iterable<MapLayer>
     /**
      * Returns a <code>Rectangle</code> representing the maximum bounds in
      * tiles.
+     *
      * @return a new rectangle containing the maximum bounds of this plane
      */
     public Rectangle getBounds() {
@@ -98,6 +98,7 @@ public class MultilayerPlane implements Iterable<MapLayer>
     void insertLayer(int index, MapLayer layer) {
         layers.add(index, layer);
     }
+
     public void setLayer(int index, MapLayer layer) {
         layers.set(index, layer);
     }
@@ -182,8 +183,8 @@ public class MultilayerPlane implements Iterable<MapLayer>
     /**
      * Merges the layer at <code>index</code> with the layer below it
      *
-     * @see MapLayer#mergeOnto
      * @param index the index of the layer to merge down
+     * @see MapLayer#mergeOnto
      */
     public void mergeLayerDown(int index) {
         if (index - 1 < 0) {
@@ -194,8 +195,7 @@ public class MultilayerPlane implements Iterable<MapLayer>
         TileLayer ntl;
         try {
             ntl = (TileLayer) getLayer(index - 1).clone();
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return;
         }
@@ -204,23 +204,24 @@ public class MultilayerPlane implements Iterable<MapLayer>
         setLayer(index - 1, ntl);
         removeLayer(index);
     }
-    
+
     /**
      * Finds the index of the given MapLayer instance. If the given layer is
      * not part of this Map, the function returns -1;
-     * @param ml    the layer to request the index of.
-     * @return  the layer index or -1 if the layer could not be found
+     *
+     * @param ml the layer to request the index of.
+     * @return the layer index or -1 if the layer could not be found
      */
-    protected int findLayerIndex(MapLayer ml){
+    protected int findLayerIndex(MapLayer ml) {
         return layers.indexOf(ml);
     }
-    
+
     /**
      * Returns the layer at the specified vector index.
      *
      * @param i the index of the layer to return
      * @return the layer at the specified index, or null if the index is out of
-     *         bounds
+     * bounds
      */
     public MapLayer getLayer(int i) {
         try {
@@ -247,47 +248,45 @@ public class MultilayerPlane implements Iterable<MapLayer>
      * This method will resize all layers first (if there are any) and then
      * call <code>resize(width,height)</code>
      *
-     * @see MapLayer#resize
-     *
      * @param width  The new width of the map.
      * @param height The new height of the map.
      * @param dx     The shift in x direction in tiles.
      * @param dy     The shift in y direction in tiles.
+     * @see MapLayer#resize
      */
     public void resize(int width, int height, int dx, int dy) {
         ListIterator<MapLayer> itr = getLayers();
         while (itr.hasNext()) {
-            MapLayer layer = (MapLayer)itr.next();
+            MapLayer layer = itr.next();
             if (layer.bounds.equals(bounds)) {
                 layer.resize(width, height, dx, dy);
             } else {
                 layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
             }
         }
-        
+
         resize(width, height);
     }
 
     /**
      * Resizes this plane. The plane's layers will not be affected.
      *
-     * @see MapLayer#resize
-     *
      * @param width  The plane's new width
      * @param height The plane's new height
+     * @see MapLayer#resize
      */
     public void resize(int width, int height) {
         bounds.width = width;
         bounds.height = height;
     }
-    
+
     /**
      * Determines wether the point (x,y) falls within the plane.
      *
      * @param x
      * @param y
      * @return <code>true</code> if the point is within the plane,
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;

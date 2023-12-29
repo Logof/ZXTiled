@@ -24,11 +24,10 @@ import java.util.LinkedList;
 /**
  * A panel that allows selecting a brush from a set of presets.
  */
-public class BrushBrowser extends JPanel
-{
-    private int maxWidth = 25;
-    private Brush selectedBrush;
+public class BrushBrowser extends JPanel {
     private final LinkedList<Brush> brushes;
+    private final int maxWidth = 25;
+    private Brush selectedBrush;
 
     public BrushBrowser() {
         brushes = new LinkedList<Brush>();
@@ -40,7 +39,7 @@ public class BrushBrowser extends JPanel
                 int x = e.getX() / maxWidth;
                 int y = e.getY() / maxWidth;
                 int selectedIndex =
-                    y * perLine + (x > perLine - 1 ? perLine - 1 : x);
+                        y * perLine + (x > perLine - 1 ? perLine - 1 : x);
 
                 if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
                     Brush previousBrush = selectedBrush;
@@ -70,7 +69,7 @@ public class BrushBrowser extends JPanel
     }
 
     private void initPresets() {
-        int[] dimensions = { 1, 2, 4, 8, 12, 20 };
+        int[] dimensions = {1, 2, 4, 8, 12, 20};
 
         for (int n = 1; n < dimensions.length; n++) {
             ShapeBrush brush = new ShapeBrush();
@@ -91,7 +90,7 @@ public class BrushBrowser extends JPanel
         g.fillRect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
 
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                          RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(Color.black);
 
         // Draw the brushes
@@ -109,13 +108,17 @@ public class BrushBrowser extends JPanel
                 g.drawRect(0, 0, maxWidth, maxWidth);
             }
 
-            g.translate(maxWidth,0);
+            g.translate(maxWidth, 0);
             x += maxWidth;
             if (x + maxWidth > getWidth()) {
                 g.translate(-x, maxWidth);
                 x = 0;
             }
         }
+    }
+
+    public Brush getSelectedBrush() {
+        return selectedBrush;
     }
 
     public void setSelectedBrush(Brush selectedBrush) {
@@ -125,9 +128,5 @@ public class BrushBrowser extends JPanel
                 break;
             }
         }
-    }
-
-    public Brush getSelectedBrush() {
-        return selectedBrush;
     }
 }

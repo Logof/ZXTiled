@@ -22,8 +22,7 @@ import java.awt.*;
 /**
  * Moves an object.
  */
-public class MoveObjectEdit extends AbstractUndoableEdit
-{
+public class MoveObjectEdit extends AbstractUndoableEdit {
     private final MapObject mapObject;
     private final Point moveDist;
 

@@ -18,8 +18,7 @@ import java.awt.image.RGBImageFilter;
  * This filter is used for filtering out a given "transparent" color from an
  * image. Sometimes known as magic pink.
  */
-public class TransparentImageFilter extends RGBImageFilter
-{
+public class TransparentImageFilter extends RGBImageFilter {
     int trans;
 
     /**

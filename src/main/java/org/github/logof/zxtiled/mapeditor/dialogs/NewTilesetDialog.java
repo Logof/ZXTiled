@@ -38,29 +38,6 @@ import java.util.Vector;
  * A dialog for creating a new tileset.
  */
 public class NewTilesetDialog extends JDialog implements ChangeListener {
-    private final MapLayer layer;
-    private TileSet newTileset;
-    private IntegerSpinner tileWidth, tileHeight;
-    private IntegerSpinner tileSpacing;
-    private IntegerSpinner tileMargin;
-    private JTextField tilesetName;
-    private JTextField tilebmpFile;
-    private JLabel spacingLabel;
-    private JLabel marginLabel;
-    private JLabel tilebmpFileLabel, cutterLabel, tileHeightLabel;
-    private JCheckBox tilebmpCheck;
-    private JCheckBox transCheck;
-    private JComboBox cutterBox;
-    private JButton previewButton;
-    private JButton browseButton;
-    private JButton propsButton;
-    private ColorButton colorButton;
-    private String path;
-    
-    private Properties defaultSetProperties;
-
-    private UndoableEditSupport undoSupport;
-        
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
@@ -83,6 +60,26 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     private static final String COLOR_CHOOSE_ERROR_TITLE = Resources.getString("dialog.newtileset.colorchoose.error.title");
     private static final String PROPERTIES_TITLE = Resources.getString("dialog.properties.default.title");
     private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
+    private final MapLayer layer;
+    private TileSet newTileset;
+    private IntegerSpinner tileWidth, tileHeight;
+    private IntegerSpinner tileSpacing;
+    private IntegerSpinner tileMargin;
+    private JTextField tilesetName;
+    private JTextField tilebmpFile;
+    private JLabel spacingLabel;
+    private JLabel marginLabel;
+    private JLabel tilebmpFileLabel, cutterLabel, tileHeightLabel;
+    private JCheckBox tilebmpCheck;
+    private JCheckBox transCheck;
+    private JComboBox cutterBox;
+    private JButton previewButton;
+    private JButton browseButton;
+    private JButton propsButton;
+    private ColorButton colorButton;
+    private String path;
+    private final Properties defaultSetProperties;
+    private final UndoableEditSupport undoSupport;
 
     /* -- */
 
@@ -128,7 +125,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         tileHeight.setEnabled(false);
         tileWidthLabel.setEnabled(false);
 
-        cutterBox = new JComboBox(new String[] {"Basic", "Border"});
+        cutterBox = new JComboBox(new String[]{"Basic", "Border"});
         cutterBox.setEditable(false);
         cutterBox.setEnabled(false);
         cutterLabel.setEnabled(false);
@@ -181,7 +178,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
                 BorderFactory.createTitledBorder(FROM_TILESET_IMG_TITLE),
                 BorderFactory.createEmptyBorder(0, 5, 5, 5)));
 
-    	
+
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 0;
@@ -199,7 +196,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         tilebmpPanel.add(tileWidth, c);
         c.gridy = 2;
         tilebmpPanel.add(tileHeight, c);
-        c.gridx = 0;        
+        c.gridx = 0;
         c.gridy = 3;
         c.gridwidth = 1;
         c.insets = new Insets(5, 0, 0, 5);
@@ -329,7 +326,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         propsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 PropertiesDialog lpd =
-                    new PropertiesDialog(null, defaultSetProperties, undoSupport);
+                        new PropertiesDialog(null, defaultSetProperties, undoSupport);
                 lpd.setTitle(PROPERTIES_TITLE);
                 lpd.getProps();
             }
@@ -353,18 +350,16 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     }
 
     private void createSetAndDispose() {
-       Vector<TileSet> tilesets =  layer.getMap().getTilesets();
-       for(TileSet tileset : tilesets)
-       {
-            if(tileset.getName().compareTo(tilesetName.getText()) == 0)
-            {
+        Vector<TileSet> tilesets = layer.getMap().getTilesets();
+        for (TileSet tileset : tilesets) {
+            if (tileset.getName().compareTo(tilesetName.getText()) == 0) {
                 newTileset = null;
                 JOptionPane.showMessageDialog(this, TILESET_NAME_ERR,
-                       IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+                        IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
                 return;
             }
         }
-    	
+
         newTileset = new TileSet();
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
@@ -384,8 +379,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
 
                 newTileset.importTileBitmap(file,
                         getCutter(width, height, spacing, margin));
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
                         IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
             }
@@ -415,8 +409,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
 
         if (source == tilebmpCheck) {
             setUseTileBitmap(tilebmpCheck.isSelected());
-        }
-        else if (source == transCheck) {
+        } else if (source == transCheck) {
             colorButton.setEnabled(tilebmpCheck.isSelected() &&
                     transCheck.isSelected());
         }
@@ -430,7 +423,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         tileMargin.setEnabled(value);
         tileHeight.setEnabled(value);
         tileHeightLabel.setEnabled(value);
-        
+
         spacingLabel.setEnabled(value);
         marginLabel.setEnabled(value);
         transCheck.setEnabled(value);

@@ -21,14 +21,13 @@ import java.io.File;
  *
  * @version $Id$
  */
-public class OpenRecentAction extends AbstractFileAction
-{
+public class OpenRecentAction extends AbstractFileAction {
     private final String path;
 
     public OpenRecentAction(MapEditor editor, SaveAction saveAction, String path) {
         super(editor, saveAction,
-              path.substring(path.lastIndexOf(File.separatorChar) + 1),
-              Resources.getString("action.map.open.tooltip"));
+                path.substring(path.lastIndexOf(File.separatorChar) + 1),
+                Resources.getString("action.map.open.tooltip"));
 
         this.path = path;
     }

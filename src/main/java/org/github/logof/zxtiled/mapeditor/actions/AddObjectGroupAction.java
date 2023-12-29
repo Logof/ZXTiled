@@ -21,13 +21,12 @@ import org.github.logof.zxtiled.mapeditor.Resources;
  *
  * @version $Id$
  */
-public class AddObjectGroupAction extends AbstractLayerAction
-{
+public class AddObjectGroupAction extends AbstractLayerAction {
     public AddObjectGroupAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.objectgroup.add.name"),
-              Resources.getString("action.objectgroup.add.tooltip"),
-              Resources.getIcon("icon/gnome-new.png"));
+                Resources.getString("action.objectgroup.add.name"),
+                Resources.getString("action.objectgroup.add.tooltip"),
+                Resources.getIcon("icon/gnome-new.png"));
     }
 
     protected void doPerformAction() {

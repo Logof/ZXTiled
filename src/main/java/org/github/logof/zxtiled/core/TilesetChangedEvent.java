@@ -19,8 +19,7 @@ import java.util.EventObject;
  *
  * @version $Id$
  */
-public class TilesetChangedEvent extends EventObject
-{
+public class TilesetChangedEvent extends EventObject {
     public TilesetChangedEvent(TileSet set) {
         super(set);
     }

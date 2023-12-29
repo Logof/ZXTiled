@@ -19,8 +19,7 @@ import java.awt.*;
 /**
  * @version $Id$
  */
-public class BrushPreview extends JPanel
-{
+public class BrushPreview extends JPanel {
     private AbstractBrush brush;
 
     public BrushPreview() {

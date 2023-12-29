@@ -12,18 +12,22 @@
 
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.mapeditor.util.TransparentImageFilter;
+import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
+import org.github.logof.zxtiled.mapeditor.util.cutter.TileCutter;
+import org.github.logof.zxtiled.util.NumberedSet;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import javax.imageio.ImageIO;
-
-import org.github.logof.zxtiled.mapeditor.util.TransparentImageFilter;
-import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
-import org.github.logof.zxtiled.mapeditor.util.cutter.TileCutter;
-import org.github.logof.zxtiled.util.NumberedSet;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * todo: Update documentation
@@ -35,10 +39,10 @@ import org.github.logof.zxtiled.util.NumberedSet;
  *
  * <p>The other is the tile image.</p>
  */
-public class TileSet
-{
+public class TileSet {
     private String base;
-    private NumberedSet tiles, images;
+    private final NumberedSet tiles;
+    private final NumberedSet images;
     private int firstGid;
     private long tilebmpFileLastModified;
     private TileCutter tileCutter;
@@ -52,8 +56,8 @@ public class TileSet
     private Color transparentColor;
     private Properties defaultTileProperties;
     private Image tileSetImage;
-    private LinkedList<TilesetChangeListener> tilesetChangeListeners;
-    private java.util.Map<Integer, String> imageSources = new HashMap<Integer, String>();
+    private final LinkedList<TilesetChangeListener> tilesetChangeListeners;
+    private final java.util.Map<Integer, String> imageSources = new HashMap<Integer, String>();
 
     /**
      * Default constructor
@@ -75,8 +79,7 @@ public class TileSet
      * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
      */
     public void importTileBitmap(String imgFilename, TileCutter cutter)
-            throws IOException
-    {
+            throws IOException {
         setTilesetImageFilename(imgFilename);
 
         Image image = ImageIO.read(new File(imgFilename));
@@ -106,11 +109,10 @@ public class TileSet
      * Creates a tileset from a buffered image. Tiles are cut by the passed
      * cutter.
      *
-     * @param tilebmp     the image to be used, must not be null
-     * @param cutter      the tile cutter, must not be null
+     * @param tilebmp the image to be used, must not be null
+     * @param cutter  the tile cutter, must not be null
      */
-    private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
-    {
+    private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter) {
         assert tilebmp != null;
         assert cutter != null;
 
@@ -140,11 +142,10 @@ public class TileSet
      * Refreshes a tileset from a tileset image file.
      *
      * @throws IOException
-     * @see TileSet#importTileBitmap(BufferedImage,TileCutter)
+     * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
      */
     private void refreshImportedTileBitmap()
-            throws IOException
-    {
+            throws IOException {
         String imgFilename = tilebmpFile.getPath();
 
         Image image = ImageIO.read(new File(imgFilename));
@@ -199,33 +200,10 @@ public class TileSet
 
     public void checkUpdate() throws IOException {
         if (tilebmpFile != null &&
-                tilebmpFile.lastModified() > tilebmpFileLastModified)
-        {
+                tilebmpFile.lastModified() > tilebmpFileLastModified) {
             refreshImportedTileBitmap();
             tilebmpFileLastModified = tilebmpFile.lastModified();
         }
-    }
-
-    /**
-     * Sets the URI path of the external source of this tile set. By setting
-     * this, the set is implied to be external in all other operations.
-     *
-     * @param source a URI of the tileset image file
-     */
-    public void setSource(String source) {
-        String oldSource = externalSource;
-        externalSource = source;
-
-        fireSourceChanged(oldSource, source);
-    }
-
-    /**
-     * Sets the base directory for the tileset
-     *
-     * @param base a String containing the native format directory
-     */
-    public void setBaseDir(String base) {
-        this.base = base;
     }
 
     /**
@@ -238,39 +216,9 @@ public class TileSet
         if (name != null) {
             tilebmpFile = new File(name);
             tilebmpFileLastModified = tilebmpFile.lastModified();
-        }
-        else {
+        } else {
             tilebmpFile = null;
         }
-    }
-
-    /**
-     * Sets the first global id used by this tileset.
-     *
-     * @param firstGid first global id
-     */
-    public void setFirstGid(int firstGid) {
-        this.firstGid = firstGid;
-    }
-
-    /**
-     * Sets the name of this tileset.
-     *
-     * @param name the new name for this tileset
-     */
-    public void setName(String name) {
-        String oldName = this.name;
-        this.name = name;
-        fireNameChanged(oldName, name);
-    }
-
-    /**
-     * Sets the transparent color in the tileset image.
-     *
-     * @param color
-     */
-    public void setTransparentColor(Color color) {
-        transparentColor = color;
     }
 
     /**
@@ -310,8 +258,8 @@ public class TileSet
      * the functionality of <code>addTile()</code>, sets the id of the tile
      * to -1.
      *
-     * @see TileSet#addTile(Tile)
      * @param t the new tile to add.
+     * @see TileSet#addTile(Tile)
      */
     public void addNewTile(Tile t) {
         t.setId(-1);
@@ -322,7 +270,7 @@ public class TileSet
      * Removes a tile from this tileset. Does not invalidate other tile
      * indices. Removal is simply setting the reference at the specified
      * index to <b>null</b>.
-     *
+     * <p>
      * todo: Fix the behaviour of this function? It actually does seem to
      * todo: invalidate other tile indices due to implementation of
      * todo: NumberedSet.
@@ -366,7 +314,7 @@ public class TileSet
      * removed from the middle of a set of tiles. (Maps tiles contiguously)
      *
      * @return a {@link Vector} mapping ordered set location to the next
-     *         non-null tile
+     * non-null tile
      */
     public Vector<Tile> generateGaplessVector() {
         Vector<Tile> gapless = new Vector<Tile>();
@@ -393,7 +341,7 @@ public class TileSet
      * Returns the tile height of tiles in this tileset. Not all tiles in a
      * tileset are required to have the same height, but the height should be
      * at least the tile height of the map the tileset is used with.
-     *
+     * <p>
      * If there are tiles with varying heights in this tileset, the returned
      * height will be the maximum.
      *
@@ -405,6 +353,7 @@ public class TileSet
 
     /**
      * Returns the spacing between the tiles on the tileset image.
+     *
      * @return the spacing in pixels between the tiles on the tileset image
      */
     public int getTileSpacing() {
@@ -413,6 +362,7 @@ public class TileSet
 
     /**
      * Returns the margin around the tiles on the tileset image.
+     *
      * @return the margin in pixels around the tiles on the tileset image
      */
     public int getTileMargin() {
@@ -421,6 +371,7 @@ public class TileSet
 
     /**
      * Returns the number of tiles per row in the original tileset image.
+     *
      * @return the number of tiles per row in the original tileset image.
      */
     public int getTilesPerRow() {
@@ -432,12 +383,13 @@ public class TileSet
      *
      * @param i local id of tile
      * @return A tile with local id <code>i</code> or <code>null</code> if no
-     *         tile exists with that id
+     * tile exists with that id
      */
     public Tile getTile(int i) {
         try {
             return (Tile) tiles.get(i);
-        } catch (ArrayIndexOutOfBoundsException a) {}
+        } catch (ArrayIndexOutOfBoundsException a) {
+        }
         return null;
     }
 
@@ -445,7 +397,7 @@ public class TileSet
      * Returns the first non-null tile in the set.
      *
      * @return The first tile in this tileset, or <code>null</code> if none
-     *         exists.
+     * exists.
      */
     public Tile getFirstTile() {
         Tile ret = null;
@@ -461,10 +413,23 @@ public class TileSet
      * Returns the source of this tileset.
      *
      * @return a filename if tileset is external or <code>null</code> if
-     *         tileset is internal.
+     * tileset is internal.
      */
     public String getSource() {
         return externalSource;
+    }
+
+    /**
+     * Sets the URI path of the external source of this tile set. By setting
+     * this, the set is implied to be external in all other operations.
+     *
+     * @param source a URI of the tileset image file
+     */
+    public void setSource(String source) {
+        String oldSource = externalSource;
+        externalSource = source;
+
+        fireSourceChanged(oldSource, source);
     }
 
     /**
@@ -477,10 +442,19 @@ public class TileSet
     }
 
     /**
+     * Sets the base directory for the tileset
+     *
+     * @param base a String containing the native format directory
+     */
+    public void setBaseDir(String base) {
+        this.base = base;
+    }
+
+    /**
      * Returns the filename of the tileset image.
      *
      * @return the filename of the tileset image, or <code>null</code> if this
-     *         tileset doesn't reference a tileset image
+     * tileset doesn't reference a tileset image
      */
     public String getTilebmpFile() {
         if (tilebmpFile != null) {
@@ -503,10 +477,30 @@ public class TileSet
     }
 
     /**
+     * Sets the first global id used by this tileset.
+     *
+     * @param firstGid first global id
+     */
+    public void setFirstGid(int firstGid) {
+        this.firstGid = firstGid;
+    }
+
+    /**
      * @return the name of this tileset.
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Sets the name of this tileset.
+     *
+     * @param name the new name for this tileset
+     */
+    public void setName(String name) {
+        String oldName = this.name;
+        this.name = name;
+        fireNameChanged(oldName, name);
     }
 
     /**
@@ -517,6 +511,15 @@ public class TileSet
      */
     public Color getTransparentColor() {
         return transparentColor;
+    }
+
+    /**
+     * Sets the transparent color in the tileset image.
+     *
+     * @param color
+     */
+    public void setTransparentColor(Color color) {
+        transparentColor = color;
     }
 
     /**
@@ -557,7 +560,7 @@ public class TileSet
      *
      * @param i an Image object
      * @return returns the id of the given image, or -1 if the image is not in
-     *         the set
+     * the set
      */
     public int getIdByImage(Image i) {
         return images.indexOf(i);
@@ -566,21 +569,21 @@ public class TileSet
     /**
      * @param id
      * @return the image identified by the key, or <code>null</code> when
-     *         there is no such image
+     * there is no such image
      */
     public Image getImageById(int id) {
         return (Image) images.get(id);
     }
-    
+
     /**
+     * @param id
      * @return the source path registered with this image ID. May be null
      * even if an image is registered for this ID, because a source does
      * not need to be registered (this is especially true for imbedded
      * images)
-     * @param id
      * @return
      */
-    public String getImageSource(int id){
+    public String getImageSource(int id) {
         return imageSources.get(id);
     }
 
@@ -597,12 +600,12 @@ public class TileSet
     /**
      * Returns the dimensions of an image as specified by the id.
      *
-     * @deprecated Unless somebody can explain the purpose of this function in
-     *             its documentation, I consider this function deprecated. It
-     *             is only used by tiles, but they should in my opinion just
-     *             use their "internalImage". - Bjorn
      * @param id the image id
      * @return dimensions of image with referenced by given key
+     * @deprecated Unless somebody can explain the purpose of this function in
+     * its documentation, I consider this function deprecated. It
+     * is only used by tiles, but they should in my opinion just
+     * use their "internalImage". - Bjorn
      */
     public Dimension getImageDimensions(int id) {
         Image img = (Image) images.get(id);
@@ -618,14 +621,14 @@ public class TileSet
      * in the cache, returns the id of the existing image. If it does not
      * exist, this function adds the image and returns the new id.
      *
-     * @param image the java.awt.Image to add to the image cache
+     * @param image       the java.awt.Image to add to the image cache
      * @param imageSource the path of the source image or null if none
-     *  is to be specified.
+     *                    is to be specified.
      * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image, String imageSource) {
         int id = images.findOrAdd(image);
-        if(imageSource != null)
+        if (imageSource != null)
             imageSources.put(id, imageSource);
         return id;
     }
@@ -633,11 +636,11 @@ public class TileSet
     public int addImage(Image image) {
         return addImage(image, null);
     }
-    
+
     public int addImage(Image image, int id, String imgSource) {
-        if(imgSource != null)
+        if (imgSource != null)
             imageSources.put(id, imgSource);
-        
+
         return images.put(id, image);
     }
 
@@ -658,9 +661,9 @@ public class TileSet
     /**
      * Checks whether each image has a one to one relationship with the tiles.
      *
-     * @deprecated
      * @return <code>true</code> if each image is associated with one and only
-     *         one tile, <code>false</code> otherwise.
+     * one tile, <code>false</code> otherwise.
+     * @deprecated
      */
     public boolean isOneForOne() {
         Iterator itr = iterator();

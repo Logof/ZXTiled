@@ -32,8 +32,7 @@ import java.io.File;
  * Automatic adding of file extension only works with
  * {@link tiled.mapeditor.util.ConfirmableFileFilter}.
  */
-public final class ConfirmingFileChooser extends JFileChooser
-{
+public final class ConfirmingFileChooser extends JFileChooser {
     private static final String UNKNOWN_TYPE_MESSAGE = Resources.getString("dialog.saveas.unknown-type.message");
     private static final String CONFIRM_MISMATCH = Resources.getString("dialog.saveas.confirm.mismatch");
     private static final String CONFIRM_MISMATCH_TITLE = Resources.getString("dialog.saveas.confirm.mismatch.title");
@@ -44,17 +43,16 @@ public final class ConfirmingFileChooser extends JFileChooser
         super(currentDirectoryPath);
     }
 
+    public ConfirmingFileChooser() {
+        this(null);
+    }
+
     public int showSaveDialog(Component component) throws HeadlessException {
         setDialogTitle(Resources.getString("dialog.saveas.title"));
         return super.showSaveDialog(component);
     }
 
-    public ConfirmingFileChooser() {
-        this(null);
-    }
-
-    public void approveSelection ()
-    {
+    public void approveSelection() {
         // When it's an open dialog, we don't need the extension or overwrite
         // checks. Probably you should just be using JFileChooser.
         if (getDialogType() == OPEN_DIALOG) {
@@ -107,19 +105,16 @@ public final class ConfirmingFileChooser extends JFileChooser
         }
 
         // Confirm overwrite if the file happens to exist already
-        if (file.exists())
-        {
+        if (file.exists()) {
             int answer = JOptionPane.showConfirmDialog(
                     this,
                     FILE_EXISTS_MESSAGE, FILE_EXISTS_TITLE,
                     JOptionPane.YES_NO_OPTION);
 
-            if (answer == JOptionPane.YES_OPTION)
-            {
+            if (answer == JOptionPane.YES_OPTION) {
                 super.approveSelection();
             }
-        }
-        else {
+        } else {
             super.approveSelection();
         }
     }

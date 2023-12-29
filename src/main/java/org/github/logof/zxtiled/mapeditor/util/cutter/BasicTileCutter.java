@@ -19,18 +19,16 @@ import java.awt.image.BufferedImage;
  * Cuts tiles from a tileset image according to a regular rectangular pattern.
  * Supports a variable spacing between tiles and a margin around them.
  */
-public class BasicTileCutter implements TileCutter
-{
-    private int nextX, nextY;
-    private BufferedImage image;
+public class BasicTileCutter implements TileCutter {
     private final int tileWidth;
     private final int tileHeight;
     private final int tileSpacing;
     private final int tileMargin;
+    private int nextX, nextY;
+    private BufferedImage image;
 
     public BasicTileCutter(int tileWidth, int tileHeight, int tileSpacing,
-                           int tileMargin)
-    {
+                           int tileMargin) {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.tileSpacing = tileSpacing;
@@ -50,7 +48,7 @@ public class BasicTileCutter implements TileCutter
     public Image getNextTile() {
         if (nextY + tileHeight + tileMargin <= image.getHeight()) {
             BufferedImage tile =
-                image.getSubimage(nextX, nextY, tileWidth, tileHeight);
+                    image.getSubimage(nextX, nextY, tileWidth, tileHeight);
             nextX += tileWidth + tileSpacing;
 
             if (nextX + tileWidth + tileMargin > image.getWidth()) {
@@ -75,6 +73,7 @@ public class BasicTileCutter implements TileCutter
 
     /**
      * Returns the spacing between tile images.
+     *
      * @return the spacing between tile images.
      */
     public int getTileSpacing() {
@@ -83,6 +82,7 @@ public class BasicTileCutter implements TileCutter
 
     /**
      * Returns the margin around the tile images.
+     *
      * @return the margin around the tile images.
      */
     public int getTileMargin() {
@@ -91,6 +91,7 @@ public class BasicTileCutter implements TileCutter
 
     /**
      * Returns the number of tiles per row in the tileset image.
+     *
      * @return the number of tiles per row in the tileset image.
      */
     public int getTilesPerRow() {

@@ -45,18 +45,8 @@ import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
 public class BrushDialog extends JDialog implements ActionListener,
-       ItemListener, ChangeListener, PropertyChangeListener,
-       ListSelectionListener
-{
-    private AbstractBrush myBrush;
-    private final MapEditor editor;
-
-    private JCheckBox cbRandomBrush;
-    private IntegerSpinner affectLayers, brushSize;
-    private JSlider sRandomAmount;
-    private JButton okButton, bApply, bCancel;
-    private BrushBrowser brushes;
-
+                                                    ItemListener, ChangeListener, PropertyChangeListener,
+                                                    ListSelectionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.brush.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String APPLY_BUTTON = Resources.getString("general.button.apply");
@@ -73,10 +63,16 @@ public class BrushDialog extends JDialog implements ActionListener,
     private static final String AFFECTED_LAYERS_LABEL = Resources.getString("dialog.brush.affected.layers.label");
     private static final String CREATE_BUTTON = Resources.getString("dialog.brush.create.button");
     private static final String LOAD_BUTTON = Resources.getString("dialog.brush.load.button");
+    private final MapEditor editor;
+    private AbstractBrush myBrush;
+    private JCheckBox cbRandomBrush;
+    private IntegerSpinner affectLayers, brushSize;
+    private JSlider sRandomAmount;
+    private JButton okButton, bApply, bCancel;
+    private BrushBrowser brushes;
 
     public BrushDialog(MapEditor editor, JFrame parent,
-                       AbstractBrush currentBrush)
-    {
+                       AbstractBrush currentBrush) {
         super(parent, DIALOG_TITLE, false);
         myBrush = currentBrush;
         this.editor = editor;
@@ -98,8 +94,8 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         JPanel presets = new JPanel();
         presets.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(PRESETS_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+                BorderFactory.createTitledBorder(PRESETS_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         presets.setLayout(new GridLayout(1, 1));
         presets.add(brushScrollPane);
 
@@ -122,7 +118,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         cbRandomBrush.addItemListener(this);
         sRandomAmount = new JSlider();
         sRandomAmount.setPreferredSize(new Dimension(
-                    50, sRandomAmount.getPreferredSize().height));
+                50, sRandomAmount.getPreferredSize().height));
         sRandomAmount.setToolTipText(RANDOM_AMOUNT_TOOLTIP);
         sRandomAmount.addChangeListener(this);
 
@@ -130,8 +126,8 @@ public class BrushDialog extends JDialog implements ActionListener,
         JPanel opts = new VerticalStaticJPanel();
         opts.setLayout(new GridBagLayout());
         opts.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(OPTIONS_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+                BorderFactory.createTitledBorder(OPTIONS_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.NORTHWEST;
@@ -142,7 +138,9 @@ public class BrushDialog extends JDialog implements ActionListener,
         opts.add(new JLabel(AFFECTED_LAYERS_LABEL), c);
         c.gridy = 2;
         opts.add(cbRandomBrush, c);
-        c.gridy = 0; c.gridx = 1; c.weightx = 0.3;
+        c.gridy = 0;
+        c.gridx = 1;
+        c.weightx = 0.3;
         c.fill = GridBagConstraints.HORIZONTAL;
         opts.add(brushSize, c);
         c.gridy = 1;
@@ -184,14 +182,17 @@ public class BrushDialog extends JDialog implements ActionListener,
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.NORTH;
         c.fill = GridBagConstraints.NONE;
-        c.weightx = 2; c.weighty = 2;
+        c.weightx = 2;
+        c.weighty = 2;
         customPanel.add(miniSp, c);
-        c.weightx = 1; c.weighty = 1;
-        c.gridx=2;
+        c.weightx = 1;
+        c.weighty = 1;
+        c.gridx = 2;
         customPanel.add(bCreate, c);
-        c.gridy=1;
+        c.gridy = 1;
         customPanel.add(bLoad, c);
-        c.gridx=0; c.gridy=2;
+        c.gridx = 0;
+        c.gridy = 2;
         customPanel.add(layerTable, c);
 
         return customPanel;
@@ -246,13 +247,13 @@ public class BrushDialog extends JDialog implements ActionListener,
             RandomBrush randomBrush = new RandomBrush(sel);
             randomBrush.setRatio(
                     sRandomAmount.getValue() /
-                    (double) sRandomAmount.getMaximum());
+                            (double) sRandomAmount.getMaximum());
             myBrush = randomBrush;
         } else {
             myBrush = new ShapeBrush(sel);
         }
 
-        ((ShapeBrush)myBrush).setTile(t);
+        ((ShapeBrush) myBrush).setTile(t);
         myBrush.setAffectedLayers((Integer) affectLayers.getValue());
 
         update();
@@ -266,7 +267,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         } else if (myBrush instanceof RandomBrush) {  // Random brush
             cbRandomBrush.setSelected(true);
             sRandomAmount.setValue(
-                    (int)(((RandomBrush)myBrush).getRatio() * 100));
+                    (int) (((RandomBrush) myBrush).getRatio() * 100));
         }
 
         sRandomAmount.setEnabled(cbRandomBrush.isSelected());
@@ -279,16 +280,13 @@ public class BrushDialog extends JDialog implements ActionListener,
             createFromOptions();
             editor.setBrush(myBrush);
             dispose();
-        }
-        else if (source == bApply) {
+        } else if (source == bApply) {
             createFromOptions();
             editor.setBrush(myBrush);
             bApply.setEnabled(false);
-        }
-        else if (source == bCancel) {
+        } else if (source == bCancel) {
             dispose();
-        }
-        else if (e.getActionCommand().equals(LOAD_BUTTON)) {
+        } else if (e.getActionCommand().equals(LOAD_BUTTON)) {
             try {
                 openMap();
                 //mmv.setView(((CustomBrush)myBrush));

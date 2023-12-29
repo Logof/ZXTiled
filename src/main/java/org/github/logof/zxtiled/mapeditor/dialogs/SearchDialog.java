@@ -30,14 +30,8 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public class SearchDialog extends JDialog implements ActionListener
-{
-    private final Map map;
-    private JComboBox searchCBox, replaceCBox;
-    private Point currentMatch;
-    private SelectionLayer sl;
+public class SearchDialog extends JDialog implements ActionListener {
     private static final double LIST_TILE_SCALE = 0.5;
-
     private static final String DIALOG_TITLE = Resources.getString("dialog.search.title");
     private static final String FIND_LABEL = Resources.getString("dialog.search.find.label");
     private static final String REPLACE_LABEL = Resources.getString("dialog.search.replace.label");
@@ -46,6 +40,10 @@ public class SearchDialog extends JDialog implements ActionListener
     private static final String REPLACE_BUTTON = Resources.getString("dialog.search.replace.button");
     private static final String REPLACE_ALL_BUTTON = Resources.getString("dialog.search.replaceall.button");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private final Map map;
+    private JComboBox searchCBox, replaceCBox;
+    private Point currentMatch;
+    private SelectionLayer sl;
 
     public SearchDialog(JFrame parent) {
         this(parent, null);
@@ -68,7 +66,8 @@ public class SearchDialog extends JDialog implements ActionListener
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.weightx = 2; c.weighty = 1;
+        c.weightx = 2;
+        c.weighty = 1;
         searchPanel.add(new JLabel(FIND_LABEL), c);
         c.gridx = 1;
         searchCBox = new JComboBox();
@@ -84,7 +83,7 @@ public class SearchDialog extends JDialog implements ActionListener
         replaceCBox.setRenderer(tileListRenderer);
         //searchCBox.setSelectedIndex(1);
         replaceCBox.setEditable(false);
-        searchPanel.add(replaceCBox,c);
+        searchPanel.add(replaceCBox, c);
         queryTiles(searchCBox);
         //replaceCBox.addItem(null);
         queryTiles(replaceCBox);
@@ -158,7 +157,7 @@ public class SearchDialog extends JDialog implements ActionListener
             dispose();
         } else if (command.equals(FIND_BUTTON)) {
             if (searchCBox.getSelectedItem() instanceof Tile) {
-                find((Tile)searchCBox.getSelectedItem());
+                find((Tile) searchCBox.getSelectedItem());
             }
         } else if (command.equals(FIND_ALL_BUTTON)) {
             if (sl != null) {
@@ -174,8 +173,8 @@ public class SearchDialog extends JDialog implements ActionListener
                     layer.getBounds(bounds);
                     for (int y = 0; y < bounds.height; y++) {
                         for (int x = 0; x < bounds.width; x++) {
-                            if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
-                                sl.select(x,y);
+                            if (((TileLayer) layer).getTileAt(x, y) == searchCBox.getSelectedItem()) {
+                                sl.select(x, y);
                             }
                         }
                     }
@@ -186,11 +185,11 @@ public class SearchDialog extends JDialog implements ActionListener
 
         } else if (command.equals(REPLACE_ALL_BUTTON)) {
             if (!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
-                replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
+                replaceAll((Tile) searchCBox.getSelectedItem(), (Tile) replaceCBox.getSelectedItem());
         } else if (command.equals(REPLACE_BUTTON)) {
             if (searchCBox.getSelectedItem() instanceof Tile && replaceCBox.getSelectedItem() instanceof Tile) {
                 if (currentMatch == null) {
-                    find((Tile)searchCBox.getSelectedItem());
+                    find((Tile) searchCBox.getSelectedItem());
                 }
 
                 // run through the layers, look for the first instance of the
@@ -199,15 +198,15 @@ public class SearchDialog extends JDialog implements ActionListener
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
                     if (layer instanceof TileLayer) {
-                        if (((TileLayer)layer).getTileAt(currentMatch.x,currentMatch.y) == searchCBox.getSelectedItem()) {
-                            ((TileLayer)layer).setTileAt(currentMatch.x,currentMatch.y, (Tile) replaceCBox.getSelectedItem());
+                        if (((TileLayer) layer).getTileAt(currentMatch.x, currentMatch.y) == searchCBox.getSelectedItem()) {
+                            ((TileLayer) layer).setTileAt(currentMatch.x, currentMatch.y, (Tile) replaceCBox.getSelectedItem());
                             break;
                         }
                     }
                 }
                 // find the next instance, effectively stepping forward in our
                 // replace
-                find((Tile)searchCBox.getSelectedItem());
+                find((Tile) searchCBox.getSelectedItem());
             }
         }
 
@@ -219,7 +218,7 @@ public class SearchDialog extends JDialog implements ActionListener
         while (itr.hasNext()) {
             MapLayer layer = itr.next();
             if (layer instanceof TileLayer) {
-                ((TileLayer) layer).replaceTile(f,r);
+                ((TileLayer) layer).replaceTile(f, r);
             }
         }
         map.touch();
@@ -248,15 +247,15 @@ public class SearchDialog extends JDialog implements ActionListener
                     if (layer instanceof TileLayer) {
                         layer.getBounds(bounds);
 
-                        if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
+                        if (((TileLayer) layer).getTileAt(x, y) == searchCBox.getSelectedItem()) {
                             if (currentMatch != null) {
-                                if (currentMatch.equals(new Point(x,y))) {
+                                if (currentMatch.equals(new Point(x, y))) {
                                     continue;
                                 }
                             }
-                            sl.select(x,y);
+                            sl.select(x, y);
                             bFound = true;
-                            currentMatch = new Point(x,y);
+                            currentMatch = new Point(x, y);
                             break;
                         }
                     }

@@ -12,10 +12,6 @@
 
 package org.github.logof.zxtiled.mapeditor.util;
 
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.table.AbstractTableModel;
-
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapChangedEvent;
@@ -27,13 +23,15 @@ import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import javax.swing.table.AbstractTableModel;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class TilesetTableModel extends AbstractTableModel implements MapChangeListener, TilesetChangeListener {
-    private Map map;
-    private static final String[] columnNames = { Resources.getString("dialog.tilesetmanager.table.name"),
-        Resources.getString("dialog.tilesetmanager.table.source") };
-
+    private static final String[] columnNames = {Resources.getString("dialog.tilesetmanager.table.name"),
+            Resources.getString("dialog.tilesetmanager.table.source")};
     private static final String EMBEDDED = Resources.getString("dialog.tilesetmanager.embedded");
+    private final Map map;
 
     public TilesetTableModel(Map map) {
         this.map = map;
@@ -62,7 +60,7 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
     public Object getValueAt(int row, int col) {
         Vector tilesets = map.getTilesets();
         if (row >= 0 && row < tilesets.size()) {
-            TileSet tileset = (TileSet)tilesets.get(row);
+            TileSet tileset = (TileSet) tilesets.get(row);
             if (col == 0) {
                 return tileset.getName();
             } else {
@@ -88,7 +86,7 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
         Vector tilesets = map.getTilesets();
         if (row >= 0 && row < tilesets.size()) {
-            TileSet tileset = (TileSet)tilesets.get(row);
+            TileSet tileset = (TileSet) tilesets.get(row);
             if (col == 0) {
                 tileset.setName(value.toString());
             }
@@ -101,11 +99,11 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
         Iterator tileIterator = set.iterator();
 
         while (tileIterator.hasNext()) {
-            Tile tile = (Tile)tileIterator.next();
+            Tile tile = (Tile) tileIterator.next();
             Iterator itr = map.getLayers();
 
             while (itr.hasNext()) {
-                MapLayer ml = (MapLayer)itr.next();
+                MapLayer ml = (MapLayer) itr.next();
 
                 if (ml instanceof TileLayer) {
                     if (((TileLayer) ml).isUsed(tile)) {
@@ -127,10 +125,10 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
     public void layerRemoved(MapChangedEvent e) {
     }
-    
+
     public void layerMoved(MapChangedEvent e) {
     }
-    
+
     public void tilesetAdded(MapChangedEvent event, TileSet tileset) {
         int index = map.getTilesets().indexOf(tileset);
 
@@ -169,7 +167,7 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
     }
 
     public void clearListeners() {
-        for (Iterator it = map.getTilesets().iterator(); it.hasNext();) {
+        for (Iterator it = map.getTilesets().iterator(); it.hasNext(); ) {
             ((TileSet) it.next()).removeTilesetChangeListener(this);
         }
     }

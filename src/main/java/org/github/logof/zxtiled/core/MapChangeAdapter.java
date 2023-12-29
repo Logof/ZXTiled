@@ -6,10 +6,9 @@
 package org.github.logof.zxtiled.core;
 
 /**
- *
  * @author upachler
  */
-public class MapChangeAdapter implements MapChangeListener{
+public class MapChangeAdapter implements MapChangeListener {
 
     public void mapChanged(MapChangedEvent e) {
     }

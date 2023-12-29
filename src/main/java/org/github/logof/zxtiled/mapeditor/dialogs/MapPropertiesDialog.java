@@ -17,16 +17,14 @@ import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 
 /**
- *
  * @author count
  */
-public class MapPropertiesDialog extends PropertiesDialog{
-    private IntegerSpinner viewportWidthSpinner, viewportHeightSpinner;
-    private final Map map;
-
+public class MapPropertiesDialog extends PropertiesDialog {
     private static final String DIALOG_TITLE = Resources.getString("dialog.mapproperites.title");
     private static final String WIDTH_LABEL = Resources.getString("dialog.mapproperites.viewport.width.label");
     private static final String HEIGHT_LABEL = Resources.getString("dialog.mapproperites.viewport.height.label");
+    private final Map map;
+    private IntegerSpinner viewportWidthSpinner, viewportHeightSpinner;
 
     public MapPropertiesDialog(JFrame parent, Map map, UndoableEditSupport undoSupport) {
         super(parent, map.getProperties(), undoSupport, false);
@@ -41,7 +39,7 @@ public class MapPropertiesDialog extends PropertiesDialog{
         super.init();
         JLabel viewportWidthLabel = new JLabel(WIDTH_LABEL);
         JLabel viewportHeightLabel = new JLabel(HEIGHT_LABEL);
-        
+
         viewportWidthSpinner = new IntegerSpinner(0, 0, 4096);
         viewportHeightSpinner = new IntegerSpinner(0, 0, 4096);
 
@@ -66,7 +64,7 @@ public class MapPropertiesDialog extends PropertiesDialog{
         miscPropPanel.add(viewportWidthSpinner, c);
         c.gridy++;
         miscPropPanel.add(viewportHeightSpinner, c);
-        
+
         mainPanel.add(miscPropPanel, 0);
     }
 
@@ -78,26 +76,26 @@ public class MapPropertiesDialog extends PropertiesDialog{
 
     protected UndoableEdit commit() {
         // Make sure the changes to the object can be undone
-        
+
         UndoableEdit propertyEdit = super.commit();
-        
+
         boolean viewportDimensionsChanged =
-            viewportWidthSpinner.intValue() != map.getViewportWidth()
-        ||  viewportHeightSpinner.intValue() != map.getViewportHeight();
-        
-        if(!viewportDimensionsChanged)
+                viewportWidthSpinner.intValue() != map.getViewportWidth()
+                        || viewportHeightSpinner.intValue() != map.getViewportHeight();
+
+        if (!viewportDimensionsChanged)
             return propertyEdit;
 
         CompoundEdit ce = new CompoundEdit();
-        if(propertyEdit != null)
+        if (propertyEdit != null)
             ce.addEdit(propertyEdit);
-        
+
         ce.addEdit(new MapViewportSettingsEdit(map));
         map.setViewportWidth(viewportWidthSpinner.intValue());
         map.setViewportHeight(viewportHeightSpinner.intValue());
-        
+
         ce.end();
-        
+
         return ce;
     }
 }

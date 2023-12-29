@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -23,8 +23,7 @@ import java.awt.event.ActionListener;
  * of the button and clicking the button spawns a color chooser dialog to allow
  * changing the associated color.
  */
-public class ColorButton extends JButton implements ActionListener
-{
+public class ColorButton extends JButton implements ActionListener {
     public ColorButton(Color initialColor) {
         setBackground(initialColor);
         addActionListener(this);
@@ -39,17 +38,17 @@ public class ColorButton extends JButton implements ActionListener
     }
 
     /**
-     * Sets the new color of this button.
-     */
-    public void setColor(Color color) {
-        setBackground(color);
-    }
-
-    /**
      * Gets the color of this button.
      */
     public Color getColor() {
         return getBackground();
+    }
+
+    /**
+     * Sets the new color of this button.
+     */
+    public void setColor(Color color) {
+        setBackground(color);
     }
 
     public void actionPerformed(ActionEvent event) {

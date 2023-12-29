@@ -24,8 +24,7 @@ import javax.swing.undo.CannotUndoException;
  *
  * @version $Id$
  */
-public class AddObjectEdit extends AbstractUndoableEdit
-{
+public class AddObjectEdit extends AbstractUndoableEdit {
     private final ObjectGroup objectGroup;
     private final MapObject mapObject;
 

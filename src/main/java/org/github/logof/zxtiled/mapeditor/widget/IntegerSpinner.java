@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
@@ -22,8 +22,7 @@ import java.awt.*;
  *
  * @version $Id$
  */
-public class IntegerSpinner extends JSpinner
-{
+public class IntegerSpinner extends JSpinner {
     public IntegerSpinner() {
         super(new SpinnerNumberModel());
         setPreferredSize(new Dimension(60, getPreferredSize().height));
@@ -39,6 +38,6 @@ public class IntegerSpinner extends JSpinner
     }
 
     public int intValue() {
-        return ((Number)getValue()).intValue();
+        return ((Number) getValue()).intValue();
     }
 }

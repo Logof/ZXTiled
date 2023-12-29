@@ -12,10 +12,8 @@
 
 package org.github.logof.zxtiled.io.xml;
 
-import java.lang.String;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Stack;
 
 /**
@@ -24,14 +22,12 @@ import java.util.Stack;
  *
  * @version $Id$
  */
-public class XMLWriter
-{
+public class XMLWriter {
+    private final Writer w;
+    private final Stack<String> openElements;
     private boolean bIndent = true;
     private String indentString = " ";
     private String newLine = "\n";
-    private final Writer w;
-
-    private final Stack<String> openElements;
     private boolean bStartTagOpen;
     private boolean bDocumentOpen;
 
@@ -87,7 +83,7 @@ public class XMLWriter
     }
 
     public void startElement(String name)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         if (!bDocumentOpen) {
             throw new XMLWriterException(
                     "Can't start new element, no open document.");
@@ -110,12 +106,12 @@ public class XMLWriter
         while (!openElements.isEmpty()) {
             endElement();
         }
-        
+
         w.flush(); //writers do not always flush automatically...
     }
 
     public void endElement() throws IOException {
-        String name = (String)openElements.pop();
+        String name = openElements.pop();
 
         // If start tag still open, end with />, else with </name>.
         if (bStartTagOpen) {
@@ -134,7 +130,7 @@ public class XMLWriter
 
 
     public void writeAttribute(String name, String content)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         if (bStartTagOpen) {
             String escapedContent = (content != null) ?
                     content.replaceAll("\"", "&quot;") : "";
@@ -146,17 +142,17 @@ public class XMLWriter
     }
 
     public void writeAttribute(String name, int content)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         writeAttribute(name, String.valueOf(content));
     }
 
     public void writeAttribute(String name, boolean content)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         writeAttribute(name, String.valueOf(content));
     }
 
     public void writeAttribute(String name, float content)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         writeAttribute(name, String.valueOf(content));
     }
 
@@ -181,7 +177,7 @@ public class XMLWriter
     }
 
     public void writeElement(String name, String content)
-        throws IOException, XMLWriterException {
+            throws IOException, XMLWriterException {
         startElement(name);
         writeCDATA(content);
         endElement();

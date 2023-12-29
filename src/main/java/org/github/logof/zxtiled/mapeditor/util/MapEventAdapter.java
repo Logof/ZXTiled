@@ -16,12 +16,11 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-public class MapEventAdapter
-{
-    public static final int ME_MAPACTIVE   = 1;
+public class MapEventAdapter {
+    public static final int ME_MAPACTIVE = 1;
     public static final int ME_MAPINACTIVE = 2;
 
-    private LinkedList listeners;
+    private final LinkedList listeners;
 
     public MapEventAdapter() {
         listeners = new LinkedList();
@@ -39,7 +38,7 @@ public class MapEventAdapter
          * LinkedList.remove() only removes the first instance of a given
          * object.
          */
-        if (listeners.indexOf(obj) == -1) {
+        if (!listeners.contains(obj)) {
             listeners.add(obj);
         }
     }
@@ -77,7 +76,7 @@ public class MapEventAdapter
         }
     }
 
-    private void disableEvent(){
+    private void disableEvent() {
         Component c;
         ListIterator li = listeners.listIterator();
         while (li.hasNext()) {

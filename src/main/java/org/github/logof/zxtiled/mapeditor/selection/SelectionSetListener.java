@@ -6,13 +6,12 @@
 package org.github.logof.zxtiled.mapeditor.selection;
 
 /**
- *
  * @author upachler
  */
 public interface SelectionSetListener {
 
-    public void selectionAdded(SelectionSet selectionSet, Selection[] selections);
+    void selectionAdded(SelectionSet selectionSet, Selection[] selections);
 
-    public void selectionRemoved(SelectionSet selectionSet, Selection[] selections);
+    void selectionRemoved(SelectionSet selectionSet, Selection[] selections);
 
 }

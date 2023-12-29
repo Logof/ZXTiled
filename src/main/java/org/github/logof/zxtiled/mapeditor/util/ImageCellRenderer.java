@@ -15,18 +15,17 @@ package org.github.logof.zxtiled.mapeditor.util;
 import javax.swing.*;
 import java.awt.*;
 
-public class ImageCellRenderer extends DefaultListCellRenderer
-{
+public class ImageCellRenderer extends DefaultListCellRenderer {
     public ImageCellRenderer() {
         setOpaque(true);
     }
 
     public Component getListCellRendererComponent(JList list, Object value,
-            int index,  boolean isSelected, boolean cellHasFocus) {
+                                                  int index, boolean isSelected, boolean cellHasFocus) {
         super.getListCellRendererComponent(
                 list, value, index, isSelected, cellHasFocus);
 
-        Image img = (Image)value;
+        Image img = (Image) value;
         if (img != null) {
             setIcon(new ImageIcon(img));
         } else {

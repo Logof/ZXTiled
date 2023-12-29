@@ -31,16 +31,7 @@ import java.awt.event.ActionListener;
  *
  * @version $Id$
  */
-public class ObjectDialog extends PropertiesDialog
-{
-    private JTextField objectName, objectType;
-    private JTextField objectImageSource;
-    private IntegerSpinner objectWidth, objectHeight;
-    private final MapObject object;
-    private final UndoableEditSupport undoSupport;
-
-    private static String path;
-
+public class ObjectDialog extends PropertiesDialog {
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.object.title");
     private static final String NAME_LABEL = Resources.getString("dialog.object.name.label");
@@ -50,6 +41,12 @@ public class ObjectDialog extends PropertiesDialog
     private static final String HEIGHT_LABEL = Resources.getString("dialog.object.height.label");
     private static final String UNTITLED_OBJECT = Resources.getString("general.object.object");
     private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
+    private static String path;
+    private final MapObject object;
+    private final UndoableEditSupport undoSupport;
+    private JTextField objectName, objectType;
+    private JTextField objectImageSource;
+    private IntegerSpinner objectWidth, objectHeight;
 
     public ObjectDialog(JFrame parent, MapObject object, UndoableEditSupport undoSupport) {
         super(parent, object.getProperties(), undoSupport);
@@ -154,20 +151,20 @@ public class ObjectDialog extends PropertiesDialog
     protected UndoableEdit commit() {
         CompoundEdit ce = new CompoundEdit();
         UndoableEdit propertyEdit = super.commit();
-        if(propertyEdit!=null)
+        if (propertyEdit != null)
             ce.addEdit(propertyEdit);
-        
+
         // Make sure the changes to the object can be undone
         ce.addEdit(new ChangeObjectEdit(object));
-        
+
         object.setName(objectName.getText());
         object.setType(objectType.getText());
         object.setImageSource(objectImageSource.getText());
         object.setWidth(objectWidth.intValue());
         object.setHeight(objectHeight.intValue());
-        
+
         ce.end();
-        
+
         return ce;
     }
 }

@@ -24,8 +24,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * @version $Id$
  */
-public class ShapeBrush extends AbstractBrush
-{
+public class ShapeBrush extends AbstractBrush {
     protected Area shape;
     protected Tile paintTile;
 
@@ -51,7 +50,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeCircleBrush(double rad) {
         shape = new Area(new Ellipse2D.Double(0, 0, rad * 2, rad * 2));
-        resize((int)(rad * 2), (int)(rad * 2), 0, 0);
+        resize((int) (rad * 2), (int) (rad * 2), 0, 0);
     }
 
     /**
@@ -71,18 +70,18 @@ public class ShapeBrush extends AbstractBrush
         if (shape.isRectangular()) {
             makeQuadBrush(new Rectangle(0, 0, size, size));
         } else if (!shape.isPolygonal()) {
-            makeCircleBrush(size/2);
+            makeCircleBrush(size / 2);
         } else {
             // TODO: scale the polygon brush
         }
     }
 
-    public void setTile(Tile t) {
-        paintTile = t;
-    }
-
     public Tile getTile() {
         return paintTile;
+    }
+
+    public void setTile(Tile t) {
+        paintTile = t;
     }
 
     public Rectangle getBounds() {
@@ -112,31 +111,30 @@ public class ShapeBrush extends AbstractBrush
     /**
      * Paints the entire area of the brush with the set tile. This brush can
      * affect several layers.
-     * @throws Exception
      *
+     * @throws Exception
      * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
      */
-    public Rectangle doPaint(int x, int y) throws Exception
-    {
+    public Rectangle doPaint(int x, int y) throws Exception {
         Rectangle shapeBounds = shape.getBounds();
         int centerx = x - shapeBounds.width / 2;
         int centery = y - shapeBounds.height / 2;
-        
+
         // check if all layers are editable
         for (int layer = 0; layer < numLayers; layer++) {
             TileLayer tl = (TileLayer) affectedMp.getLayer(initLayer + layer);
-            
-            if(!tl.canEdit()){
-                if(tl.getLocked()){
+
+            if (!tl.canEdit()) {
+                if (tl.getLocked()) {
                     throw new LayerLockedBrushException(tl);
-                } else if(!tl.isVisible()){
+                } else if (!tl.isVisible()) {
                     throw new LayerInvisibleBrushException(tl);
                 } else {
                     throw new BrushException(tl);
                 }
             }
         }
-        
+
         super.doPaint(x, y);
 
         // FIXME: This loop does not take all edges into account

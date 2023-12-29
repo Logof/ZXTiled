@@ -27,15 +27,13 @@ import java.awt.event.ActionEvent;
  *
  * @version $Id$
  */
-public class SaveAsAction extends AbstractAction
-{
-    protected MapEditor editor;
-    private boolean savingCancelled;
-
+public class SaveAsAction extends AbstractAction {
     private static final String ACTION_NAME = Resources.getString("action.map.saveas.name");
     private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveas.tooltip");
     private static final String SAVEAS_ERROR_MESSAGE = Resources.getString("dialog.saveas.error.message");
     private static final String SAVEAS_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
+    protected MapEditor editor;
+    private boolean savingCancelled;
 
     public SaveAsAction(MapEditor editor) {
         super(ACTION_NAME);
@@ -52,8 +50,7 @@ public class SaveAsAction extends AbstractAction
      * Shows the confirming file chooser and proceeds with saving the map when
      * a filename was approved.
      */
-    protected void showFileChooser()
-    {
+    protected void showFileChooser() {
         // Start at the location of the most recently loaded map file
         String startLocation =
                 TiledConfiguration.node("recent").get("file0", null);
@@ -80,14 +77,12 @@ public class SaveAsAction extends AbstractAction
         chooser.setFileFilter(byExtensionFilter);
 
         int result = chooser.showSaveDialog(editor.getAppFrame());
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
+        if (result == JFileChooser.APPROVE_OPTION) {
             savingCancelled = false;
             TiledFileFilter saver = (TiledFileFilter) chooser.getFileFilter();
             String selectedFile = chooser.getSelectedFile().getAbsolutePath();
             saveFile(saver, selectedFile);
-        }
-        else {
+        } else {
             savingCancelled = true;
         }
     }
@@ -95,11 +90,10 @@ public class SaveAsAction extends AbstractAction
     /**
      * Actually saves the map.
      *
-     * @param saver the file filter selected when the filename was chosen
+     * @param saver    the file filter selected when the filename was chosen
      * @param filename the filename to save the map to
      */
-    protected void saveFile(TiledFileFilter saver, String filename)
-    {
+    protected void saveFile(TiledFileFilter saver, String filename) {
         try {
             // Either select the format by extension or use a specific format
             // when selected.
@@ -107,7 +101,7 @@ public class SaveAsAction extends AbstractAction
                 MapHelper.saveMap(editor.getCurrentMap(), filename);
             } else {
                 MapHelper.saveMap(editor.getCurrentMap(), saver.getPlugin(),
-                                  filename);
+                        filename);
             }
 
             // The file was saved successfully, update some things.
@@ -116,20 +110,18 @@ public class SaveAsAction extends AbstractAction
             editor.updateRecent(filename);
             editor.getUndoHandler().commitSave();
             editor.updateTitle();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(editor.getAppFrame(),
-                                          SAVEAS_ERROR_MESSAGE + " " +
-                                                  filename + ": " +
-                                                  e.getLocalizedMessage(),
-                                          SAVEAS_ERROR_TITLE,
-                                          JOptionPane.ERROR_MESSAGE);
+                    SAVEAS_ERROR_MESSAGE + " " +
+                            filename + ": " +
+                            e.getLocalizedMessage(),
+                    SAVEAS_ERROR_TITLE,
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public boolean isSavingCancelled ()
-    {
+    public boolean isSavingCancelled() {
         return savingCancelled;
     }
 }

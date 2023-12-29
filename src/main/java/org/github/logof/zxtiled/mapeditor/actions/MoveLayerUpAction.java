@@ -22,13 +22,12 @@ import javax.swing.*;
  *
  * @version $Id$
  */
-public class MoveLayerUpAction extends AbstractLayerAction
-{
+public class MoveLayerUpAction extends AbstractLayerAction {
     public MoveLayerUpAction(MapEditor editor) {
         super(editor,
-              Resources.getString("action.layer.moveup.name"),
-              Resources.getString("action.layer.moveup.tooltip"),
-              Resources.getIcon("icon/gnome-up.png"));
+                Resources.getString("action.layer.moveup.name"),
+                Resources.getString("action.layer.moveup.tooltip"),
+                Resources.getIcon("icon/gnome-up.png"));
 
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_UP"));
     }

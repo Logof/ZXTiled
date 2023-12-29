@@ -24,9 +24,8 @@ import java.util.Vector;
  *
  * @author rainerd
  */
-public class NumberedSet
-{
-    private Vector<Object> data;
+public class NumberedSet {
+    private final Vector<Object> data;
 
     /**
      * Constructs a new empty NumberedSet.
@@ -45,7 +44,8 @@ public class NumberedSet
     public Object get(int id) {
         try {
             return data.get(id);
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
 
         return null;
     }
@@ -84,7 +84,7 @@ public class NumberedSet
 
     /**
      * Removes the element associated with the given id from the NumberedSet.
-     *
+     * <p>
      * todo: this function shifts the ids of any subsequent elements!
      *
      * @param id

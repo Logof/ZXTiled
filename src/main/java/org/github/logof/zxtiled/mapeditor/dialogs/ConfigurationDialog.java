@@ -35,8 +35,50 @@ import java.util.prefs.Preferences;
 /**
  * @version $Id$
  */
-public class ConfigurationDialog extends JDialog
-{
+public class ConfigurationDialog extends JDialog {
+    private static final Preferences prefs = TiledConfiguration.root();
+    private static final Preferences savingPrefs = prefs.node("saving");
+    private static final Preferences ioPrefs = prefs.node("io");
+    private static final Preferences displayPrefs = prefs.node("display");
+    private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private static final String OPACITY_LABEL = Resources.getString("dialog.preferences.opacity.label");
+    private static final String BINARY_ENCODE_CHECKBOX = Resources.getString("dialog.preferences.binary.encode.checkbox");
+    private static final String COMPRESS_LAYER_DATA_CHECKBOX = Resources.getString("dialog.preferences.compress.layer.data.checkbox");
+    private static final String USEFUL_COMMENTS_CHECKBOX = Resources.getString("dialog.preferences.useful.comments.checkbox");
+    private static final String EMBED_IMAGES_CHECKBOX = Resources.getString("dialog.preferences.embed.images.checkbox");
+    private static final String REPORT_IO_WARNINGS_CHECKBOX = Resources.getString("dialog.preferences.report.io.warnings.checkbox");
+    private static final String AUTO_OPEN_LAST_FILE_CHECKBOX = Resources.getString("dialog.preferences.report.io.autoopenlast.checkbox");
+    private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
+    private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
+    private static final String IMAGE_FORMAT_LABEL = Resources.getString("dialog.preferences.image.format.combobox");
+    private static final String PIXEL_FORMAT_LABEL = Resources.getString("dialog.preferences.pixel.format.combobox");
+    //private JColorChooser gridColor;
+    private static final String BYTE_ORDER_LABEL = Resources.getString("dialog.preferences.byte.order.combobox");
+    private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
+    private static final String GENERAL_SAVING_OPTIONS_TITLE = Resources.getString("dialog.preferences.general.tab");
+    private static final String LAYER_OPTIONS_TITLE = Resources.getString("dialog.preferences.layer.options.title");
+    private static final String UNDO_DEPTH_LABEL = Resources.getString("dialog.preferences.undo.depth.label");
+    private static final String TILESET_OPTIONS_TITLE = Resources.getString("dialog.preferences.tileset.options.title");
+    private static final String GENERAL_TAB = Resources.getString("dialog.preferences.general.tab");
+    private static final String SAVING_TAB = Resources.getString("dialog.preferences.saving.tab");
+    private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
+    private static final String EXPORT_BUTTON = Resources.getString("dialog.preferences.export.button");
+    private static final String IMPORT_BUTTON = Resources.getString("dialog.preferences.import.button");
+    private static final ConfirmableFileFilter xmlFileFilter =
+            new ConfirmableFileFilter() {
+                public String getDefaultExtension() {
+                    return "xml";
+                }
+
+                public boolean accept(File file) {
+                    return file.isDirectory() || file.getPath().endsWith(".xml");
+                }
+
+                public String getDescription() {
+                    return "XML files (*.xml)";
+                }
+            };
     private IntegerSpinner undoDepth;
     private JSlider gridOpacitySlider;
     private JCheckBox cbBinaryEncode;
@@ -54,51 +96,6 @@ public class ConfigurationDialog extends JDialog
     private JComboBox coPixelFormat;
     private JComboBox coByteOrder;
     private JCheckBox cbGridAA;
-    //private JColorChooser gridColor;
-
-    private static final Preferences prefs = TiledConfiguration.root();
-    private static final Preferences savingPrefs = prefs.node("saving");
-    private static final Preferences ioPrefs = prefs.node("io");
-    private static final Preferences displayPrefs = prefs.node("display");
-
-    private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
-    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
-    private static final String OPACITY_LABEL = Resources.getString("dialog.preferences.opacity.label");
-    private static final String BINARY_ENCODE_CHECKBOX = Resources.getString("dialog.preferences.binary.encode.checkbox");
-    private static final String COMPRESS_LAYER_DATA_CHECKBOX = Resources.getString("dialog.preferences.compress.layer.data.checkbox");
-    private static final String USEFUL_COMMENTS_CHECKBOX = Resources.getString("dialog.preferences.useful.comments.checkbox");
-    private static final String EMBED_IMAGES_CHECKBOX = Resources.getString("dialog.preferences.embed.images.checkbox");
-    private static final String REPORT_IO_WARNINGS_CHECKBOX = Resources.getString("dialog.preferences.report.io.warnings.checkbox");
-    private static final String AUTO_OPEN_LAST_FILE_CHECKBOX = Resources.getString("dialog.preferences.report.io.autoopenlast.checkbox");
-    private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
-    private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
-    private static final String IMAGE_FORMAT_LABEL = Resources.getString("dialog.preferences.image.format.combobox");
-    private static final String PIXEL_FORMAT_LABEL = Resources.getString("dialog.preferences.pixel.format.combobox");
-    private static final String BYTE_ORDER_LABEL = Resources.getString("dialog.preferences.byte.order.combobox");
-    
-    private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
-    private static final String GENERAL_SAVING_OPTIONS_TITLE = Resources.getString("dialog.preferences.general.tab");
-    private static final String LAYER_OPTIONS_TITLE = Resources.getString("dialog.preferences.layer.options.title");
-    private static final String UNDO_DEPTH_LABEL = Resources.getString("dialog.preferences.undo.depth.label");
-    private static final String TILESET_OPTIONS_TITLE = Resources.getString("dialog.preferences.tileset.options.title");
-    private static final String GENERAL_TAB = Resources.getString("dialog.preferences.general.tab");
-    private static final String SAVING_TAB = Resources.getString("dialog.preferences.saving.tab");
-    private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
-    private static final String EXPORT_BUTTON = Resources.getString("dialog.preferences.export.button");
-    private static final String IMPORT_BUTTON = Resources.getString("dialog.preferences.import.button");
-
-    private static final ConfirmableFileFilter xmlFileFilter =
-            new ConfirmableFileFilter() {
-                public String getDefaultExtension() {
-                    return "xml";
-                }
-                public boolean accept(File file) {
-                    return file.isDirectory() || file.getPath().endsWith(".xml");
-                }
-                public String getDescription() {
-                    return "XML files (*.xml)";
-                }
-            };
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
@@ -110,7 +107,7 @@ public class ConfigurationDialog extends JDialog
 
     private void updateUI() {
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
-        
+
         boolean embed = cbEmbedImages.isSelected();
 
         coImageFormat.setEnabled(embed);
@@ -151,16 +148,19 @@ public class ConfigurationDialog extends JDialog
         JPanel layerOps = new VerticalStaticJPanel();
         layerOps.setLayout(new GridBagLayout());
         layerOps.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(LAYER_OPTIONS_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+                BorderFactory.createTitledBorder(LAYER_OPTIONS_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.NONE;
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         layerOps.add(cbBinaryEncode, c);
-        c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 2;
+        c.insets = new Insets(0, 10, 0, 0);
         layerOps.add(cbCompressLayerData, c);
 
         /* GENERAL OPTIONS */
@@ -172,7 +172,8 @@ public class ConfigurationDialog extends JDialog
         c.fill = GridBagConstraints.NONE;
         generalOps.add(new JLabel(UNDO_DEPTH_LABEL), c);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.weightx = 1;
+        c.gridx = 1;
+        c.weightx = 1;
         generalOps.add(undoDepth, c);
         c.gridy = 1;
         c.gridx = 0;
@@ -185,37 +186,48 @@ public class ConfigurationDialog extends JDialog
         JPanel generalSavingOps = new VerticalStaticJPanel();
         generalSavingOps.setLayout(new GridBagLayout());
         generalSavingOps.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(GENERAL_SAVING_OPTIONS_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+                BorderFactory.createTitledBorder(GENERAL_SAVING_OPTIONS_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
         Insets defaultInsets = c.insets;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         generalSavingOps.add(cbUsefulComments, c);
 
         /* TILESET OPTIONS */
         JPanel tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        c.gridy = 0; c.insets = new Insets(0, 10, 0, 0);
+                BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        c.gridy = 0;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInTiles, c);
-        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 1;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInSet, c);
-        c.gridy = 2; c.insets = defaultInsets;
+        c.gridy = 2;
+        c.insets = defaultInsets;
         tilesetOps.add(cbEmbedImages, c);
-        c.gridy = 3; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 3;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(lbImageFormat, c);
-        c.gridy = 4; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 4;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(coImageFormat, c);
-        c.gridy = 5; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 5;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(lbPixelFormat, c);
-        c.gridy = 6; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 6;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(coPixelFormat, c);
-        c.gridy = 7; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 7;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(lbByteOrder, c);
-        c.gridy = 8; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 8;
+        c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(coByteOrder, c);
 
         /* GRID OPTIONS */
@@ -226,10 +238,13 @@ public class ConfigurationDialog extends JDialog
         c.insets = new Insets(0, 0, 0, 5);
         gridOps.add(new JLabel(OPACITY_LABEL), c);
         c.insets = new Insets(0, 0, 0, 0);
-        c.weightx = 1; c.gridx = 1;
+        c.weightx = 1;
+        c.gridx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         gridOps.add(gridOpacitySlider, c);
-        c.gridwidth = 2; c.gridy = 1; c.gridx = 0;
+        c.gridwidth = 2;
+        c.gridy = 1;
+        c.gridx = 0;
         gridOps.add(cbGridAA, c);
         //c.gridy = 2; c.weightx = 0;
         //gridOps.add(new JLabel("Color: "), c);
@@ -325,7 +340,7 @@ public class ConfigurationDialog extends JDialog
                         cbUsefulComments.isSelected());
             }
         });
-        
+
         cbEmbedImages.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 final boolean embed = cbEmbedImages.isSelected();
@@ -333,27 +348,27 @@ public class ConfigurationDialog extends JDialog
                 updateUI();
             }
         });
-        
-        coImageFormat.addItemListener(new ItemListener(){
+
+        coImageFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 savingPrefs.put("imageFormat", coImageFormat.getSelectedItem().toString());
                 updateUI();
             }
         });
-        
-        coPixelFormat.addItemListener(new ItemListener(){
+
+        coPixelFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 savingPrefs.put("pixelFormat", coPixelFormat.getSelectedItem().toString());
             }
         });
-        
+
         coByteOrder.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 int index = coByteOrder.getSelectedIndex();
                 savingPrefs.putBoolean("imageIsBigEndian", index == 0);
             }
         });
-        
+
         cbReportIOWarnings.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 ioPrefs.putBoolean("reportWarnings",
@@ -402,8 +417,8 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
-//        rbEmbedInTiles.setEnabled(false);
-//        rbEmbedInSet.setEnabled(false);
+        //        rbEmbedInTiles.setEnabled(false);
+        //        rbEmbedInSet.setEnabled(false);
 
         //gridColor.setName("tiled.grid.color");
     }
@@ -422,11 +437,10 @@ public class ConfigurationDialog extends JDialog
 
         if (savingPrefs.getBoolean("tileSetImages", false)) {
             rbEmbedInSet.setSelected(true);
-        }
-        else {
+        } else {
             rbEmbedInTiles.setSelected(true);
         }
-            
+
 
         cbUsefulComments.setSelected(savingPrefs.getBoolean("usefulComments", false));
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
@@ -434,12 +448,12 @@ public class ConfigurationDialog extends JDialog
         cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));
         cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
         cbAutoOpenLastFile.setSelected(ioPrefs.getBoolean("autoOpenLast", false));
-        
+
         coImageFormat.setSelectedItem(ImageHelper.ImageFormat.valueOf(savingPrefs.get("imageFormat", "PNG"), ImageHelper.ImageFormat.PNG));
         coPixelFormat.setSelectedItem(ImageHelper.PixelFormat.valueOf(savingPrefs.get("pixelFormat", "A1R5G5B5"), ImageHelper.PixelFormat.A1R5G5B5));
         boolean imageIsBigEndian = savingPrefs.getBoolean("imageIsBigEndian", true);
         coByteOrder.setSelectedIndex(imageIsBigEndian ? 0 : 1);
-        
+
         updateUI();
     }
 
@@ -448,8 +462,7 @@ public class ConfigurationDialog extends JDialog
         chooser.addChoosableFileFilter(xmlFileFilter);
         int result = chooser.showSaveDialog(this);
 
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
+        if (result == JFileChooser.APPROVE_OPTION) {
             File configFile = chooser.getSelectedFile();
 
             try {
@@ -457,16 +470,14 @@ public class ConfigurationDialog extends JDialog
                 try {
                     outputStream = new FileOutputStream(configFile);
                     prefs.exportSubtree(outputStream);
-                }
-                finally {
+                } finally {
                     if (outputStream != null) {
                         outputStream.close();
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("Error while exporting configuration:\n" +
-                        e.toString());
+                        e);
             }
         }
     }
@@ -476,23 +487,21 @@ public class ConfigurationDialog extends JDialog
         chooser.addChoosableFileFilter(xmlFileFilter);
         int result = chooser.showOpenDialog(this);
 
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
+        if (result == JFileChooser.APPROVE_OPTION) {
             File configFile = chooser.getSelectedFile();
             try {
                 FileInputStream inputStream = null;
                 try {
                     inputStream = new FileInputStream(configFile);
                     Preferences.importPreferences(inputStream);
-                }
-                finally {
+                } finally {
                     if (inputStream != null) {
                         inputStream.close();
                     }
                 }
             } catch (Exception e) {
                 System.out.println("Error while importing configuration:\n" +
-                        e.toString());
+                        e);
             }
             updateFromConfiguration();
         }

@@ -32,12 +32,11 @@ import java.util.jar.JarFile;
  * The plugin class loader searches and loads available reader and writer
  * plugins.
  */
-public final class PluginClassLoader extends URLClassLoader
-{
+public final class PluginClassLoader extends URLClassLoader {
+    private static PluginClassLoader instance;
     private final Vector<PluggableMapIO> readers, writers;
     private final Hashtable<String, String> readerFormats;
     private final Hashtable<String, String> writerFormats;
-    private static PluginClassLoader instance;
 
     private PluginClassLoader() {
         super(new URL[0]);
@@ -53,6 +52,30 @@ public final class PluginClassLoader extends URLClassLoader
             instance = new PluginClassLoader();
         }
         return instance;
+    }
+
+    private static boolean doesImplement(Class klass, String interfaceName)
+            throws Exception {
+        if (klass == null) {
+            return false;
+        }
+
+        Class[] interfaces = klass.getInterfaces();
+        for (Class anInterface : interfaces) {
+            String name = anInterface.toString();
+            if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isReader(Class klass) throws Exception {
+        return doesImplement(klass, "tiled.io.MapReader");
+    }
+
+    private static boolean isWriter(Class writerClass) throws Exception {
+        return doesImplement(writerClass, "tiled.io.MapWriter");
     }
 
     public void readPlugins(String base, JFrame parent) throws Exception {
@@ -91,7 +114,7 @@ public final class PluginClassLoader extends URLClassLoader
         for (int i = 0; i < files.length; i++) {
             String aPath = files[i].getAbsolutePath();
             String aName =
-                aPath.substring(aPath.lastIndexOf(File.separatorChar) + 1);
+                    aPath.substring(aPath.lastIndexOf(File.separatorChar) + 1);
 
             // Skip non-jar files.
             if (!aPath.endsWith(".jar")) {
@@ -108,11 +131,11 @@ public final class PluginClassLoader extends URLClassLoader
                     continue;
 
                 String readerClassName =
-                    jf.getManifest().getMainAttributes().getValue(
-                            "Reader-Class");
+                        jf.getManifest().getMainAttributes().getValue(
+                                "Reader-Class");
                 String writerClassName =
-                    jf.getManifest().getMainAttributes().getValue(
-                            "Writer-Class");
+                        jf.getManifest().getMainAttributes().getValue(
+                                "Writer-Class");
 
                 Class<Object> readerClass = null;
                 Class<Object> writerClass = null;
@@ -133,7 +156,8 @@ public final class PluginClassLoader extends URLClassLoader
                     if (reader != null) {
                         readerClass = loadFromJar(
                                 jf, reader, readerClassName);
-                    }else System.err.println("Manifest entry "+readerClassName+" does not match any class in the jar.");
+                    } else
+                        System.err.println("Manifest entry " + readerClassName + " does not match any class in the jar.");
                 }
                 if (writerClassName != null) {
                     JarEntry writer = jf.getJarEntry(
@@ -142,13 +166,11 @@ public final class PluginClassLoader extends URLClassLoader
                     if (writer != null) {
                         writerClass = loadFromJar(
                                 jf, writer, writerClassName);
-                    } else System.err.println("Manifest entry "+writerClassName+" does not match any class in the jar.");
+                    } else
+                        System.err.println("Manifest entry " + writerClassName + " does not match any class in the jar.");
                 }
 
-                boolean bPlugin = false;
-                if (isReader(readerClass)) {
-                    bPlugin = true;
-                }
+                boolean bPlugin = isReader(readerClass);
                 if (isWriter(writerClass)) {
                     bPlugin = true;
                 }
@@ -167,11 +189,11 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public MapReader[] getReaders() {
-        return (MapReader[]) readers.toArray(new MapReader[readers.size()]);
+        return readers.toArray(new MapReader[readers.size()]);
     }
 
     public MapWriter[] getWriters() {
-        return (MapWriter[]) writers.toArray(new MapWriter[writers.size()]);
+        return writers.toArray(new MapWriter[writers.size()]);
     }
 
     public Object getReaderFor(String file) throws Exception {
@@ -197,9 +219,8 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public Class loadFromJar(JarFile jf, JarEntry je, String className)
-        throws IOException
-    {
-        byte[] buffer = new byte[(int)je.getSize()];
+            throws IOException {
+        byte[] buffer = new byte[(int) je.getSize()];
         int n;
 
         InputStream in = jf.getInputStream(je);
@@ -212,38 +233,13 @@ public final class PluginClassLoader extends URLClassLoader
         if (buffer.length < je.getSize()) {
             throw new IOException(
                     "Failed to read entire entry! (" + buffer.length + "<" +
-                    je.getSize() + ")");
+                            je.getSize() + ")");
         }
 
         return defineClass(className, buffer, 0, buffer.length);
     }
 
-    private static boolean doesImplement(Class klass, String interfaceName)
-        throws Exception
-    {
-        if (klass == null) {
-            return false;
-        }
-
-        Class[] interfaces = klass.getInterfaces();
-        for (Class anInterface : interfaces) {
-            String name = anInterface.toString();
-            if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isReader(Class klass) throws Exception {
-        return doesImplement(klass, "tiled.io.MapReader");
-    }
-
-    private static boolean isWriter(Class writerClass) throws Exception {
-        return doesImplement(writerClass, "tiled.io.MapWriter");
-    }
-
-    private void _add(Class klass) throws Exception{
+    private void _add(Class klass) throws Exception {
         try {
             PluggableMapIO p = (PluggableMapIO) klass.newInstance();
             String clname = klass.toString();
@@ -263,7 +259,7 @@ public final class PluginClassLoader extends URLClassLoader
                 writers.add(p);
             }
         } catch (NoClassDefFoundError e) {
-            System.err.println("**Failed loading plugin: " + e.toString());
+            System.err.println("**Failed loading plugin: " + e);
         }
     }
 }

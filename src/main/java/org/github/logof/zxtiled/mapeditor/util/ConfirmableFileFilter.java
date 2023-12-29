@@ -21,15 +21,14 @@ import javax.swing.filechooser.FileFilter;
  *
  * @version $Id$
  */
-public abstract class ConfirmableFileFilter extends FileFilter
-{
+public abstract class ConfirmableFileFilter extends FileFilter {
     /**
      * Returns the default extension used by files filtered with this file
      * filter.
      *
      * @return a string representing the default extension (ie. "tmx"), or
-     *         <code>null</code> when a default extension doesn't exist (ie.
-     *         when the filter determines the type using the extension)
+     * <code>null</code> when a default extension doesn't exist (ie.
+     * when the filter determines the type using the extension)
      */
     public abstract String getDefaultExtension();
 }

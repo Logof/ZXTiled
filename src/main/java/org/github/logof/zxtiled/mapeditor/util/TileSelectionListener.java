@@ -17,9 +17,8 @@ import java.util.EventListener;
 /**
  * @version $Id$
  */
-public interface TileSelectionListener extends EventListener
-{
-    public void tileSelected(TileSelectionEvent e);
+public interface TileSelectionListener extends EventListener {
+    void tileSelected(TileSelectionEvent e);
 
-    public void tileRegionSelected(TileRegionSelectionEvent e);
+    void tileRegionSelected(TileRegionSelectionEvent e);
 }

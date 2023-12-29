@@ -21,14 +21,12 @@ import java.util.TreeMap;
 /**
  * @version $Id$
  */
-public class PropertiesTableModel extends AbstractTableModel
-{
-    private SortedMap properties;
-
+public class PropertiesTableModel extends AbstractTableModel {
     private static final String[] columnNames = {
             Resources.getString("dialog.properties.column.name"),
             Resources.getString("dialog.properties.column.value")
     };
+    private final SortedMap properties;
 
     public PropertiesTableModel() {
         properties = new TreeMap();
@@ -94,15 +92,15 @@ public class PropertiesTableModel extends AbstractTableModel
         fireTableDataChanged();
     }
 
-    public void setProperties(Properties props) {
-        properties.clear();
-        properties.putAll(props);
-        fireTableDataChanged();
-    }
-
     public Properties getProperties() {
         Properties props = new Properties();
         props.putAll(properties);
         return props;
+    }
+
+    public void setProperties(Properties props) {
+        properties.clear();
+        properties.putAll(props);
+        fireTableDataChanged();
     }
 }

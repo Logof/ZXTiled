@@ -10,14 +10,13 @@ import javax.swing.undo.AbstractUndoableEdit;
 import java.util.Properties;
 
 /**
- *
  * @author upachler
  */
 public class ChangePropertiesEdit extends AbstractUndoableEdit {
     private boolean undone = false;
     private Properties backupProperties;
-    private Properties properties;
-    
+    private final Properties properties;
+
     /// creates a new edit that stores a backup of the layer's old Properties
     /// object. Note that this object needs to be a clone of the the layer's
     /// property object in its state before the edit was performed.
@@ -25,15 +24,15 @@ public class ChangePropertiesEdit extends AbstractUndoableEdit {
         backupProperties = oldPropertiesCopy;
         this.properties = properties;
     }
-    
-    public void undo(){
+
+    public void undo() {
         super.undo();
         assert !undone;
         swapProperties();
         undone = true;
     }
-    
-    public void redo(){
+
+    public void redo() {
         super.redo();
         assert undone;
         swapProperties();
@@ -46,7 +45,7 @@ public class ChangePropertiesEdit extends AbstractUndoableEdit {
         properties.putAll(backupProperties);
         backupProperties = newBackupProperties;
     }
-    
+
     @Override
     public String getPresentationName() {
         return Resources.getString("edit.changeproperties.name");

@@ -25,13 +25,12 @@ import java.awt.event.ActionEvent;
  *
  * @version $Id$
  */
-public class DeleteLayerAction extends AbstractAction
-{
+public class DeleteLayerAction extends AbstractAction {
     MapEditor editor;
-    
+
     public DeleteLayerAction(MapEditor editor) {
         super(Resources.getString("action.layer.delete.name"),
-              Resources.getIcon("icon/gnome-delete.png"));
+                Resources.getIcon("icon/gnome-delete.png"));
         this.editor = editor;
         putValue(SHORT_DESCRIPTION, "action.layer.delete.name");
     }
@@ -40,9 +39,9 @@ public class DeleteLayerAction extends AbstractAction
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
         int totalLayers = map.getTotalLayers();
-        
+
         UndoableEdit layerDeleteEdit = new DeleteLayerEdit(editor, map, layerIndex);
-        
+
         if (layerIndex >= 0) {
             map.removeLayer(layerIndex);
 
@@ -53,7 +52,7 @@ public class DeleteLayerAction extends AbstractAction
                 editor.setCurrentLayerIndex(totalLayers - 2);
             }
         }
-        
+
         editor.getUndoSupport().postEdit(layerDeleteEdit);
     }
 }

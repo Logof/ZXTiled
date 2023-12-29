@@ -20,9 +20,8 @@ import java.util.EventObject;
  *
  * @version $Id$
  */
-public class TileSelectionEvent extends EventObject
-{
-    private Tile tile;
+public class TileSelectionEvent extends EventObject {
+    private final Tile tile;
 
     public TileSelectionEvent(Object source, Tile tile) {
         super(source);

@@ -33,14 +33,12 @@ import java.io.IOException;
  * @version $Id$
  * @noinspection serial
  */
-public class SaveAsImageAction extends AbstractAction
-{
-    private final MapEditor editor;
-    private final Frame appFrame;
-
+public class SaveAsImageAction extends AbstractAction {
     private static final String ACTION_NAME = Resources.getString("action.map.saveasimage.name");
     private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveasimage.tooltip");
     private static final String DIALOG_TITLE = Resources.getString("dialog.saveasimage.title");
+    private final MapEditor editor;
+    private final Frame appFrame;
 
     public SaveAsImageAction(MapEditor editor) {
         super(ACTION_NAME);
@@ -116,7 +114,7 @@ public class SaveAsImageAction extends AbstractAction
             } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(appFrame,
-                        "Error while saving " + filename + ": " + e.toString(),
+                        "Error while saving " + filename + ": " + e,
                         "Error while saving map image",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -129,8 +127,7 @@ public class SaveAsImageAction extends AbstractAction
         }
     }
 
-    public class BasicFileFilter extends ConfirmableFileFilter
-    {
+    public class BasicFileFilter extends ConfirmableFileFilter {
         private final String extension;
         private final String description;
 
@@ -149,7 +146,7 @@ public class SaveAsImageAction extends AbstractAction
         }
 
         public String getDescription() {
-            return description + " (*."+ extension +")";
+            return description + " (*." + extension + ")";
         }
     }
 }
