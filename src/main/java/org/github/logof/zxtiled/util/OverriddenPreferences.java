@@ -5,7 +5,6 @@
 
 package org.github.logof.zxtiled.util;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,8 +22,8 @@ import java.util.prefs.Preferences;
 public class OverriddenPreferences extends Preferences {
 
     private final Preferences shadow;
-    private final Map<String, String> store = new HashMap<String, String>();
-    private final Set<String> removed = new HashSet<String>();
+    private final Map<String, String> store = new HashMap<>();
+    private final Set<String> removed = new HashSet<>();
 
     public OverriddenPreferences(Preferences shadow) {
         this.shadow = shadow;
@@ -54,9 +53,7 @@ public class OverriddenPreferences extends Preferences {
 
     @Override
     public String[] keys() throws BackingStoreException {
-        Set<String> keySet = new HashSet();
-        for (String key : store.keySet())
-            keySet.add(key);
+        Set<String> keySet = new HashSet<>(store.keySet());
         Collections.addAll(keySet, shadow.keys());
         return keySet.toArray(new String[keySet.size()]);
     }
@@ -142,12 +139,12 @@ public class OverriddenPreferences extends Preferences {
     }
 
     @Override
-    public boolean nodeExists(String pathName) throws BackingStoreException {
+    public boolean nodeExists(String pathName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void removeNode() throws BackingStoreException {
+    public void removeNode() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -202,12 +199,12 @@ public class OverriddenPreferences extends Preferences {
     }
 
     @Override
-    public void exportNode(OutputStream os) throws IOException, BackingStoreException {
+    public void exportNode(OutputStream os) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportSubtree(OutputStream os) throws IOException, BackingStoreException {
+    public void exportSubtree(OutputStream os) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

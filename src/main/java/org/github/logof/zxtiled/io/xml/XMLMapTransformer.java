@@ -74,8 +74,8 @@ public class XMLMapTransformer implements MapReader {
         return url;
     }
 
-    private static int reflectFindMethodByName(Class c, String methodName) {
-        Method[] methods = c.getMethods();
+    private static int reflectFindMethodByName(Class clazz, String methodName) {
+        Method[] methods = clazz.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equalsIgnoreCase(methodName)) {
                 return i;
@@ -105,8 +105,8 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
-    private static String getAttribute(Node node, String attribname, String def) {
-        final String attr = getAttributeValue(node, attribname);
+    private static String getAttribute(Node node, String attributeName, String def) {
+        final String attr = getAttributeValue(node, attributeName);
         if (attr != null) {
             return attr;
         } else {

@@ -24,6 +24,8 @@ import java.util.Properties;
  * An object occupying an {@link ObjectGroup}.
  */
 public class MapObject implements Cloneable {
+    @Setter
+    @Getter
     private Properties properties = new Properties();
     @Getter
     @Setter
@@ -31,7 +33,11 @@ public class MapObject implements Cloneable {
     @Setter
     @Getter
     private Rectangle bounds;
+    @Setter
+    @Getter
     private String name = "Object";
+    @Setter
+    @Getter
     private String type = "";
     @Getter
     private String imageSource = "";
@@ -111,22 +117,6 @@ public class MapObject implements Cloneable {
         bounds.translate(dx, dy);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public int getWidth() {
         return bounds.width;
     }
@@ -141,14 +131,6 @@ public class MapObject implements Cloneable {
 
     public void setHeight(int height) {
         bounds.height = height;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties p) {
-        properties = p;
     }
 
     public String toString() {

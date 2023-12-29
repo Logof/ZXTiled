@@ -12,6 +12,8 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Properties;
@@ -24,10 +26,13 @@ import java.util.Properties;
 public class Tile {
     protected int tileImageId = -1;
     private Image internalImage, scaledImage;
+    @Getter
     private int id = -1;
     private int groundHeight;          // Height above/below "ground"
     private int tileOrientation;
     private double myZoom = 1.0;
+    @Setter
+    @Getter
     private Properties properties;
     private TileSet tileset;
 
@@ -42,41 +47,18 @@ public class Tile {
 
     /**
      * Copy constructor
-     *
-     * @param t
+     * @param tile Tile
      */
-    public Tile(Tile t) {
-        properties = (Properties) t.properties.clone();
-        tileImageId = t.tileImageId;
-        tileset = t.tileset;
+    public Tile(Tile tile) {
+        properties = (Properties) tile.properties.clone();
+        tileImageId = tile.tileImageId;
+        tileset = tile.tileset;
         if (tileset != null) {
             scaledImage = getImage().getScaledInstance(
                     -1, -1, Image.SCALE_DEFAULT);
         }
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties p) {
-        properties = p;
-    }
-
-    /**
-     * Returns the tile id of this tile, relative to tileset.
-     *
-     * @return id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id of the tile as long as it is at least 0.
-     *
-     * @param i The id of the tile
-     */
     public void setId(int i) {
         if (i >= 0) {
             id = i;
@@ -93,15 +75,6 @@ public class Tile {
             return id + tileset.getFirstGid();
         }
         return id;
-    }
-
-    /**
-     * Returns the {@link TileSet} that this tile is part of.
-     *
-     * @return TileSet
-     */
-    public TileSet getTileSet() {
-        return tileset;
     }
 
     /**
@@ -129,15 +102,15 @@ public class Tile {
      * but will rescale if the requested zoom does not equal the
      * current cache zoom.
      *
-     * @param g    Graphics instance to draw to
+     * @param graphics    Graphics instance to draw to
      * @param x    x-coord to draw tile at
      * @param y    y-coord to draw tile at
      * @param zoom Zoom level to draw the tile
      */
-    public void drawRaw(Graphics g, int x, int y, double zoom) {
+    public void drawRaw(Graphics graphics, int x, int y, double zoom) {
         Image img = getScaledImage(zoom);
         if (img != null) {
-            g.drawImage(img, x, y - img.getHeight(null), null);
+            graphics.drawImage(img, x, y - img.getHeight(null), null);
         } else {
             // TODO: Allow drawing IDs when no image data exists as a
             // config option
@@ -255,8 +228,8 @@ public class Tile {
                 mediaTracker.addImage(scaledImage, 0);
                 try {
                     mediaTracker.waitForID(0);
-                } catch (InterruptedException ie) {
-                    System.err.println(ie);
+                } catch (InterruptedException e) {
+                    System.err.println(e);
                 }
                 mediaTracker.removeImage(scaledImage);
                 myZoom = zoom;

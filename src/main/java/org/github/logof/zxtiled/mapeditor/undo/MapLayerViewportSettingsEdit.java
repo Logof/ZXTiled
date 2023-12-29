@@ -5,6 +5,7 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -16,15 +17,11 @@ import java.util.logging.Logger;
  * @author upachler
  */
 public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
+    @Getter
     private final boolean significant;
     private ViewportState backupState;
     private boolean undone = false;
     private final MapLayer layer;
-
-    public MapLayerViewportSettingsEdit(MapLayer layer) {
-        this(layer, true);
-    }
-
 
     public MapLayerViewportSettingsEdit(MapLayer layer, boolean significant) {
         backupState = new ViewportState();
@@ -66,10 +63,6 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
 
         // inisignificant changes are merged
         return !other.isSignificant();
-    }
-
-    public boolean isSignificant() {
-        return significant;
     }
 
     private void swapViewportState() {

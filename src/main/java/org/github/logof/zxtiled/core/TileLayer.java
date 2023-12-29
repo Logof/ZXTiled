@@ -319,26 +319,7 @@ public class TileLayer extends MapLayer {
         return (bounds.contains(tx, ty)) ?
                 map[ty - bounds.y][tx - bounds.x] : null;
     }
-
-    /**
-     * Returns the first occurance (using top down, left to right search) of
-     * the given tile.
-     *
-     * @param t the {@link Tile} to look for
-     * @return A java.awt.Point instance of the first instance of t, or
-     * <code>null</code> if it is not found
-     */
-    public Point locationOf(Tile t) {
-        for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
-            for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
-                if (getTileAt(x, y) == t) {
-                    return new Point(x, y);
-                }
-            }
-        }
-        return null;
-    }
-
+    
     /**
      * Replaces all occurances of the Tile <code>find</code> with the Tile
      * <code>replace</code> in the entire layer
