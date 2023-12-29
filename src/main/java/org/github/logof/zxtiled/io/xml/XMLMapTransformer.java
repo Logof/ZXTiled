@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.io.xml;
 
+import lombok.Setter;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
@@ -58,6 +59,7 @@ public class XMLMapTransformer implements MapReader {
     private final EntityResolver entityResolver = new MapEntityResolver();
     private Map map;
     private String xmlPath;
+    @Setter
     private PluginLogger logger;
 
     public XMLMapTransformer() {
@@ -896,15 +898,10 @@ public class XMLMapTransformer implements MapReader {
         return false;
     }
 
-    public void setLogger(PluginLogger logger) {
-        this.logger = logger;
-    }
-
     private class MapEntityResolver implements EntityResolver {
         public InputSource resolveEntity(String publicId, String systemId) {
             if (systemId.equals("http://mapeditor.org/dtd/1.0/map.dtd")) {
-                return new InputSource(Resources.class.getResourceAsStream(
-                        "/map.dtd"));
+                return new InputSource(Resources.resourceResolver);
             }
             return null;
         }
