@@ -21,7 +21,7 @@ import javax.swing.*;
  * @version $Id$
  */
 public class TMenuItem extends JMenuItem {
-    private boolean showIcon;
+    private final boolean showIcon;
 
     public TMenuItem(boolean showIcon) {
         this.showIcon = showIcon;
@@ -34,10 +34,6 @@ public class TMenuItem extends JMenuItem {
     public TMenuItem(Action action, boolean showIcon) {
         this(showIcon);
         setAction(action);
-    }
-
-    public void setShowIcon(boolean showIcon) {
-        this.showIcon = showIcon;
     }
 
     public void setIcon(Icon icon) {

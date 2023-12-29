@@ -283,7 +283,7 @@ public class XMLMapWriter implements MapWriter {
 
         w.writeAttribute("version", "1.0");
 
-        if (map.getOrientation() == Map.MDO_ORTHO) {
+        if (map.getOrientation() == Map.MDO_ORTHOGONAL) {
             w.writeAttribute("orientation", "orthogonal");
         }
 

@@ -31,6 +31,8 @@ public final class Resources {
     // The resource bundle used by this class
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("gui");
 
+    public static final InputStream resourceResolver = Resources.class.getResourceAsStream("/map.dtd");
+
     // Prevent instanciation
     private Resources() {
     }
