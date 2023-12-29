@@ -1880,7 +1880,6 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
             mapView.setShowGrid(display.getBoolean("showGrid", true));
-            mapView.setZoomLevel(ZOOM_NORMAL_SIZE);
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);

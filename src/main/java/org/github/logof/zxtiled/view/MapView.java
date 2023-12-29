@@ -41,21 +41,20 @@ public abstract class MapView extends JPanel implements Scrollable {
     public static final int PF_COORDINATES = 0x04;
     public static final int PF_NO_SPECIAL = 0x08;
     /**
-     * The default grid color (black).
+     * The default grid color (gray).
      */
-    public static final Color DEFAULT_GRID_COLOR = Color.black;
-    private static final float SELECTIONRUBBERBAND_OUTER_WIDTH = 3.0f;
+    public static final Color DEFAULT_GRID_COLOR = Color.GRAY;
+    public static final Color DEFAULT_GRID_SCREEN_COLOR = Color.WHITE;
+    private static final float SELECTION_RUBBER_BAND_OUTER_WIDTH = 3.0f;
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
     public static int ZOOM_NORMAL_SIZE = 1;
-    protected static double[] zoomLevels = {
-            1.0, 1.5, 2.0, 3.0, 4.0
-    };
+    protected static double[] zoomLevels = {1.0, 1.5, 2.0, 3.0, 4.0};
     protected static Image propertyFlagImage;
     protected Map map;
     protected Brush currentBrush;
     protected int modeFlags;
     @Getter
-    protected double zoom = 1.0;
+    protected double zoom = zoomLevels[ZOOM_NORMAL_SIZE];
     @Getter
     protected int zoomLevel = ZOOM_NORMAL_SIZE;
     // these two indicate where the center of the view is. This is used for
@@ -65,7 +64,7 @@ public abstract class MapView extends JPanel implements Scrollable {
     // the left to the right of the map (up/down respectively)
     protected float viewportCenterX;
     protected float viewportCenterY;
-    protected Color viewportFrameColor = Color.yellow;
+
     // Grid properties
     protected boolean showGrid;
     protected boolean antialiasGrid;
@@ -164,8 +163,11 @@ public abstract class MapView extends JPanel implements Scrollable {
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 
-    private Rectangle addMarginToRectangle(Rectangle r, int margin) {
-        return new Rectangle(r.x - margin, r.y - margin, r.width + 2 * margin, r.height + 2 * margin);
+    private Rectangle addMarginToRectangle(Rectangle r) {
+        return new Rectangle(r.x - (int) SELECTION_RUBBER_BAND_OUTER_WIDTH,
+                r.y - (int) SELECTION_RUBBER_BAND_OUTER_WIDTH,
+                r.width + 2 * (int) SELECTION_RUBBER_BAND_OUTER_WIDTH,
+                r.height + 2 * (int) SELECTION_RUBBER_BAND_OUTER_WIDTH);
     }
 
     public void setSelectionRubberband(MapLayer selectedLayer, Rectangle selectionRubberband) {
@@ -173,19 +175,19 @@ public abstract class MapView extends JPanel implements Scrollable {
         Rectangle previousSelectionRubberbandR = selectionRubberBandRectangle;
         MapLayer previousSelectedRubberbandL = selectionRubberBandLayer;
 
-        if (selectionRubberband != null)
-            selectionRubberBandRectangle = new Rectangle(selectionRubberband);
-        else
-            selectionRubberBandRectangle = null;
+        selectionRubberBandRectangle = (selectionRubberband != null)
+                ? new Rectangle(selectionRubberband)
+                : null;
+
         selectionRubberBandLayer = selectedLayer;
 
         // issue repaints
         if (previousSelectionRubberbandR != null) {
-            Rectangle r = addMarginToRectangle(previousSelectionRubberbandR, (int) SELECTIONRUBBERBAND_OUTER_WIDTH);
+            Rectangle r = addMarginToRectangle(previousSelectionRubberbandR);
             repaint(pixelToScreenCoords(previousSelectedRubberbandL, r));
         }
         if (selectionRubberBandRectangle != null) {
-            Rectangle r = addMarginToRectangle(selectionRubberBandRectangle, (int) SELECTIONRUBBERBAND_OUTER_WIDTH);
+            Rectangle r = addMarginToRectangle(selectionRubberBandRectangle);
             repaint(pixelToScreenCoords(selectionRubberBandLayer, r));
         }
     }
@@ -259,8 +261,8 @@ public abstract class MapView extends JPanel implements Scrollable {
 
         int mapWidthPx = map.getWidth() * map.getTileWidth();
         int mapHeightPx = map.getHeight() * map.getTileHeight();
-        float originPosX = mapWidthPx / 2;
-        float originPosY = mapHeightPx / 2;
+        float originPosX = (float) mapWidthPx / 2;
+        float originPosY = (float) mapHeightPx / 2;
         float viewOffsetX = (viewportCenterX * mapWidthPx - originPosX);
         float viewOffsetY = (viewportCenterY * mapHeightPx - originPosY);
 
@@ -408,14 +410,14 @@ public abstract class MapView extends JPanel implements Scrollable {
      * account when drawing, and will also draw the grid, and any 'special'
      * layers.
      *
-     * @param g the Graphics2D object to paint to
+     * @param graphics the Graphics2D object to paint to
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see MapLayer
      * @see SelectionLayer
      */
     @Override
-    public void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g.create();
+    public void paintComponent(Graphics graphics) {
+        Graphics2D g2d = (Graphics2D) graphics.create();
 
         MapLayer layer;
         Rectangle clip = g2d.getClipBounds();
@@ -463,13 +465,10 @@ public abstract class MapView extends JPanel implements Scrollable {
             }
 
             // Configure grid antialiasing
-            if (antialiasGrid) {
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-            } else {
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_OFF);
-            }
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    antialiasGrid
+                            ? RenderingHints.VALUE_ANTIALIAS_ON
+                            : RenderingHints.VALUE_ANTIALIAS_OFF);
 
             g2d.setStroke(new BasicStroke());
             paintGrid(g2d);
@@ -580,7 +579,6 @@ public abstract class MapView extends JPanel implements Scrollable {
      */
     protected abstract void paintCoordinates(Graphics2D g2d);
 
-    protected abstract void paintPropertyFlags(Graphics2D g2d, TileLayer layer);
 
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>.
