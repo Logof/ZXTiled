@@ -16,7 +16,7 @@ import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
-import org.github.logof.zxtiled.core.TilesetChangedEvent;
+import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileRegionSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionListener;

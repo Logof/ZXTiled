@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Setter;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.HashMap;
@@ -25,9 +26,11 @@ import java.util.Properties;
  */
 public class TileLayer extends MapLayer {
     protected Tile[][] map;
-    protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<Object, Properties>();
+    protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<>();
 
+    @Setter
     private int tileWidth;
+    @Setter
     private int tileHeight;
 
     /**
@@ -208,24 +211,24 @@ public class TileLayer extends MapLayer {
     }
 
     /**
-     * Creates a diff of the two layers, <code>ml</code> is considered the
+     * Creates a diff of the two layers, <code>mapLayer</code> is considered the
      * significant difference.
      *
-     * @param ml
+     * @param mapLayer Layer of map
      * @return A new MapLayer that represents the difference between this
      * layer, and the argument, or <b>null</b> if no difference exists.
      */
-    public MapLayer createDiff(MapLayer ml) {
-        if (ml == null) {
+    public MapLayer createDiff(MapLayer mapLayer) {
+        if (mapLayer == null) {
             return null;
         }
 
-        if (ml instanceof TileLayer) {
+        if (mapLayer instanceof TileLayer) {
             Rectangle r = null;
 
             for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
                 for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
-                    if (((TileLayer) ml).getTileAt(x, y) != getTileAt(x, y)) {
+                    if (((TileLayer) mapLayer).getTileAt(x, y) != getTileAt(x, y)) {
                         if (r != null) {
                             r.add(x, y);
                         } else {
@@ -237,8 +240,8 @@ public class TileLayer extends MapLayer {
 
             if (r != null) {
                 MapLayer diff = new TileLayer(
-                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1), ml.getTileWidth(), ml.getTileHeight());
-                diff.copyFrom(ml);
+                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1), mapLayer.getTileWidth(), mapLayer.getTileHeight());
+                diff.copyFrom(mapLayer);
                 return diff;
             } else {
                 return new TileLayer();
@@ -258,10 +261,6 @@ public class TileLayer extends MapLayer {
         return tileHeight;
     }
 
-    public void setTileHeight(int tileHeight) {
-        this.tileHeight = tileHeight;
-    }
-
     /// gets the tile height specific for this layer. The tile width and height
     /// can be specified individually for layers of this type using
     /// setTileDimensions().
@@ -270,10 +269,6 @@ public class TileLayer extends MapLayer {
     @Override
     public int getTileWidth() {
         return tileWidth;
-    }
-
-    public void setTileWidth(int tileWidth) {
-        this.tileWidth = tileWidth;
     }
 
     /**
@@ -486,7 +481,7 @@ public class TileLayer extends MapLayer {
 
         // Clone the layer data
         clone.map = new Tile[map.length][];
-        clone.tileInstanceProperties = new HashMap<Object, Properties>();
+        clone.tileInstanceProperties = new HashMap<>();
 
         for (int i = 0; i < map.length; i++) {
             clone.map[i] = new Tile[map[i].length];
@@ -517,7 +512,7 @@ public class TileLayer extends MapLayer {
             return;
 
         Tile[][] newMap = new Tile[height][width];
-        HashMap<Object, Properties> newTileInstanceProperties = new HashMap<Object, Properties>();
+        HashMap<Object, Properties> newTileInstanceProperties = new HashMap<>();
 
         int maxX = Math.min(width, bounds.width + dx);
         int maxY = Math.min(height, bounds.height + dy);

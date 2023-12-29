@@ -18,6 +18,7 @@ public class MapViewportSettingsEdit extends AbstractUndoableEdit {
     private ViewportState backupState;
     private boolean undone = false;
     private final Map map;
+
     public MapViewportSettingsEdit(Map map) {
         backupState = new ViewportState();
         backupState.readFrom(map);

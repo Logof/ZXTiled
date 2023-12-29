@@ -148,15 +148,15 @@ public class Tile {
      * Draws the tile at the given pixel coordinates in the given
      * graphics context, and at the given zoom level
      *
-     * @param g
+     * @param graphics
      * @param x
      * @param y
      * @param zoom
      */
-    public void draw(Graphics g, int x, int y, double zoom) {
+    public void draw(Graphics graphics, int x, int y, double zoom) {
         // Invoke raw draw function
         int gnd_h = (int) (groundHeight * zoom);
-        drawRaw(g, x, y - gnd_h, zoom);
+        drawRaw(graphics, x, y - gnd_h, zoom);
     }
 
     public int getWidth() {

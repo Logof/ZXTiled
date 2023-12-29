@@ -12,7 +12,6 @@
 
 package org.github.logof.zxtiled.io.xml;
 
-import org.github.logof.zxtiled.core.AnimatedTile;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
@@ -689,10 +688,6 @@ public class XMLMapWriter implements MapWriter {
                 }
                 w.endElement();
             }
-        }
-
-        if (tile instanceof AnimatedTile) {
-            writeAnimation(((AnimatedTile) tile).getSprite(), w);
         }
 
         w.endElement();

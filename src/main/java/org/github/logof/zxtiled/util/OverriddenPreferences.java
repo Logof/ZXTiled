@@ -168,7 +168,7 @@ public class OverriddenPreferences extends Preferences {
 
     @Override
     public String toString() {
-        return shadow.toString() + store.toString();
+        return shadow.toString() + store;
     }
 
     @Override

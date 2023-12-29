@@ -32,7 +32,7 @@ public class Sprite {
 
     public Sprite() {
         frameSize = new Rectangle();
-        keys = new Vector<KeyFrame>();
+        keys = new Vector<>();
     }
 
     public Sprite(Tile[] frames) {

@@ -12,6 +12,9 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.util.TransparentImageFilter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.TileCutter;
@@ -43,21 +46,29 @@ public class TileSet {
     private String base;
     private final NumberedSet tiles;
     private final NumberedSet images;
+    @Setter
+    @Getter
     private int firstGid;
     private long tilebmpFileLastModified;
     private TileCutter tileCutter;
     private Rectangle tileDimensions;
+    @Getter
     private int tileSpacing;
+    @Getter
     private int tileMargin;
+    @Getter
     private int tilesPerRow;
     private String externalSource;
     private File tilebmpFile;
+    @Getter
     private String name;
+    @Setter
+    @Getter
     private Color transparentColor;
     private Properties defaultTileProperties;
     private Image tileSetImage;
     private final LinkedList<TilesetChangeListener> tilesetChangeListeners;
-    private final java.util.Map<Integer, String> imageSources = new HashMap<Integer, String>();
+    private final java.util.Map<Integer, String> imageSources = new HashMap<>();
 
     /**
      * Default constructor
@@ -67,7 +78,7 @@ public class TileSet {
         images = new NumberedSet();
         tileDimensions = new Rectangle();
         defaultTileProperties = new Properties();
-        tilesetChangeListeners = new LinkedList();
+        tilesetChangeListeners = new LinkedList<>();
     }
 
     /**
@@ -317,7 +328,7 @@ public class TileSet {
      * non-null tile
      */
     public Vector<Tile> generateGaplessVector() {
-        Vector<Tile> gapless = new Vector<Tile>();
+        Vector<Tile> gapless = new Vector<>();
 
         for (int i = 0; i <= getMaxTileId(); i++) {
             if (getTile(i) != null) gapless.add(getTile(i));
@@ -349,33 +360,6 @@ public class TileSet {
      */
     public int getTileHeight() {
         return tileDimensions.height;
-    }
-
-    /**
-     * Returns the spacing between the tiles on the tileset image.
-     *
-     * @return the spacing in pixels between the tiles on the tileset image
-     */
-    public int getTileSpacing() {
-        return tileSpacing;
-    }
-
-    /**
-     * Returns the margin around the tiles on the tileset image.
-     *
-     * @return the margin in pixels around the tiles on the tileset image
-     */
-    public int getTileMargin() {
-        return tileMargin;
-    }
-
-    /**
-     * Returns the number of tiles per row in the original tileset image.
-     *
-     * @return the number of tiles per row in the original tileset image.
-     */
-    public int getTilesPerRow() {
-        return tilesPerRow;
     }
 
     /**
@@ -468,31 +452,6 @@ public class TileSet {
     }
 
     /**
-     * Returns the first global id connected to this tileset.
-     *
-     * @return first global id
-     */
-    public int getFirstGid() {
-        return firstGid;
-    }
-
-    /**
-     * Sets the first global id used by this tileset.
-     *
-     * @param firstGid first global id
-     */
-    public void setFirstGid(int firstGid) {
-        this.firstGid = firstGid;
-    }
-
-    /**
-     * @return the name of this tileset.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
      * Sets the name of this tileset.
      *
      * @param name the new name for this tileset
@@ -501,25 +460,6 @@ public class TileSet {
         String oldName = this.name;
         this.name = name;
         fireNameChanged(oldName, name);
-    }
-
-    /**
-     * Returns the transparent color of the tileset image, or <code>null</code>
-     * if none is set.
-     *
-     * @return Color - The transparent color of the set
-     */
-    public Color getTransparentColor() {
-        return transparentColor;
-    }
-
-    /**
-     * Sets the transparent color in the tileset image.
-     *
-     * @param color
-     */
-    public void setTransparentColor(Color color) {
-        transparentColor = color;
     }
 
     /**
@@ -543,7 +483,7 @@ public class TileSet {
      * @return an Enumeration of the image ids
      */
     public Enumeration<String> getImageIds() {
-        Vector<String> v = new Vector();
+        Vector<String> v = new Vector<>();
         for (int id = 0; id <= images.getMaxId(); ++id) {
             if (images.containsId(id)) {
                 v.add(Integer.toString(id));
@@ -581,7 +521,7 @@ public class TileSet {
      * even if an image is registered for this ID, because a source does
      * not need to be registered (this is especially true for imbedded
      * images)
-     * @return
+     * @return String
      */
     public String getImageSource(int id) {
         return imageSources.get(id);
@@ -650,15 +590,6 @@ public class TileSet {
     }
 
     /**
-     * Returns whether the tileset is derived from a tileset image.
-     *
-     * @return tileSetImage != null
-     */
-    public boolean isSetFromImage() {
-        return tileSetImage != null;
-    }
-
-    /**
      * Checks whether each image has a one to one relationship with the tiles.
      *
      * @return <code>true</code> if each image is associated with one and only
@@ -667,17 +598,6 @@ public class TileSet {
      */
     public boolean isOneForOne() {
         Iterator itr = iterator();
-
-        //[ATURK] I don't think that this check makes complete sense...
-        /*
-        while (itr.hasNext()) {
-            Tile t = (Tile)itr.next();
-            if (t.countAnimationFrames() != 1 || t.getImageId() != t.getId()
-                    || t.getImageOrientation() != 0) {
-                return false;
-            }
-        }
-        */
 
         for (int id = 0; id <= images.getMaxId(); ++id) {
             int relations = 0;
@@ -694,7 +614,6 @@ public class TileSet {
                 return false;
             }
         }
-
         return true;
     }
 

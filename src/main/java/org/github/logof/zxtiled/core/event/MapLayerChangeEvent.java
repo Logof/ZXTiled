@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
-package org.github.logof.zxtiled.core;
+package org.github.logof.zxtiled.core.event;
+
+import lombok.Getter;
 
 /**
  * A change event for a layer specifies what change happened to that layer.
@@ -13,6 +15,7 @@ package org.github.logof.zxtiled.core;
  *
  * @author upachler
  */
+@Getter
 public class MapLayerChangeEvent {
 
     /**
@@ -20,34 +23,22 @@ public class MapLayerChangeEvent {
      * getOldName() and getNewName() member functions will yield the layer's
      * old and new name.
      */
-    public static final int CHANGETYPE_NAME = 1;
+    public static final int CHANGE_TYPE_NAME = 1;
 
     private int changeType = -1;
 
     private String oldName;
+
     private String newName;
 
     private MapLayerChangeEvent(int changeType) {
         this.changeType = changeType;
     }
 
-
-    static MapLayerChangeEvent createNameChangeEvent(String oldName, String newName) {
-        MapLayerChangeEvent e = new MapLayerChangeEvent(CHANGETYPE_NAME);
+    public static MapLayerChangeEvent createNameChangeEvent(String oldName, String newName) {
+        MapLayerChangeEvent e = new MapLayerChangeEvent(CHANGE_TYPE_NAME);
         e.oldName = oldName;
         e.newName = newName;
         return e;
-    }
-
-    public int getChangeType() {
-        return changeType;
-    }
-
-    public String getOldName() {
-        return oldName;
-    }
-
-    public String getNewName() {
-        return newName;
     }
 }

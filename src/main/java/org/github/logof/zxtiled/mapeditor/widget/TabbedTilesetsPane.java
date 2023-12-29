@@ -17,10 +17,10 @@ package org.github.logof.zxtiled.mapeditor.widget;
 
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeAdapter;
-import org.github.logof.zxtiled.core.MapChangedEvent;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
-import org.github.logof.zxtiled.core.TilesetChangedEvent;
+import org.github.logof.zxtiled.core.event.MapChangedEvent;
+import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.util.TileRegionSelectionEvent;

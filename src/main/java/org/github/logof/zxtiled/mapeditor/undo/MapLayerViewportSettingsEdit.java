@@ -20,6 +20,7 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
     private ViewportState backupState;
     private boolean undone = false;
     private final MapLayer layer;
+
     public MapLayerViewportSettingsEdit(MapLayer layer) {
         this(layer, true);
     }

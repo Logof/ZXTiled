@@ -14,14 +14,14 @@ package org.github.logof.zxtiled.mapeditor.util;
 
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeListener;
-import org.github.logof.zxtiled.core.MapChangedEvent;
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapLayerChangeEvent;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
-import org.github.logof.zxtiled.core.TilesetChangedEvent;
+import org.github.logof.zxtiled.core.event.MapChangedEvent;
+import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
+import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.table.AbstractTableModel;
 import java.util.Iterator;

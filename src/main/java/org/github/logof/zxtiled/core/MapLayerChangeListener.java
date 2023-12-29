@@ -5,11 +5,12 @@
 
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
+
 /**
  * @author upachler
  */
 interface MapLayerChangeListener {
-
     void layerChanged(MapLayer aThis, MapLayerChangeEvent e);
 
 }

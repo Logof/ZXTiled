@@ -5,6 +5,9 @@
 
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.core.event.MapChangedEvent;
+import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
+
 /**
  * @author upachler
  */

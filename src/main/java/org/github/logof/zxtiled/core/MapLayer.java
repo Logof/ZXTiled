@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.core;
 
 import lombok.Getter;
+import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.Properties;

@@ -12,7 +12,6 @@
 
 package org.github.logof.zxtiled.io.xml;
 
-import org.github.logof.zxtiled.core.AnimatedTile;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
@@ -509,25 +508,10 @@ public class XMLMapTransformer implements MapReader {
             throws Exception {
         Tile tile = null;
         NodeList children = t.getChildNodes();
-        boolean isAnimated = false;
-
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if ("animation".equalsIgnoreCase(child.getNodeName())) {
-                isAnimated = true;
-                break;
-            }
-        }
-
         try {
-            if (isAnimated) {
-                tile = (Tile) unmarshalClass(AnimatedTile.class, t);
-            } else {
-                tile = (Tile) unmarshalClass(Tile.class, t);
-            }
+            tile = (Tile) unmarshalClass(Tile.class, t);
         } catch (Exception e) {
             logger.error("failed creating tile: " + e.getLocalizedMessage());
-            //e.printStackTrace();
             return tile;
         }
 

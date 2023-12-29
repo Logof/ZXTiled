@@ -10,8 +10,9 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.core;
+package org.github.logof.zxtiled.core.event;
 
+import org.github.logof.zxtiled.core.TileSet;
 import java.util.EventObject;
 
 /**

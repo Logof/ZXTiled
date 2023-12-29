@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import java.util.EventListener;
 
 /**

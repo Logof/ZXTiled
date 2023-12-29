@@ -12,6 +12,8 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
@@ -23,16 +25,21 @@ import java.util.Properties;
  */
 public class MapObject implements Cloneable {
     private Properties properties = new Properties();
+    @Getter
+    @Setter
     private ObjectGroup objectGroup;
-    private Rectangle bounds = new Rectangle();
+    @Setter
+    @Getter
+    private Rectangle bounds;
     private String name = "Object";
     private String type = "";
+    @Getter
     private String imageSource = "";
     private Image image;
     private Image scaledImage;
 
     public MapObject(int x, int y, int width, int height) {
-        bounds = new Rectangle(x, y, width, height);
+        this.bounds = new Rectangle(x, y, width, height);
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -42,35 +49,6 @@ public class MapObject implements Cloneable {
         return clone;
     }
 
-    /**
-     * @return the object group this object is part of
-     */
-    public ObjectGroup getObjectGroup() {
-        return objectGroup;
-    }
-
-    /**
-     * Sets the object group this object is part of. Should only be called by
-     * the object group.
-     *
-     * @param objectGroup the object group this object is part of
-     */
-    public void setObjectGroup(ObjectGroup objectGroup) {
-        this.objectGroup = objectGroup;
-    }
-
-    public Rectangle getBounds() {
-        return bounds;
-    }
-
-    public void setBounds(Rectangle bounds) {
-        this.bounds = bounds;
-    }
-
-    public String getImageSource() {
-        return imageSource;
-    }
-
     public void setImageSource(String source) {
         if (imageSource.equals(source))
             return;
@@ -78,7 +56,7 @@ public class MapObject implements Cloneable {
         imageSource = source;
 
         // Attempt to read the image
-        if (imageSource.length() > 0) {
+        if (!imageSource.isEmpty()) {
             try {
                 image = ImageIO.read(new File(imageSource));
             } catch (IOException e) {
@@ -87,7 +65,6 @@ public class MapObject implements Cloneable {
         } else {
             image = null;
         }
-
         scaledImage = null;
     }
 
