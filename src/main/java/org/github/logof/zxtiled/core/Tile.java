@@ -29,7 +29,6 @@ public class Tile {
     @Getter
     private int id = -1;
     private int groundHeight;          // Height above/below "ground"
-    private int tileOrientation;
     private double myZoom = 1.0;
     @Setter
     @Getter
@@ -154,22 +153,6 @@ public class Tile {
 
     public int getImageId() {
         return tileImageId;
-    }
-
-    /**
-     * @return int
-     * @deprecated
-     */
-    public int getImageOrientation() {
-        return tileOrientation;
-    }
-
-    /**
-     * @param orientation
-     * @deprecated
-     */
-    public void setImageOrientation(int orientation) {
-        tileOrientation = orientation;
     }
 
     /**

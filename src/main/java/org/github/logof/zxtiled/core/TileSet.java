@@ -44,6 +44,7 @@ import java.util.Vector;
  */
 public class TileSet {
     private String base;
+    @Getter
     private final NumberedSet tiles;
     private final NumberedSet images;
     @Setter
@@ -373,8 +374,8 @@ public class TileSet {
         try {
             return (Tile) tiles.get(i);
         } catch (ArrayIndexOutOfBoundsException a) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -587,34 +588,6 @@ public class TileSet {
     public void removeImage(int id) {
         images.remove(id);
         imageSources.remove(id);
-    }
-
-    /**
-     * Checks whether each image has a one to one relationship with the tiles.
-     *
-     * @return <code>true</code> if each image is associated with one and only
-     * one tile, <code>false</code> otherwise.
-     * @deprecated
-     */
-    public boolean isOneForOne() {
-        Iterator itr = iterator();
-
-        for (int id = 0; id <= images.getMaxId(); ++id) {
-            int relations = 0;
-            itr = iterator();
-
-            while (itr.hasNext()) {
-                Tile t = (Tile) itr.next();
-                // todo: move the null check back into the iterator?
-                if (t != null && t.getImageId() == id) {
-                    relations++;
-                }
-            }
-            if (relations != 1) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void setDefaultProperties(Properties defaultSetProperties) {
