@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.util;
 
+import lombok.Getter;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -25,13 +26,14 @@ import java.util.Vector;
  * @author rainerd
  */
 public class NumberedSet {
+    @Getter
     private final Vector<Object> data;
 
     /**
      * Constructs a new empty NumberedSet.
      */
     public NumberedSet() {
-        data = new Vector<Object>();
+        data = new Vector<>();
     }
 
     /**
@@ -44,10 +46,9 @@ public class NumberedSet {
     public Object get(int id) {
         try {
             return data.get(id);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            return null;
         }
-
-        return null;
     }
 
     /**

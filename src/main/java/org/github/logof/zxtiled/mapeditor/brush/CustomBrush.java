@@ -21,7 +21,7 @@ import java.util.ListIterator;
 
 public class CustomBrush extends AbstractBrush {
     public CustomBrush(MultilayerPlane mlp) {
-        addAllLayers(mlp.getLayerVector());
+        addAllLayers(mlp.getLayers());
         fitBoundsToLayers();
     }
 
@@ -73,7 +73,7 @@ public class CustomBrush extends AbstractBrush {
 
         super.doPaint(x, y);
 
-        ListIterator<MapLayer> itr = getLayers();
+        ListIterator<MapLayer> itr = getListIteratorsLayers();
         while (itr.hasNext()) {
             TileLayer tl = (TileLayer) itr.next();
             TileLayer tm = (TileLayer) affectedMp.getLayer(layer++);

@@ -12,6 +12,8 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Vector;
@@ -20,14 +22,21 @@ import java.util.Vector;
  * @version $Id$
  */
 public class Sprite {
+    @Getter
     private Vector<KeyFrame> keys;
+    @Getter
+    @Setter
     private int borderWidth = 0;
+    @Setter
     private int fpl = 0;
+    @Setter
     private int totalKeys = -1;
 
     private float currentFrame = 0;
+    @Getter
     private Rectangle frameSize;
     private boolean bPlaying = true;
+    @Getter
     private KeyFrame currentKey = null;
 
     public Sprite() {
@@ -64,30 +73,12 @@ public class Sprite {
         frameSize.height = h;
     }
 
-    public void setFpl(int f) {
-        fpl = f;
-    }
-
-    public Rectangle getFrameSize() {
-        return frameSize;
-    }
-
     public int getTotalFrames() {
         int total = 0;
-        Iterator<KeyFrame> itr = keys.iterator();
-        while (itr.hasNext()) {
-            total += itr.next().getTotalFrames();
+        for (KeyFrame key : keys) {
+            total += key.getTotalFrames();
         }
-
         return total;
-    }
-
-    public int getBorderWidth() {
-        return borderWidth;
-    }
-
-    public void setBorderWidth(int b) {
-        borderWidth = b;
     }
 
     public Tile getCurrentFrame() {
@@ -141,7 +132,9 @@ public class Sprite {
         while (itr.hasNext()) {
             KeyFrame k = itr.next();
             if (k == currentKey) {
-                if (itr.hasNext()) return itr.next();
+                if (itr.hasNext()) {
+                    return itr.next();
+                }
             }
         }
 
@@ -153,10 +146,6 @@ public class Sprite {
         return null;
     }
 
-    public KeyFrame getCurrentKey() {
-        return currentKey;
-    }
-
     public int getFPL() {
         return fpl;
     }
@@ -165,16 +154,10 @@ public class Sprite {
         return keys.size();
     }
 
-    public void setTotalKeys(int t) {
-        totalKeys = t;
-    }
-
     public void setKeyFrameTo(String name) {
-        Iterator<KeyFrame> itr = keys.iterator();
-        while (itr.hasNext()) {
-            KeyFrame k = itr.next();
-            if (k.equalsIgnoreCase(name)) {
-                currentKey = k;
+        for (KeyFrame key : keys) {
+            if (key.equalsIgnoreCase(name)) {
+                currentKey = key;
                 break;
             }
         }
@@ -231,9 +214,7 @@ public class Sprite {
     }
 
     public KeyFrame getKey(String keyName) {
-        Iterator<KeyFrame> itr = keys.iterator();
-        while (itr.hasNext()) {
-            KeyFrame k = itr.next();
+        for (KeyFrame k : keys) {
             if (k != null && k.equalsIgnoreCase(keyName)) {
                 return k;
             }
@@ -243,10 +224,6 @@ public class Sprite {
 
     public KeyFrame getKey(int i) {
         return keys.get(i);
-    }
-
-    public Iterator<KeyFrame> getKeys() throws Exception {
-        return keys.iterator();
     }
 
     public Rectangle getCurrentFrameRect() {
@@ -281,9 +258,17 @@ public class Sprite {
 
         public static final int KEY_NAME_LENGTH_MAX = 32;
 
+        @Setter
+        @Getter
         private String name = null;
+        @Setter
+        @Getter
         private int id = -1;
+        @Setter
+        @Getter
         private int flags = KEY_LOOP;
+        @Setter
+        @Getter
         private float frameRate = 1.0f;   //one fps
         private Tile[] frames;
 
@@ -301,14 +286,6 @@ public class Sprite {
             frames = tile;
         }
 
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
         public int getLastFrame() {
             return frames.length - 1;
         }
@@ -317,35 +294,11 @@ public class Sprite {
             return frames.length - 1 == frame;
         }
 
-        public int getFlags() {
-            return flags;
-        }
-
-        public void setFlags(int f) {
-            flags = f;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public Tile getFrame(int f) {
             if (f > 0 && f < frames.length) {
                 return frames[f];
             }
             return null;
-        }
-
-        public float getFrameRate() {
-            return frameRate;
-        }
-
-        public void setFrameRate(float r) {
-            frameRate = r;
         }
 
         public int getTotalFrames() {

@@ -37,7 +37,7 @@ public class TileMergeHelper {
     }
 
     public static boolean areTileSizesUniform(Map map) {
-        for (MapLayer l : map.getLayerVector()) {
+        for (MapLayer l : map.getLayers()) {
             if (l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()) {
                 return false;
             }

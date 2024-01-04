@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -290,7 +291,7 @@ public class XMLMapWriter implements MapWriter {
 
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
             w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
-        Iterator<MapLayer> ml = map.getLayers();
+        Iterator<MapLayer> ml = map.getListIteratorsLayers();
         while (ml.hasNext()) {
             MapLayer layer = ml.next();
             writeMapLayer(layer, w, wp);
@@ -459,17 +460,14 @@ public class XMLMapWriter implements MapWriter {
             }
 
             // Check to see if there is a need to write tile elements
-            Iterator<Tile> tileIterator = tileset.iterator();
-            boolean needWrite = !tileset.isOneForOne();
+
+            boolean needWrite = false;
 
             if (!tileSetImages) {
                 needWrite = true;
             } else {
-                // As long as one has properties, they all need to be written.
-                // TODO: This shouldn't be necessary
-                while (tileIterator.hasNext()) {
-                    Tile tile = tileIterator.next();
-                    if (!tile.getProperties().isEmpty()) {
+                for (Object tile : tileset.getTiles().getData()) {
+                    if (!((Tile) tile).getProperties().isEmpty()) {
                         needWrite = true;
                         break;
                     }
@@ -477,12 +475,9 @@ public class XMLMapWriter implements MapWriter {
             }
 
             if (needWrite) {
-                tileIterator = tileset.iterator();
-                while (tileIterator.hasNext()) {
-                    Tile tile = tileIterator.next();
-                    // todo: move this check back into the iterator?
-                    if (tile != null) {
-                        writeTile(tile, tileset, wp, w);
+                for (Object tile : tileset.getTiles().getData()) {
+                    if (Objects.nonNull(tile)) {
+                        writeTile((Tile) tile, tileset, wp, w);
                     }
                 }
             }

@@ -14,13 +14,11 @@ package org.github.logof.zxtiled.mapeditor.animation;
 
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.Sprite;
-import org.github.logof.zxtiled.core.Sprite.KeyFrame;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 /**
  * This is the multi-purpose animation dialog, which can handle any
@@ -182,13 +180,7 @@ public class AnimationDialog extends JDialog implements ActionListener {
     public void updateList() {
         if (currentSprite != null) {
             keyframe.removeAllItems();
-            try {
-                Iterator<KeyFrame> itr = currentSprite.getKeys();
-                while (itr.hasNext()) {
-                    keyframe.addItem(itr.next().getName());
-                }
-            } catch (Exception e) {
-            }
+            currentSprite.getKeys().forEach(key -> keyframe.addItem(key.getName()));
         }
     }
 

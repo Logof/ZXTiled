@@ -166,7 +166,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
             sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
             Rectangle bounds = new Rectangle();
-            final Iterator<MapLayer> itr = map.getLayers();
+            final Iterator<MapLayer> itr = map.getListIteratorsLayers();
             while (itr.hasNext()) {
                 MapLayer layer = itr.next();
                 if (layer instanceof TileLayer) {
@@ -194,7 +194,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
                 // run through the layers, look for the first instance of the
                 // tile we need to replace
-                final Iterator<MapLayer> itr = map.getLayers();
+                final Iterator<MapLayer> itr = map.getListIteratorsLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
                     if (layer instanceof TileLayer) {
@@ -214,7 +214,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
     private void replaceAll(Tile f, Tile r) {
         // TODO: Allow for "scopes" of one or more layers, rather than all layers
-        final Iterator<MapLayer> itr = map.getLayers();
+        final Iterator<MapLayer> itr = map.getListIteratorsLayers();
         while (itr.hasNext()) {
             MapLayer layer = itr.next();
             if (layer instanceof TileLayer) {
@@ -240,7 +240,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
         for (int y = starty; y < map.getHeight() && !bFound; y++) {
             for (int x = startx; x < map.getWidth() && !bFound; x++) {
-                final Iterator<MapLayer> itr = map.getLayers();
+                final Iterator<MapLayer> itr = map.getListIteratorsLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
 

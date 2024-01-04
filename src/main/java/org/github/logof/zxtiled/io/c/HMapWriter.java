@@ -6,7 +6,6 @@ import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
-import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,8 +61,12 @@ public class HMapWriter implements MapWriter {
     }
 
     private void mapToByte(Map map, FileWriter writer) throws IOException {
-        Rectangle bounds = map.getLayer(0).getBounds();
-        final TileLayer tileLayer = (TileLayer) map.getLayer(0);
+        final TileLayer[] tileLayer = new TileLayer[1];
+        map.getListIteratorsLayers().forEachRemaining(layer -> {
+            if (layer instanceof TileLayer) {
+                tileLayer[0] = (TileLayer) layer;
+            }
+        });
 
         for (int screenY = 0; screenY < map.getHeight() / 10; screenY++) {
             for (int screenX = 0; screenX < map.getWidth() / 15; screenX++) {
@@ -73,7 +76,7 @@ public class HMapWriter implements MapWriter {
                 for (int y = 0; y < 10; y++) {
                     writer.write("\t");
                     for (int x = 0; x < 15; x++) {
-                        Tile tile = tileLayer.getTileAt(screenX * 15 + x, screenY * 10 + y);
+                        Tile tile = tileLayer[0].getTileAt(screenX * 15 + x, screenY * 10 + y);
 
                         if (tile.getId() == 15) {
                             boltMapList.add("\t{ " + (screenY * 15 + screenX) + ", " + x + ", " + y + ", 0 }");

@@ -208,7 +208,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         // only issue full repaint if we have layers with parallax enabled -
         // otherwise setting the view center will have no effect.
         boolean hasLayerWithParallaxOffset = false;
-        for (MapLayer l : map.getLayerVector())
+        for (MapLayer l : map.getLayers())
             hasLayerWithParallaxOffset = hasLayerWithParallaxOffset || l.getViewPlaneDistance() != 0.0f || l.isViewPlaneInfinitelyFarAway();
 
         if (hasLayerWithParallaxOffset)
@@ -466,17 +466,8 @@ public abstract class MapView extends JPanel implements Scrollable {
             paintCoordinates(g2d);
         }
 
-        //if (editor != null && editor.getCurrentLayer() instanceof TileLayer) {
-        //    g2d.setComposite(AlphaComposite.SrcOver);
-        //
-        //    TileLayer tl = (TileLayer) editor.getCurrentLayer();
-        //    if (tl != null && tl.isVisible()) {
-        //        paintPropertyFlags(g2d, tl);
-        //    }
-        //}
-
         // render selected objects
-        for (Selection s : selectionSet) {
+        for (Selection s : selectionSet.getSelection()) {
             if (ObjectSelection.class.isAssignableFrom(s.getClass())) {
                 ObjectSelection os = (ObjectSelection) s;
                 MapObject o = os.getObject();
@@ -499,7 +490,7 @@ public abstract class MapView extends JPanel implements Scrollable {
 
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
                             float mapOpacity) {
-        Iterator<MapLayer> li = m.getLayers();
+        Iterator<MapLayer> li = m.getListIteratorsLayers();
         MapLayer layer;
 
         while (li.hasNext()) {

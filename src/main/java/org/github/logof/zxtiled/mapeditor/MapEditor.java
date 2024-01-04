@@ -113,6 +113,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -346,6 +347,9 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private static MapLayer createLayerCopy(MapLayer layer) {
+        if (Objects.isNull(layer)) {
+            return null;
+        }
         try {
             return (MapLayer) layer.clone();
         } catch (CloneNotSupportedException e) {
@@ -1362,7 +1366,7 @@ public class MapEditor implements ActionListener, MouseListener,
         if (!redraw.equals(brushRedraw)) {
             if (currentBrush instanceof CustomBrush) {
                 CustomBrush customBrush = (CustomBrush) currentBrush;
-                ListIterator<MapLayer> layers = customBrush.getLayers();
+                ListIterator<MapLayer> layers = customBrush.getListIteratorsLayers();
                 while (layers.hasNext()) {
                     MapLayer layer = layers.next();
                     layer.setOffset(brushRedraw.x, brushRedraw.y);
@@ -1597,8 +1601,8 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (e.getSource() == mapViewport && mapView != null) {
             // Store the point in the middle for zooming purposes
             Rectangle viewRect = mapViewport.getViewRect();
-            relativeMidX = Math.min(1, (viewRect.x + viewRect.width / 2) / (float) mapView.getWidth());
-            relativeMidY = Math.min(1, (viewRect.y + viewRect.height / 2) / (float) mapView.getHeight());
+            relativeMidX = Math.min(1, (viewRect.x + (float) viewRect.width / 2) / (float) mapView.getWidth());
+            relativeMidY = Math.min(1, (viewRect.y + (float) viewRect.height / 2) / (float) mapView.getHeight());
         }
     }
 
@@ -2244,7 +2248,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 MapLayer cl = getCurrentLayer();
                 clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                ListIterator<MapLayer> itr = currentMap.getLayers();
+                ListIterator<MapLayer> itr = currentMap.getListIteratorsLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
                     if (layer instanceof TileLayer) {
@@ -2308,13 +2312,16 @@ public class MapEditor implements ActionListener, MouseListener,
 
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && clipboardLayer != null) {
-                Vector<MapLayer> layersBefore = currentMap.getLayerVector();
-                MapLayer ml = createLayerCopy(clipboardLayer);
-                ml.setName(Resources.getString("general.layer.layer") + " " + currentMap.getTotalLayers());
-                currentMap.addLayer(ml);
+                Vector<MapLayer> layersBefore = currentMap.getLayers();
+                MapLayer mapLayer = createLayerCopy(clipboardLayer);
+                if (Objects.isNull(mapLayer)) {
+                    return;
+                }
+                mapLayer.setName(Resources.getString("general.layer.layer") + " " + currentMap.getTotalLayers());
+                currentMap.addLayer(mapLayer);
                 undoSupport.postEdit(
                         new MapLayerStateEdit(currentMap, layersBefore,
-                                new Vector<>(currentMap.getLayerVector()),
+                                new Vector<>(currentMap.getLayers()),
                                 "Paste Selection"));
             }
         }

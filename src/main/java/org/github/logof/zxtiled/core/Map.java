@@ -104,12 +104,13 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
         // clone mapChangeListeners first, because otherwise we'll get
         // concurrent modification exceptions if a listener calls something
         // that add or removes listeners
-        Iterable<MapChangeListener> mapChangeListenersClone = new Vector<>(mapChangeListeners);
+        Vector<MapChangeListener> mapChangeListenersClone = new Vector<>(mapChangeListeners);
 
-        for (MapChangeListener l : mapChangeListenersClone) {
-            if (event == null)
+        for (MapChangeListener listener : mapChangeListenersClone) {
+            if (event == null) {
                 event = new MapChangedEvent(this);
-            l.mapChanged(event);
+            }
+            listener.mapChanged(event);
         }
     }
 
@@ -205,7 +206,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
         super.addLayer(layer);
         layer.addMapLayerChangeListener(this);
         fireMapChanged();
-        fireLayerAdded(getLayerVector().indexOf(layer));
+        fireLayerAdded(getLayers().indexOf(layer));
         return layer;
     }
 
@@ -287,18 +288,18 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
     public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
         final int tilesetIndex = tilesets.indexOf(tileset);
-        if (tilesetIndex == -1)
+        if (tilesetIndex == -1) {
             return;
+        }
 
         // Go through the map and remove any instances of the tiles in the set
-        Iterator<Object> tileIterator = tileset.iterator();
+        Iterator<Tile> tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
-            Tile tile = (Tile) tileIterator.next();
-            Iterator<MapLayer> layerIterator = getLayers();
-            while (layerIterator.hasNext()) {
-                MapLayer ml = layerIterator.next();
-                if (ml instanceof TileLayer) {
-                    ((TileLayer) ml).removeTile(tile);
+            Tile tile = tileIterator.next();
+
+            for (MapLayer mapLayer : getLayers()) {
+                if (mapLayer instanceof TileLayer) {
+                    ((TileLayer) mapLayer).removeTile(tile);
                 }
             }
         }

@@ -248,7 +248,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile) tileIterator.next();
-            Iterator layerIterator = map.getLayers();
+            Iterator layerIterator = map.getListIteratorsLayers();
 
             while (layerIterator.hasNext()) {
                 MapLayer ml = (MapLayer) layerIterator.next();

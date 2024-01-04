@@ -12,9 +12,10 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.awt.*;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -22,15 +23,17 @@ import java.util.Vector;
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
  */
-public class MultilayerPlane implements Iterable<MapLayer> {
+public class MultilayerPlane {
     protected Rectangle bounds;          //in tiles
+    @Getter
+    @Setter
     private Vector<MapLayer> layers;
 
     /**
      * Default constructor.
      */
     public MultilayerPlane() {
-        layers = new Vector<MapLayer>();
+        layers = new Vector<>();
         bounds = new Rectangle();
     }
 
@@ -130,14 +133,6 @@ public class MultilayerPlane implements Iterable<MapLayer> {
         layers.removeAllElements();
     }
 
-    /**
-     * Returns the layer vector.
-     *
-     * @return Vector the layer vector
-     */
-    public Vector<MapLayer> getLayerVector() {
-        return layers;
-    }
 
     /**
      * Sets the layer vector to the given java.util.Vector.
@@ -236,7 +231,7 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      *
      * @return a listIterator
      */
-    public ListIterator<MapLayer> getLayers() {
+    public ListIterator<MapLayer> getListIteratorsLayers() {
         return layers.listIterator();
     }
 
@@ -255,16 +250,13 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @see MapLayer#resize
      */
     public void resize(int width, int height, int dx, int dy) {
-        ListIterator<MapLayer> itr = getLayers();
-        while (itr.hasNext()) {
-            MapLayer layer = itr.next();
+        for (MapLayer layer : getLayers()) {
             if (layer.bounds.equals(bounds)) {
                 layer.resize(width, height, dx, dy);
             } else {
                 layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
             }
         }
-
         resize(width, height);
     }
 
@@ -290,9 +282,5 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      */
     public boolean inBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
-    }
-
-    public Iterator<MapLayer> iterator() {
-        return layers.iterator();
     }
 }
