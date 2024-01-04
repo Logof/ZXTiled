@@ -157,9 +157,9 @@ public abstract class MapView extends JPanel implements Scrollable {
         g2d.setStroke(previousStroke);
     }
 
-    private Rectangle pixelToScreenCoords(MapLayer layer, Rectangle rect) {
-        Point p0 = pixelToScreenCoords(layer, rect.x, rect.y);
-        Point p1 = pixelToScreenCoords(layer, rect.x + rect.width, rect.y + rect.height);
+    private Rectangle pixelToScreenCoordinates(MapLayer layer, Rectangle rect) {
+        Point p0 = pixelToScreenCoordinates(rect.x, rect.y);
+        Point p1 = pixelToScreenCoordinates(rect.x + rect.width, rect.y + rect.height);
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 
@@ -184,11 +184,11 @@ public abstract class MapView extends JPanel implements Scrollable {
         // issue repaints
         if (previousSelectionRubberbandR != null) {
             Rectangle r = addMarginToRectangle(previousSelectionRubberbandR);
-            repaint(pixelToScreenCoords(previousSelectedRubberbandL, r));
+            repaint(pixelToScreenCoordinates(previousSelectedRubberbandL, r));
         }
         if (selectionRubberBandRectangle != null) {
             Rectangle r = addMarginToRectangle(selectionRubberBandRectangle);
-            repaint(pixelToScreenCoords(selectionRubberBandLayer, r));
+            repaint(pixelToScreenCoordinates(selectionRubberBandLayer, r));
         }
     }
 
@@ -481,7 +481,7 @@ public abstract class MapView extends JPanel implements Scrollable {
                 ObjectSelection os = (ObjectSelection) s;
                 MapObject o = os.getObject();
                 MapLayer l = os.getLayer();
-                Rectangle r = pixelToScreenCoords(l, o.getBounds());
+                Rectangle r = pixelToScreenCoordinates(l, o.getBounds());
                 paintSelectionRectangle(g2d, r);
             }
         }
@@ -490,8 +490,8 @@ public abstract class MapView extends JPanel implements Scrollable {
         if (selectionRubberBandRectangle != null) {
             // calculate rectangle to draw
             Rectangle r = selectionRubberBandRectangle;
-            Point p0 = pixelToScreenCoords(selectionRubberBandLayer, r.x, r.y);
-            Point p1 = pixelToScreenCoords(selectionRubberBandLayer, r.x + r.width, r.y + r.height);
+            Point p0 = pixelToScreenCoordinates(r.x, r.y);
+            Point p1 = pixelToScreenCoordinates(r.x + r.width, r.y + r.height);
             r = new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
             paintSelectionRectangle(g2d, r);
         }
@@ -586,25 +586,17 @@ public abstract class MapView extends JPanel implements Scrollable {
      * coordinates. The map pixel coordinates may be different in more ways
      * than the zoom level, depending on the projection the view implements.
      *
-     * @param layer to calculate the coordinates for or null if
-     *              the coordinate transformation should be done in the map's coordinate
-     *              system.
-     * @param x     x in screen coordinates
-     * @param y     y in screen coordinates
+     * @param x x in screen coordinates
+     * @param y y in screen coordinates
      * @return the position in map pixel coordinates
      */
-    public Point screenToPixelCoords(MapLayer layer, int x, int y) {
-        Point p = new Point((int) (x / zoom), (int) (y / zoom));
-        if (layer != null) {
-            Point o = calculateParallaxOffset(layer);
-            p.setLocation(p.x - o.x, p.y - o.y);
-        }
-        return p;
+    public Point screenToPixelCoordinates(int x, int y) {
+        return new Point((int) (x / zoom), (int) (y / zoom));
     }
 
-    public Rectangle screenToPixelCoords(MapLayer layer, Rectangle r) {
-        Point p0 = screenToPixelCoords(layer, r.x, r.y);
-        Point p1 = screenToPixelCoords(layer, r.x + r.width, r.y + r.height);
+    public Rectangle screenToPixelCoordinates(Rectangle r) {
+        Point p0 = screenToPixelCoordinates(r.x, r.y);
+        Point p1 = screenToPixelCoordinates(r.x + r.width, r.y + r.height);
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 
@@ -636,19 +628,12 @@ public abstract class MapView extends JPanel implements Scrollable {
      * coordinates. The map pixel coordinates may be different in more ways
      * than the zoom level, depending on the projection the view implements.
      *
-     * @param layer the layer for which the pixel coordinates are given,
-     *              or null if the pixel coordinates are given for the map
-     * @param x     x in pixel coordinates
-     * @param y     y in pixel coordinates
+     * @param x x in pixel coordinates
+     * @param y y in pixel coordinates
      * @return the position in map pixel coordinates
      */
-    public Point pixelToScreenCoords(MapLayer layer, int x, int y) {
-        Point p = new Point(x, y);
-        if (layer != null) {
-            Point o = calculateParallaxOffset(layer);
-            p.setLocation(p.x + o.x, p.y + o.y);
-        }
-        return new Point((int) (p.x * zoom), (int) (p.y * zoom));
+    public Point pixelToScreenCoordinates(int x, int y) {
+        return new Point((int) (x * zoom), (int) (y * zoom));
     }
 
     public void setCurrentLayer(MapLayer layer) {

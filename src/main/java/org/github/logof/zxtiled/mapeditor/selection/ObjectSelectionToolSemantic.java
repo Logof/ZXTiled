@@ -181,7 +181,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         ObjectGroup og = (ObjectGroup) (getEditor().getCurrentLayer());
         final int margin = 1;   // one pixel margin around selection point
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
-        r = mapView.screenToPixelCoords(og, r);
+        r = mapView.screenToPixelCoordinates(r);
         MapObject[] objects = og.findObjectsByOutline(r);
 
         return objects.length != 0 ? objects[0] : null;
@@ -193,7 +193,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         final int margin = 2;   // one pixel margin around selection point
 
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
-        r = mapView.screenToPixelCoords(og, r);
+        r = mapView.screenToPixelCoordinates(r);
         return Corner.findCorner(o.getBounds(), r);
     }
 
@@ -217,7 +217,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
         MapView mapView = getEditor().getMapView();
         selectedLayer = getEditor().getCurrentLayer();
-        selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
+        selectionStart = mapView.screenToPixelCoordinates(x, y);
         selectionRubberband = new Rectangle();
         updateSelection(x, y);
     }
@@ -227,7 +227,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             return;
 
         MapView mapView = getEditor().getMapView();
-        Point p = mapView.screenToPixelCoords(selectedLayer, screenX, screenY);
+        Point p = mapView.screenToPixelCoordinates(screenX, screenY);
         int x = p.x;
         int y = p.y;
         if (x >= selectionStart.x) {
@@ -280,7 +280,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         undoableEdit = new ChangeObjectEdit(object);
         MapView mapView = getEditor().getMapView();
         selectedLayer = getEditor().getCurrentLayer();
-        selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
+        selectionStart = mapView.screenToPixelCoordinates(x, y);
         objectStartPos = new Point(o.getBounds().x, o.getBounds().y);
 
         updateMoveObject(x, y);
@@ -290,7 +290,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         if (mode != Mode.MOVE_OBJECT)
             return;
         MapView mapView = getEditor().getMapView();
-        Point p = mapView.screenToPixelCoords(selectedLayer, x, y);
+        Point p = mapView.screenToPixelCoordinates(x, y);
         int diffX = p.x - selectionStart.x;
         int diffY = p.y - selectionStart.y;
         Rectangle b = object.getBounds();
@@ -318,7 +318,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         undoableEdit = new ChangeObjectEdit(object);
         MapView mapView = getEditor().getMapView();
         selectedLayer = getEditor().getCurrentLayer();
-        selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
+        selectionStart = mapView.screenToPixelCoordinates(x, y);
         corner = findObjectCorner(o, selectionStart.x, selectionStart.y);
         objectStartPos = new Point(Corner.getRectCorner(o.getBounds(), corner));
 
@@ -336,7 +336,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         if (mode != Mode.RESIZE_OBJECT)
             return;
         MapView mapView = getEditor().getMapView();
-        Point p = mapView.screenToPixelCoords(selectedLayer, x, y);
+        Point p = mapView.screenToPixelCoordinates(x, y);
         int diffX = p.x - selectionStart.x;
         int diffY = p.y - selectionStart.y;
         Rectangle b = object.getBounds();

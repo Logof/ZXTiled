@@ -966,8 +966,8 @@ public class MapEditor implements ActionListener, MouseListener,
             } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
                 ObjectGroup group = (ObjectGroup) layer;
-                Point pos = mapView.screenToPixelCoords(
-                        layer, event.getX(), event.getY());
+                Point pos = mapView.screenToPixelCoordinates(
+                        event.getX(), event.getY());
                 MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                 if (obj != null) {
                     ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
@@ -1111,8 +1111,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_REMOVE_OBJ:
                     if (layer instanceof ObjectGroup) {
                         ObjectGroup group = (ObjectGroup) layer;
-                        Point pos = mapView.screenToPixelCoords(
-                                layer, event.getX(), event.getY());
+                        Point pos = mapView.screenToPixelCoordinates(
+                                event.getX(), event.getY());
                         MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                         if (obj != null) {
                             undoSupport.postEdit(new RemoveObjectEdit(group, obj));
@@ -1124,8 +1124,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
                 case PS_MOVE_OBJ:
                     if (layer instanceof ObjectGroup) {
-                        Point pos = mapView.screenToPixelCoords(
-                                layer, event.getX(), event.getY());
+                        Point pos = mapView.screenToPixelCoordinates(
+                                event.getX(), event.getY());
                         if (currentObject == null) {
                             ObjectGroup group = (ObjectGroup) layer;
                             currentObject = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
