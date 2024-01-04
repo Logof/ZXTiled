@@ -195,7 +195,7 @@ public class OrthoMapView extends MapView {
         Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
 
         for (int x = start.x; x < end.x; x += tileSize.width) {
-            g2d.setColor((x % (16 * tileSize.width) == 0)
+            g2d.setColor((x % (15 * tileSize.width) == 0)
                     ? DEFAULT_GRID_SCREEN_COLOR
                     : DEFAULT_GRID_COLOR);
             g2d.drawLine(x, clipRect.y, x, clipRect.y + clipRect.height - 1);

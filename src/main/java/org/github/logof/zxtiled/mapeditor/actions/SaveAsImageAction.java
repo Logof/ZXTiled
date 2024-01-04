@@ -29,13 +29,10 @@ import java.io.IOException;
 
 /**
  * Saves the map to an image.
- *
- * @version $Id$
- * @noinspection serial
  */
 public class SaveAsImageAction extends AbstractAction {
-    private static final String ACTION_NAME = Resources.getString("action.map.saveasimage.name");
-    private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveasimage.tooltip");
+    private static final String ACTION_NAME = Resources.getString("action.map.save.as.image.name");
+    private static final String ACTION_TOOLTIP = Resources.getString("action.map.save.as.image.tooltip");
     private static final String DIALOG_TITLE = Resources.getString("dialog.saveasimage.title");
     private final MapEditor editor;
     private final Frame appFrame;
@@ -72,6 +69,11 @@ public class SaveAsImageAction extends AbstractAction {
                 JFileChooser.APPROVE_OPTION) {
             saveMapImage(chooser.getSelectedFile().getAbsolutePath());
         }
+    }
+
+
+    private void saveMap(String filename) {
+
     }
 
     /**

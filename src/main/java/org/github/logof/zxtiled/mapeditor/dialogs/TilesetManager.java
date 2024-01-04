@@ -45,7 +45,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     private static final String MOVE_DOWN_BUTTON = Resources.getString("dialog.tilesetmanager.button.movedown");
     private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
     private static final String EMBED_BUTTON = Resources.getString("dialog.tilesetmanager.embed.button");
-    private static final String SAVE_AS_BUTTON = Resources.getString("action.map.saveas.name");
+    private static final String SAVE_AS_BUTTON = Resources.getString("action.map.save.as.name");
     private static final String EDIT_BUTTON = Resources.getString("dialog.tilesetmanager.edit.button");
     private static final String SAVE_BUTTON = Resources.getString("action.map.save.name");
     private static final Icon REMOVE_BUTTON_ICON = Resources.getIcon("icon/gnome-delete.png");

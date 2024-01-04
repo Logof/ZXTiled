@@ -172,7 +172,7 @@ public class NewMapDialog extends JDialog implements ActionListener {
             int height = mapHeight.intValue();
             int orientation = Map.MDO_ORTHOGONAL;
 
-            newMap = new Map(width * 16, height * 10);
+            newMap = new Map(width * 15, height * 10);
             newMap.setTileWidth(16);
             newMap.setTileHeight(16);
             newMap.addLayer();

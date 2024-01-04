@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
@@ -28,11 +29,12 @@ import java.awt.event.ActionEvent;
  * @version $Id$
  */
 public class SaveAsAction extends AbstractAction {
-    private static final String ACTION_NAME = Resources.getString("action.map.saveas.name");
-    private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveas.tooltip");
-    private static final String SAVEAS_ERROR_MESSAGE = Resources.getString("dialog.saveas.error.message");
-    private static final String SAVEAS_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
+    private static final String ACTION_NAME = Resources.getString("action.map.save.as.name");
+    private static final String ACTION_TOOLTIP = Resources.getString("action.map.save.as.tooltip");
+    private static final String SAVE_AS_ERROR_MESSAGE = Resources.getString("dialog.saveas.error.message");
+    private static final String SAVE_AS_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
     protected MapEditor editor;
+    @Getter
     private boolean savingCancelled;
 
     public SaveAsAction(MapEditor editor) {
@@ -95,13 +97,10 @@ public class SaveAsAction extends AbstractAction {
      */
     protected void saveFile(TiledFileFilter saver, String filename) {
         try {
-            // Either select the format by extension or use a specific format
-            // when selected.
             if (saver.getType() == TiledFileFilter.FILTER_EXT) {
                 MapHelper.saveMap(editor.getCurrentMap(), filename);
             } else {
-                MapHelper.saveMap(editor.getCurrentMap(), saver.getPlugin(),
-                        filename);
+                MapHelper.saveMap(editor.getCurrentMap(), saver.getPlugin(), filename);
             }
 
             // The file was saved successfully, update some things.
@@ -113,15 +112,11 @@ public class SaveAsAction extends AbstractAction {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(editor.getAppFrame(),
-                    SAVEAS_ERROR_MESSAGE + " " +
+                    SAVE_AS_ERROR_MESSAGE + " " +
                             filename + ": " +
                             e.getLocalizedMessage(),
-                    SAVEAS_ERROR_TITLE,
+                    SAVE_AS_ERROR_TITLE,
                     JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public boolean isSavingCancelled() {
-        return savingCancelled;
     }
 }

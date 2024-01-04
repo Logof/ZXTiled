@@ -31,6 +31,7 @@ import org.github.logof.zxtiled.mapeditor.actions.CloneLayerAction;
 import org.github.logof.zxtiled.mapeditor.actions.CloseMapAction;
 import org.github.logof.zxtiled.mapeditor.actions.DeleteLayerAction;
 import org.github.logof.zxtiled.mapeditor.actions.ExitAction;
+import org.github.logof.zxtiled.mapeditor.actions.ExportAction;
 import org.github.logof.zxtiled.mapeditor.actions.MergeAllLayersAction;
 import org.github.logof.zxtiled.mapeditor.actions.MergeLayerDownAction;
 import org.github.logof.zxtiled.mapeditor.actions.MoveLayerDownAction;
@@ -168,9 +169,10 @@ public class MapEditor implements ActionListener, MouseListener,
     private final SaveAction saveAction;
     private final SaveAsAction saveAsAction;
     private final SaveAsImageAction saveAsImageAction;
+    private final ExportAction exportAction;
+
     private final Action exitAction;
     private final Action zoomInAction, zoomOutAction, zoomNormalAction;
-    private final Action rot90Action, rot180Action, rot270Action;
     private final Action flipHorAction, flipVerAction;
     private final Action selectAllAction, inverseAction, cancelSelectionAction;
     private final Action addLayerAction, cloneLayerAction, deleteLayerAction;
@@ -248,13 +250,12 @@ public class MapEditor implements ActionListener, MouseListener,
         saveAction = new SaveAction(this);
         saveAsAction = new SaveAsAction(this);
         saveAsImageAction = new SaveAsImageAction(this);
+        exportAction = new ExportAction(this);
+
         exitAction = new ExitAction(this, saveAction);
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
         zoomNormalAction = new ZoomNormalAction();
-        rot90Action = new LayerTransformAction(MapLayer.ROTATE_90);
-        rot180Action = new LayerTransformAction(MapLayer.ROTATE_180);
-        rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
         flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
         flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
         selectAllAction = new SelectAllAction();
@@ -432,6 +433,7 @@ public class MapEditor implements ActionListener, MouseListener,
         JMenuItem save = new TMenuItem(saveAction);
         JMenuItem saveAs = new TMenuItem(saveAsAction);
         JMenuItem saveAsImage = new TMenuItem(saveAsImageAction);
+        JMenuItem exportMap = new TMenuItem(exportAction);
         JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
 
         recentMenu = new JMenu(Resources.getString("menu.file.recent"));
@@ -439,6 +441,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(save);
         mapEventAdapter.addListener(saveAs);
         mapEventAdapter.addListener(saveAsImage);
+        mapEventAdapter.addListener(exportMap);
         mapEventAdapter.addListener(close);
 
         JMenu fileMenu = new JMenu(Resources.getString("menu.file"));
@@ -448,6 +451,7 @@ public class MapEditor implements ActionListener, MouseListener,
         fileMenu.add(save);
         fileMenu.add(saveAs);
         fileMenu.add(saveAsImage);
+        fileMenu.add(exportMap);
         fileMenu.addSeparator();
         fileMenu.add(close);
         fileMenu.add(new TMenuItem(exitAction));
@@ -462,10 +466,6 @@ public class MapEditor implements ActionListener, MouseListener,
         pasteMenuItem.setEnabled(false);
 
         JMenu transformSub = new JMenu(Resources.getString("menu.edit.transform"));
-        transformSub.add(new TMenuItem(rot90Action, true));
-        transformSub.add(new TMenuItem(rot180Action, true));
-        transformSub.add(new TMenuItem(rot270Action, true));
-        transformSub.addSeparator();
         transformSub.add(new TMenuItem(flipHorAction, true));
         transformSub.add(new TMenuItem(flipVerAction, true));
         mapEventAdapter.addListener(transformSub);
