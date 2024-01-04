@@ -266,7 +266,6 @@ public abstract class MapView extends JPanel implements Scrollable {
         float viewOffsetX = (viewportCenterX * mapWidthPx - originPosX);
         float viewOffsetY = (viewportCenterY * mapHeightPx - originPosY);
 
-
         // layer dimensions in pixels
         int layerWidthPx = layer.getWidth() * layer.getTileWidth();
         int layerHeightPx = layer.getHeight() * layer.getTileHeight();
@@ -281,18 +280,6 @@ public abstract class MapView extends JPanel implements Scrollable {
         float y = layerOffsetY + originPosY - (float) layerHeightPx / 2;
 
         return new Point((int) x, (int) y);
-    }
-
-    /// This function is effectively the same as calculateParallaxOffset(),
-    /// with the resulting parallax offset scaled by the current zoom level
-    /// @see calculateParallaxOffset()
-    /// @param    layer    The layer to calculate the parallax offset for
-    /// @returns    The parallax offset to shift this layer by
-    protected Point calculateParallaxOffsetZoomed(MapLayer layer) {
-        Point p = calculateParallaxOffset(layer);
-        p.x *= zoom;
-        p.y *= zoom;
-        return p;
     }
 
     public void toggleMode(int modeModifier) {
@@ -607,8 +594,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @return the position in map pixel coordinates
      */
     public Point screenToPixelCoords(MapLayer layer, int x, int y) {
-        Point p = new Point(
-                (int) (x / zoom), (int) (y / zoom));
+        Point p = new Point((int) (x / zoom), (int) (y / zoom));
         if (layer != null) {
             Point o = calculateParallaxOffset(layer);
             p.setLocation(p.x - o.x, p.y - o.y);
@@ -632,7 +618,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param y Y coordinate of the tile in tile coordinates
      * @return the point in screen space
      */
-    public abstract Point tileToScreenCoords(Point zoomedOffset, Dimension zoomedTileSize, int x, int y);
+    public abstract Point tileToScreenCoordinates(Dimension zoomedTileSize, int x, int y);
 
     /// This method calls tileToScreenCoords(Point, Dimension, int, int) with
     /// the point returned from calculateParallaxOffsetZoomed(layer) and
@@ -642,7 +628,7 @@ public abstract class MapView extends JPanel implements Scrollable {
     /// method. Subclasses are advised to override the other overload instead.
     public final Point tileToScreenCoords(MapLayer layer, int x, int y) {
         Dimension zoomedTileSize = new Dimension((int) (layer.getTileWidth() * zoom), (int) (layer.getTileHeight() * zoom));
-        return tileToScreenCoords(calculateParallaxOffsetZoomed(layer), zoomedTileSize, x, y);
+        return tileToScreenCoordinates(zoomedTileSize, x, y);
     }
 
     /**
