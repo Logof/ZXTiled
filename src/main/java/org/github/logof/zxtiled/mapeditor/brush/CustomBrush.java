@@ -64,7 +64,7 @@ public class CustomBrush extends AbstractBrush {
      *
      * @throws Exception
      * @see TileLayer#mergeOnto(MapLayer)
-     * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
+     * @see org.github.logof.zxtiled.mapeditor.brush.Brush#doPaint(int, int)
      */
     public Rectangle doPaint(int x, int y) throws Exception {
         int layer = initLayer;
