@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.util;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.io.PluggableMapIO;
 import org.github.logof.zxtiled.io.xml.XMLMapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -28,6 +29,7 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     public static final int FILTER_TSX = 2;
     public static final int FILTER_BOTH = 3;
     public static final int FILTER_PLUG = 4;
+
     private static final String FILETYPE_TILED = Resources.getString("general.filetype.tiled");
     private static final String FILETYPE_TMX = Resources.getString("general.filetype.tiledmap");
     private static final String FILETYPE_TSX = Resources.getString("general.filetype.tiledtileset");
@@ -35,11 +37,12 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     private String desc;
     private final LinkedList<String> exts;
     private PluggableMapIO pmio;
+    @Getter
     private int type = FILTER_EXT;
 
     public TiledFileFilter() {
         desc = FILETYPE_TILED;
-        exts = new LinkedList<String>();
+        exts = new LinkedList<>();
         exts.add("tmx");
         exts.add("tmx.gz");
         exts.add("tsx");
@@ -47,7 +50,7 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     }
 
     public TiledFileFilter(int filter) {
-        exts = new LinkedList<String>();
+        exts = new LinkedList<>();
         desc = "";
         type = filter;
 
@@ -72,13 +75,13 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     }
 
     public TiledFileFilter(PluggableMapIO p) throws Exception {
-        exts = new LinkedList<String>();
+        exts = new LinkedList<>();
         pmio = p;
         buildFilter(p.getFilter(), p.getName());
     }
 
     public TiledFileFilter(String filter, String desc) {
-        exts = new LinkedList<String>();
+        exts = new LinkedList<>();
         buildFilter(filter, desc);
     }
 
@@ -88,10 +91,6 @@ public class TiledFileFilter extends ConfirmableFileFilter {
         for (String extension : extensions) {
             exts.add(extension.substring(extension.indexOf('.') + 1));
         }
-    }
-
-    public void addExtention(String extension) {
-        exts.add(extension);
     }
 
     public PluggableMapIO getPlugin() {
@@ -104,10 +103,6 @@ public class TiledFileFilter extends ConfirmableFileFilter {
         } else {
             return null;
         }
-    }
-
-    public int getType() {
-        return type;
     }
 
     public boolean accept(File file) {
@@ -126,13 +121,13 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     }
 
     public String getDescription() {
-        StringBuffer filter = new StringBuffer();
+        StringBuilder filter = new StringBuilder();
 
         if (!exts.isEmpty()) {
             filter.append(" (");
-            Iterator itr = exts.iterator();
+            Iterator<String> itr = exts.iterator();
             while (itr.hasNext()) {
-                filter.append("*.").append((String) itr.next());
+                filter.append("*.").append(itr.next());
                 if (itr.hasNext()) {
                     filter.append(",");
                 }
@@ -144,7 +139,4 @@ public class TiledFileFilter extends ConfirmableFileFilter {
         return desc + filter;
     }
 
-    public void setDescription(String description) {
-        desc = description;
-    }
 }

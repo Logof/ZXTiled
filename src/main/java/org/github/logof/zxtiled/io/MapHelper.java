@@ -14,6 +14,7 @@ package org.github.logof.zxtiled.io;
 
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.xml.XMLMapTransformer;
 import org.github.logof.zxtiled.io.xml.XMLMapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -53,25 +54,22 @@ public class MapHelper {
      * @throws Exception
      * @see MapWriter#writeMap(Map, String)
      */
-    public static void saveMap(Map currentMap, String filename)
-            throws Exception {
-        MapWriter mw;
+    public static void saveMap(Map currentMap, String filename) throws Exception {
+        MapWriter mapWriter;
         if (filename.endsWith(".tmx") || filename.endsWith(".tmx.gz")) {
             // Override, so people can't overtake our format
-            mw = new XMLMapWriter();
+            mapWriter = new XMLMapWriter();
+        } else if (filename.endsWith(".h")) {
+            mapWriter = new HMapWriter();
         } else {
-            mw = (MapWriter) pluginLoader.getWriterFor(filename);
+            mapWriter = (MapWriter) pluginLoader.getWriterFor(filename);
         }
 
-        if (mw != null) {
-            PluginLogger logger = new PluginLogger();
-            mw.setLogger(logger);
-            mw.writeMap(currentMap, filename);
-            currentMap.setFilename(filename);
-            reportPluginMessages(logger);
-        } else {
-            throw new Exception("Unsupported map format");
-        }
+        PluginLogger logger = new PluginLogger();
+        mapWriter.setLogger(logger);
+        mapWriter.writeMap(currentMap, filename);
+        currentMap.setFilename(filename);
+        reportPluginMessages(logger);
     }
 
     /**
@@ -229,8 +227,8 @@ public class MapHelper {
     /**
      * Reports messages from the plugin to the user in a dialog.
      *
-     * @param s A Stack which was used by the plugin to record any messages it
-     *          had for the user
+     * @param logger A Stack which was used by the plugin to record any messages it
+     *               had for the user
      */
     private static void reportPluginMessages(PluginLogger logger) {
         // TODO: maybe have a nice dialog with a scrollbar, in case there are
@@ -239,16 +237,6 @@ public class MapHelper {
 
         if (prefs.getBoolean("reportWarnings", false)) {
             PluginLogDialog pld = new PluginLogDialog();
-            /*if (!s.isEmpty()) {
-                Iterator itr = s.iterator();
-                StringBuffer warnings = new StringBuffer();
-                while (itr.hasNext()) {
-                    warnings.append(itr.next()).append("\n");
-                }
-                JOptionPane.showMessageDialog(null, warnings.toString(),
-                        "Loading Messages",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }*/
         }
     }
 }
