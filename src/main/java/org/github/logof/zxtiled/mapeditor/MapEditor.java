@@ -929,7 +929,7 @@ public class MapEditor implements ActionListener, MouseListener,
             return;
         }
 
-        Point tile = mapView.screenToTileCoords(layer, event.getX(), event.getY());
+        Point tile = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
 
         if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
@@ -966,12 +966,11 @@ public class MapEditor implements ActionListener, MouseListener,
             } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
                 ObjectGroup group = (ObjectGroup) layer;
-                Point pos = mapView.screenToPixelCoordinates(
-                        event.getX(), event.getY());
-                MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
+                Point position = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
+                MapObject obj = group.getObjectNear(position.x, position.y);
                 if (obj != null) {
-                    ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
-                    od.getProps();
+                    ObjectDialog dialog = new ObjectDialog(appFrame, obj, undoSupport);
+                    dialog.getProps();
                 }
             }
         } else if (mouseButton == MouseEvent.BUTTON2 ||
@@ -1111,9 +1110,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_REMOVE_OBJ:
                     if (layer instanceof ObjectGroup) {
                         ObjectGroup group = (ObjectGroup) layer;
-                        Point pos = mapView.screenToPixelCoordinates(
-                                event.getX(), event.getY());
-                        MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
+                        Point pos = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
+                        MapObject obj = group.getObjectNear(pos.x, pos.y);
                         if (obj != null) {
                             undoSupport.postEdit(new RemoveObjectEdit(group, obj));
                             group.removeObject(obj);
@@ -1124,24 +1122,23 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
                 case PS_MOVE_OBJ:
                     if (layer instanceof ObjectGroup) {
-                        Point pos = mapView.screenToPixelCoordinates(
-                                event.getX(), event.getY());
+                        Point position = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
                         if (currentObject == null) {
                             ObjectGroup group = (ObjectGroup) layer;
-                            currentObject = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
+                            currentObject = group.getObjectNear(position.x, position.y);
                             if (currentObject == null) { // No object to move
                                 break;
                             }
-                            mouseLastPixelLocation = pos;
+                            mouseLastPixelLocation = position;
                             moveDist = new Point(0, 0);
                             break;
                         }
                         Point translation = new Point(
-                                pos.x - mouseLastPixelLocation.x,
-                                pos.y - mouseLastPixelLocation.y);
+                                (position.x - mouseLastPixelLocation.x) * layer.getTileWidth(),
+                                (position.y - mouseLastPixelLocation.y) * layer.getTileHeight());
                         currentObject.translate(translation.x, translation.y);
                         moveDist.translate(translation.x, translation.y);
-                        mouseLastPixelLocation = pos;
+                        mouseLastPixelLocation = position;
                         mapView.repaint();
                     }
                     break;
@@ -1163,11 +1160,11 @@ public class MapEditor implements ActionListener, MouseListener,
     public void mousePressed(MouseEvent e) {
         MapLayer layer = getCurrentLayer();
 
-        Point tile = mapView.screenToTileCoords(layer, e.getX(), e.getY());
+        Point tile = mapView.screenToTileCoordinates(layer, e.getX(), e.getY());
         mouseButton = e.getButton();
         bMouseIsDown = true;
         bMouseIsDragging = false;
-        mousePressLocation = mapView.screenToTileCoords(layer, e.getX(), e.getY());
+        mousePressLocation = mapView.screenToTileCoordinates(layer, e.getX(), e.getY());
         mouseInitialPressLocation = mousePressLocation;
 
         if (mouseButton == MouseEvent.BUTTON2 ||
@@ -1237,7 +1234,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (currentPointerState == ActionModesEnum.PS_PAINT ||
                 currentPointerState == ActionModesEnum.PS_ADD_OBJ) {
-            Point tile = mapView.screenToTileCoords(
+            Point tile = mapView.screenToTileCoordinates(
                     layer, event.getX(), event.getY());
             int minx = Math.min(limp.x, tile.x);
             int miny = Math.min(limp.y, tile.y);
@@ -1324,7 +1321,7 @@ public class MapEditor implements ActionListener, MouseListener,
         Point tile = null;
         MapLayer currentLayer = getCurrentLayer();
         if (currentLayer != null)
-            tile = mapView.screenToTileCoords(getCurrentLayer(), e.getX(), e.getY());
+            tile = mapView.screenToTileCoordinates(getCurrentLayer(), e.getX(), e.getY());
         updateTileCoordsLabel(tile);
         updateCursorHighlight(tile);
     }
@@ -1335,8 +1332,8 @@ public class MapEditor implements ActionListener, MouseListener,
         doMouse(e);
 
         MapLayer layer = getCurrentLayer();
-        mousePressLocation = mapView.screenToTileCoords(layer, e.getX(), e.getY());
-        Point tile = mapView.screenToTileCoords(layer, e.getX(), e.getY());
+        mousePressLocation = mapView.screenToTileCoordinates(layer, e.getX(), e.getY());
+        Point tile = mapView.screenToTileCoordinates(layer, e.getX(), e.getY());
 
         updateTileCoordsLabel(tile);
         updateCursorHighlight(tile);

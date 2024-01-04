@@ -83,8 +83,8 @@ public class OrthoMapView extends MapView {
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        Point start = this.screenToTileCoords(layer, clipRect.x, clipRect.y);
-        Point end = this.screenToTileCoords(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
+        Point start = this.screenToTileCoordinates(layer, clipRect.x, clipRect.y);
+        Point end = this.screenToTileCoordinates(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
         end.x += 1;
         end.y += 3;
 
@@ -187,7 +187,7 @@ public class OrthoMapView extends MapView {
         // transforming coordinates back and forth between screen and tile 
         // coordinates to quantise the given screen rectangle to coordinates bla 
         // that match the grid lines
-        Point startTile = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
+        Point startTile = screenToTileCoordinates(currentLayer, clipRect.x, clipRect.y);
 
         Point start = tileToScreenCoordinates(tileSize, startTile.x, startTile.y);
         Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
@@ -229,8 +229,8 @@ public class OrthoMapView extends MapView {
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        Point start = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
-        Point end = screenToTileCoords(currentLayer, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
+        Point start = screenToTileCoordinates(currentLayer, clipRect.x, clipRect.y);
+        Point end = screenToTileCoordinates(currentLayer, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
         end.x += 1;
         end.y += 1;
 
@@ -271,7 +271,7 @@ public class OrthoMapView extends MapView {
         repaint(dirty);
     }
 
-    public Point screenToTileCoords(MapLayer layer, int x, int y) {
+    public Point screenToTileCoordinates(MapLayer layer, int x, int y) {
         Dimension tileSize = getLayerTileSize(layer);
         return new Point(x / tileSize.width, y / tileSize.height);
     }

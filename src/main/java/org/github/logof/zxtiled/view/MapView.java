@@ -579,7 +579,7 @@ public abstract class MapView extends JPanel implements Scrollable {
 
     // Conversion functions
 
-    public abstract Point screenToTileCoords(MapLayer layer, int x, int y);
+    public abstract Point screenToTileCoordinates(MapLayer layer, int x, int y);
 
     /**
      * Returns the pixel coordinates on the map based on the given screen

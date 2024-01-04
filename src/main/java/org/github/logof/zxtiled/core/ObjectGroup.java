@@ -14,7 +14,6 @@ package org.github.logof.zxtiled.core;
 
 import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
@@ -214,25 +213,22 @@ public class ObjectGroup extends MapLayer {
     }
 
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
-    public MapObject getObjectNear(int x, int y, double zoom) {
-        Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
-        Shape shape;
+    public MapObject getObjectNear(int x, int y) {
+        Rectangle2D mouse = new Rectangle(x * getMap().getTileHeight(),
+                y * getMap().getTileHeight(),
+                getMap().getTileHeight(),
+                getMap().getTileHeight());
 
         for (MapObject obj : objects) {
-            if (obj.getWidth() == 0 && obj.getHeight() == 0) {
-                shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
-            } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getMap().getTileWidth(),
-                        obj.getY() + bounds.y * getMap().getTileHeight(),
-                        obj.getWidth() > 0 ? obj.getWidth() : zoom,
-                        obj.getHeight() > 0 ? obj.getHeight() : zoom);
-            }
+            Shape shape = new Rectangle2D.Double(obj.getX() + bounds.x * getMap().getTileWidth(),
+                    obj.getY() + bounds.y * getMap().getTileHeight(),
+                    obj.getWidth(),
+                    obj.getHeight());
 
             if (shape.intersects(mouse)) {
                 return obj;
             }
         }
-
         return null;
     }
 }
