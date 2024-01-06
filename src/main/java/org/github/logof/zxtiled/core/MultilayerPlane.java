@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.awt.*;
 import java.util.Collection;
-import java.util.ListIterator;
 import java.util.Vector;
 
 /**
@@ -224,15 +223,6 @@ public class MultilayerPlane {
         } catch (ArrayIndexOutOfBoundsException e) {
         }
         return null;
-    }
-
-    /**
-     * Gets a listIterator of all layers.
-     *
-     * @return a listIterator
-     */
-    public ListIterator<MapLayer> getListIteratorsLayers() {
-        return layers.listIterator();
     }
 
     /**

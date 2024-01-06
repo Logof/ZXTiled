@@ -12,30 +12,32 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Vector;
 
 /**
  * A layer containing {@link MapObject map objects}.
  */
-public class ObjectGroup extends MapLayer {
-    private LinkedList<MapObject> objects = new LinkedList<MapObject>();
+@Getter
+public class ObjectLayer extends MapLayer {
+    private Collection<MapObject> objects = new LinkedList<>();
 
     /**
      * Default constructor.
      */
-    public ObjectGroup() {
+    public ObjectLayer() {
     }
 
     /**
      * @param map the map this object group is part of
      */
-    public ObjectGroup(Map map) {
+    public ObjectLayer(Map map) {
         super(map);
     }
 
@@ -47,7 +49,7 @@ public class ObjectGroup extends MapLayer {
      * @param origx the x origin of this layer
      * @param origy the y origin of this layer
      */
-    public ObjectGroup(Map map, int origx, int origy) {
+    public ObjectLayer(Map map, int origx, int origy) {
         super(map);
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
@@ -58,16 +60,10 @@ public class ObjectGroup extends MapLayer {
      *
      * @param area the area of the object group
      */
-    public ObjectGroup(Rectangle area) {
+    public ObjectLayer(Rectangle area) {
         super(area);
     }
 
-    /**
-     * @see MapLayer#rotate(int)
-     */
-    public void rotate(int angle) {
-        // TODO: Implement rotating an object group
-    }
 
     /**
      * @see MapLayer#mirror(int)
@@ -110,12 +106,12 @@ public class ObjectGroup extends MapLayer {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ObjectGroup clone = (ObjectGroup) super.clone();
-        clone.objects = new LinkedList<MapObject>();
+        ObjectLayer clone = (ObjectLayer) super.clone();
+        clone.objects = new LinkedList<>();
         for (MapObject object : objects) {
             final MapObject objectClone = (MapObject) object.clone();
             clone.objects.add(objectClone);
-            objectClone.setObjectGroup(clone);
+            objectClone.setObjectLayer(clone);
         }
         return clone;
     }
@@ -129,17 +125,14 @@ public class ObjectGroup extends MapLayer {
 
     public void addObject(MapObject o) {
         objects.add(o);
-        o.setObjectGroup(this);
+        o.setObjectLayer(this);
     }
 
     public void removeObject(MapObject o) {
         objects.remove(o);
-        o.setObjectGroup(null);
+        o.setObjectLayer(null);
     }
 
-    public Iterator<MapObject> getObjects() {
-        return objects.iterator();
-    }
 
     public MapObject getObjectAt(int x, int y) {
         for (MapObject obj : objects) {

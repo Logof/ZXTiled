@@ -62,7 +62,8 @@ public class HMapWriter implements MapWriter {
 
     private void mapToByte(Map map, FileWriter writer) throws IOException {
         final TileLayer[] tileLayer = new TileLayer[1];
-        map.getListIteratorsLayers().forEachRemaining(layer -> {
+
+        map.getLayers().forEach(layer -> {
             if (layer instanceof TileLayer) {
                 tileLayer[0] = (TileLayer) layer;
             }

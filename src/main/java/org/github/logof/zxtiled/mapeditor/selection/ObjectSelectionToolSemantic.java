@@ -7,7 +7,7 @@ package org.github.logof.zxtiled.mapeditor.selection;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import org.github.logof.zxtiled.view.MapView;
@@ -94,11 +94,11 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             int x = e.getX();
             int y = e.getY();
             MapObject o = findObject(x, y);
-            ObjectGroup og;
+            ObjectLayer og;
             try {
-                og = (ObjectGroup) getEditor().getCurrentLayer();
+                og = (ObjectLayer) getEditor().getCurrentLayer();
             } catch (ClassCastException ccx) {
-                return; // should never happen though, as ObjectSelectionToolSemantic should only ever be active when an ObjectGroup is the current layer...
+                return; // should never happen though, as ObjectSelectionToolSemantic should only ever be active when an ObjectLayer is the current layer...
             }
             SelectionSet ss = getEditor().getSelectionSet();
             final int allMask = MouseEvent.SHIFT_DOWN_MASK;
@@ -178,7 +178,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
     private MapObject findObject(int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectGroup og = (ObjectGroup) (getEditor().getCurrentLayer());
+        ObjectLayer og = (ObjectLayer) (getEditor().getCurrentLayer());
         final int margin = 1;   // one pixel margin around selection point
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
         r = mapView.screenToPixelCoordinates(r);
@@ -189,7 +189,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
     private Corner findObjectCorner(MapObject o, int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectGroup og = (ObjectGroup) (getEditor().getCurrentLayer());
+        ObjectLayer og = (ObjectLayer) (getEditor().getCurrentLayer());
         final int margin = 2;   // one pixel margin around selection point
 
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
@@ -252,7 +252,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         if (mode != Mode.SELECT)
             return;
 
-        ObjectGroup og = (ObjectGroup) selectedLayer;
+        ObjectLayer og = (ObjectLayer) selectedLayer;
         MapObject[] objects = og.findObjects(selectionRubberband);
         if (objects.length > 0) {
             Selection[] selection = new Selection[objects.length];

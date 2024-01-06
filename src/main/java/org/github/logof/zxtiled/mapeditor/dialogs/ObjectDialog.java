@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.MapObject;
+import org.github.logof.zxtiled.core.MapObjectType;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
@@ -25,6 +26,8 @@ import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static org.github.logof.zxtiled.core.MapObjectType.getAllValues;
 
 /**
  * A dialog for editing the name, type, size and properties of an object.
@@ -44,7 +47,8 @@ public class ObjectDialog extends PropertiesDialog {
     private static String path;
     private final MapObject object;
     private final UndoableEditSupport undoSupport;
-    private JTextField objectName, objectType;
+    private JTextField objectName;
+    private JComboBox<MapObjectType> objectType;
     private JTextField objectImageSource;
     private IntegerSpinner objectWidth, objectHeight;
 
@@ -62,11 +66,9 @@ public class ObjectDialog extends PropertiesDialog {
         JLabel nameLabel = new JLabel(NAME_LABEL);
         JLabel typeLabel = new JLabel(TYPE_LABEL);
         JLabel imageLabel = new JLabel(IMAGE_LABEL);
-        JLabel widthLabel = new JLabel(WIDTH_LABEL);
-        JLabel heightLabel = new JLabel(HEIGHT_LABEL);
 
         objectName = new JTextField(UNTITLED_OBJECT);
-        objectType = new JTextField();
+        objectType = new JComboBox<>(getAllValues());
         objectImageSource = new JTextField();
         objectWidth = new IntegerSpinner(0, 0, 1024);
         objectHeight = new IntegerSpinner(0, 0, 1024);
@@ -117,10 +119,7 @@ public class ObjectDialog extends PropertiesDialog {
         miscPropPanel.add(typeLabel, bagConstraints);
         bagConstraints.gridy = 2;
         miscPropPanel.add(imageLabel, bagConstraints);
-        bagConstraints.gridy = 3;
-        miscPropPanel.add(widthLabel, bagConstraints);
-        bagConstraints.gridy = 4;
-        miscPropPanel.add(heightLabel, bagConstraints);
+
         bagConstraints.insets = new Insets(5, 0, 0, 0);
         bagConstraints.fill = GridBagConstraints.HORIZONTAL;
         bagConstraints.gridx = 1;
@@ -142,7 +141,7 @@ public class ObjectDialog extends PropertiesDialog {
     public void updateInfo() {
         super.updateInfo();
         objectName.setText(object.getName());
-        objectType.setText(object.getType());
+        //objectType.setText(Objects.isNull(object.getType()) ? "" : object.getType().getDescryption());
         objectImageSource.setText(object.getImageSource());
         objectWidth.setValue(object.getWidth());
         objectHeight.setValue(object.getHeight());
@@ -158,7 +157,7 @@ public class ObjectDialog extends PropertiesDialog {
         ce.addEdit(new ChangeObjectEdit(object));
 
         object.setName(objectName.getText());
-        object.setType(objectType.getText());
+        object.setType((MapObjectType) objectType.getSelectedItem());
         object.setImageSource(objectImageSource.getText());
         object.setWidth(objectWidth.intValue());
         object.setHeight(objectHeight.intValue());

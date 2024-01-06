@@ -237,11 +237,11 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Create a new empty ObjectGroup. By default, the new layer's name is set
-     * to "ObjectGroup [layer index]"
+     * Create a new empty ObjectLayer. By default, the new layer's name is set
+     * to "ObjectLayer [layer index]"
      */
     public void addObjectGroup() {
-        MapLayer layer = new ObjectGroup(this);
+        MapLayer layer = new ObjectLayer(this);
         layer.setName(Resources.getString("general.objectgroup.objectgroup") +
                 " " + super.getTotalLayers());
         super.addLayer(layer);

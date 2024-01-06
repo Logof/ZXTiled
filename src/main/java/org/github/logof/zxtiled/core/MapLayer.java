@@ -35,19 +35,6 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
-    /**
-     * ROTATE_90
-     */
-    public static final int ROTATE_90 = 90;
-    /**
-     * ROTATE_180
-     */
-    public static final int ROTATE_180 = 180;
-    /**
-     * ROTATE_270
-     */
-    public static final int ROTATE_270 = 270;
-
     protected String name;
     protected boolean isVisible = true;
     protected boolean bLocked = false;
@@ -111,8 +98,6 @@ public abstract class MapLayer implements Cloneable {
         bounds.x += dx;
         bounds.y += dy;
     }
-
-    public abstract void rotate(int angle);
 
     public abstract void mirror(int dir);
 

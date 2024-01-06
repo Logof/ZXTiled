@@ -12,7 +12,6 @@
 
 package org.github.logof.zxtiled.core;
 
-import lombok.Setter;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.HashMap;
@@ -28,9 +27,7 @@ public class TileLayer extends MapLayer {
     protected Tile[][] map;
     protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<>();
 
-    @Setter
     private int tileWidth;
-    @Setter
     private int tileHeight;
 
     /**
@@ -84,55 +81,6 @@ public class TileLayer extends MapLayer {
             Object key = new Point(x, y);
             tileInstanceProperties.put(key, tip);
         }
-    }
-
-    /**
-     * Rotates the layer by the given Euler angle.
-     *
-     * @param angle The Euler angle (0-360) to rotate the layer array data by.
-     * @see MapLayer#rotate(int)
-     */
-    public void rotate(int angle) {
-        Tile[][] trans;
-        int xtrans = 0, ytrans = 0;
-
-        if (!canEdit())
-            return;
-
-        switch (angle) {
-            case ROTATE_90:
-                trans = new Tile[bounds.width][bounds.height];
-                xtrans = bounds.height - 1;
-                break;
-            case ROTATE_180:
-                trans = new Tile[bounds.height][bounds.width];
-                xtrans = bounds.width - 1;
-                ytrans = bounds.height - 1;
-                break;
-            case ROTATE_270:
-                trans = new Tile[bounds.width][bounds.height];
-                ytrans = bounds.width - 1;
-                break;
-            default:
-                System.out.println("Unsupported rotation (" + angle + ")");
-                return;
-        }
-
-        double ra = Math.toRadians(angle);
-        int cos_angle = (int) Math.round(Math.cos(ra));
-        int sin_angle = (int) Math.round(Math.sin(ra));
-
-        for (int y = 0; y < bounds.height; y++) {
-            for (int x = 0; x < bounds.width; x++) {
-                int xrot = x * cos_angle - y * sin_angle;
-                int yrot = x * sin_angle + y * cos_angle;
-                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x + bounds.x, y + bounds.y);
-            }
-        }
-
-        bounds.width = trans[0].length;
-        bounds.height = trans.length;
-        map = trans;
     }
 
     /**

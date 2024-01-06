@@ -17,7 +17,7 @@ import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
@@ -112,7 +112,6 @@ import java.awt.geom.Area;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
@@ -820,7 +819,7 @@ public class MapEditor implements ActionListener, MouseListener,
         final boolean tileLayer =
                 validSelection && getCurrentLayer() instanceof TileLayer;
         final boolean objectGroup =
-                validSelection && getCurrentLayer() instanceof ObjectGroup;
+                validSelection && getCurrentLayer() instanceof ObjectLayer;
 
         if (validSelection) {
             MapLayer l = getCurrentLayer();
@@ -967,9 +966,9 @@ public class MapEditor implements ActionListener, MouseListener,
                         mapView.repaintRegion(layer, oldArea);
                     }
                 }
-            } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
+            } else if (layer instanceof ObjectLayer && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
-                ObjectGroup group = (ObjectGroup) layer;
+                ObjectLayer group = (ObjectLayer) layer;
                 Point position = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
                 MapObject obj = group.getObjectNear(position.x, position.y);
                 if (obj != null) {
@@ -1087,7 +1086,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_ADD_OBJ:
-                    if (layer instanceof ObjectGroup) {
+                    if (layer instanceof ObjectLayer) {
                         if (marqueeSelection == null) {
                             marqueeSelection = new SelectionLayer(getCurrentLayer());
                             currentMap.addLayerSpecial(marqueeSelection);
@@ -1112,8 +1111,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_REMOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        ObjectGroup group = (ObjectGroup) layer;
+                    if (layer instanceof ObjectLayer) {
+                        ObjectLayer group = (ObjectLayer) layer;
                         Point pos = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
                         MapObject obj = group.getObjectNear(pos.x, pos.y);
                         if (obj != null) {
@@ -1125,10 +1124,10 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_MOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
+                    if (layer instanceof ObjectLayer) {
                         Point position = mapView.screenToTileCoordinates(layer, event.getX(), event.getY());
                         if (currentObject == null) {
-                            ObjectGroup group = (ObjectGroup) layer;
+                            ObjectLayer group = (ObjectLayer) layer;
                             currentObject = group.getObjectNear(position.x, position.y);
                             if (currentObject == null) { // No object to move
                                 break;
@@ -1229,7 +1228,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 currentBrush.endPaint();
             }
         } else if (currentPointerState == ActionModesEnum.PS_MOVE_OBJ) {
-            if (layer instanceof ObjectGroup && currentObject != null &&
+            if (layer instanceof ObjectLayer && currentObject != null &&
                     (moveDist.x != 0 || moveDist.y != 0)) {
                 undoSupport.postEdit(
                         new MoveObjectEdit(currentObject, moveDist));
@@ -1272,7 +1271,7 @@ public class MapEditor implements ActionListener, MouseListener,
                             tile.y - (int) bounds.getHeight() / 2);
                 }
             } else if (mouseButton == MouseEvent.BUTTON1 &&
-                    layer instanceof ObjectGroup) {
+                    layer instanceof ObjectLayer) {
                 // TODO: Fix this to use pixels in the first place
                 // (with optional snap to grid)
                 int w = currentMap.getTileWidth();
@@ -1282,7 +1281,7 @@ public class MapEditor implements ActionListener, MouseListener,
                         bounds.y * h,
                         bounds.width * w,
                         bounds.height * h);
-                ObjectGroup group = (ObjectGroup) layer;
+                ObjectLayer group = (ObjectLayer) layer;
                 undoSupport.postEdit(new AddObjectEdit(group, object));
                 group.addObject(object);
                 mapView.repaint();
@@ -1366,9 +1365,8 @@ public class MapEditor implements ActionListener, MouseListener,
         if (!redraw.equals(brushRedraw)) {
             if (currentBrush instanceof CustomBrush) {
                 CustomBrush customBrush = (CustomBrush) currentBrush;
-                ListIterator<MapLayer> layers = customBrush.getListIteratorsLayers();
-                while (layers.hasNext()) {
-                    MapLayer layer = layers.next();
+
+                for (MapLayer layer : customBrush.getLayers()) {
                     layer.setOffset(brushRedraw.x, brushRedraw.y);
                 }
                 redraw.width = currentBrush.getBounds().width;
@@ -1376,7 +1374,6 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             mapView.repaintRegion(cursorHighlight, redraw);
             cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
-            //cursorHighlight.selectRegion(currentBrush.getShape());
             mapView.repaintRegion(cursorHighlight, brushRedraw);
         }
     }
@@ -1640,7 +1637,7 @@ public class MapEditor implements ActionListener, MouseListener,
         // by something that is more powerful - when the tools are refactored
         // and moved out of MapEditor altogether..
         ToolSemantic ts;
-        if (currentPointerState == ActionModesEnum.PS_MARQUEE && ObjectGroup.class.isAssignableFrom(getCurrentLayer().getClass())) {
+        if (currentPointerState == ActionModesEnum.PS_MARQUEE && ObjectLayer.class.isAssignableFrom(getCurrentLayer().getClass())) {
             ts = objectSelectionToolSemantic;
         } else {
             ts = null;
@@ -2046,8 +2043,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 if (currentLayer instanceof TileLayer) {
                     layer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds(), currentLayer.getTileWidth(), currentLayer.getTileHeight());
-                } else if (currentLayer instanceof ObjectGroup) {
-                    layer = new ObjectGroup(
+                } else if (currentLayer instanceof ObjectLayer) {
+                    layer = new ObjectLayer(
                             marqueeSelection.getSelectedAreaBounds());
                 }
                 layer.setMap(currentMap);
@@ -2057,13 +2054,6 @@ public class MapEditor implements ActionListener, MouseListener,
             }
 
             switch (transform) {
-                case MapLayer.ROTATE_90:
-                case MapLayer.ROTATE_180:
-                case MapLayer.ROTATE_270:
-                    transEdit.setPresentationName("Rotate");
-                    layer.rotate(transform);
-                    //if(marqueeSelection != null) marqueeSelection.rotate(transform);
-                    break;
                 case MapLayer.MIRROR_VERTICAL:
                     transEdit.setPresentationName("Vertical Flip");
                     layer.mirror(MapLayer.MIRROR_VERTICAL);
@@ -2222,8 +2212,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 if (cl instanceof TileLayer) {
                     clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                } else if (getCurrentLayer() instanceof ObjectGroup) {
-                    clipboardLayer = new ObjectGroup(
+                } else if (getCurrentLayer() instanceof ObjectLayer) {
+                    clipboardLayer = new ObjectLayer(
                             marqueeSelection.getSelectedAreaBounds());
                 }
                 clipboardLayer.maskedCopyFrom(
@@ -2248,9 +2238,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 MapLayer cl = getCurrentLayer();
                 clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                ListIterator<MapLayer> itr = currentMap.getListIteratorsLayers();
-                while (itr.hasNext()) {
-                    MapLayer layer = itr.next();
+                for (MapLayer layer : currentMap.getLayers()) {
                     if (layer instanceof TileLayer) {
                         clipboardLayer.maskedMergeOnto(
                                 layer,
@@ -2277,8 +2265,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 if (getCurrentLayer() instanceof TileLayer) {
                     clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds(), ml.getTileWidth(), ml.getTileHeight());
-                } else if (getCurrentLayer() instanceof ObjectGroup) {
-                    clipboardLayer = new ObjectGroup(
+                } else if (getCurrentLayer() instanceof ObjectLayer) {
+                    clipboardLayer = new ObjectLayer(
                             marqueeSelection.getSelectedAreaBounds());
                 }
                 clipboardLayer.maskedCopyFrom(

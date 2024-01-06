@@ -17,7 +17,7 @@ import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.brush.Brush;
@@ -488,13 +488,8 @@ public abstract class MapView extends JPanel implements Scrollable {
         }
     }
 
-    public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
-                            float mapOpacity) {
-        Iterator<MapLayer> li = m.getListIteratorsLayers();
-        MapLayer layer;
-
-        while (li.hasNext()) {
-            layer = li.next();
+    public void paintSubMap(MultilayerPlane m, Graphics2D g2d, float mapOpacity) {
+        for (MapLayer layer : m.getLayers()) {
             if (layer != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
                 if (layer.isVisible() && opacity > 0.0f) {
@@ -507,8 +502,8 @@ public abstract class MapView extends JPanel implements Scrollable {
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectGroup) {
-                        paintObjectGroup(g2d, (ObjectGroup) layer);
+                    } else if (layer instanceof ObjectLayer) {
+                        paintObjectGroup(g2d, (ObjectLayer) layer);
                     }
                 }
             }
@@ -524,12 +519,12 @@ public abstract class MapView extends JPanel implements Scrollable {
     protected abstract void paintLayer(Graphics2D g2d, TileLayer layer);
 
     /**
-     * Draws an ObjectGroup. Implemented in a subclass.
+     * Draws an ObjectLayer. Implemented in a subclass.
      *
      * @param g2d the graphics context to draw the object group onto
-     * @param og  the ObjectGroup to be drawn
+     * @param og  the ObjectLayer to be drawn
      */
-    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectGroup og);
+    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectLayer og);
 
     /**
      * Tells this view a certain region of the map needs to be repainted.

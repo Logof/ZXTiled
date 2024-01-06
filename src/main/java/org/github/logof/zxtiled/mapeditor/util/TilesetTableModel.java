@@ -100,13 +100,9 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile) tileIterator.next();
-            Iterator itr = map.getListIteratorsLayers();
-
-            while (itr.hasNext()) {
-                MapLayer ml = (MapLayer) itr.next();
-
-                if (ml instanceof TileLayer) {
-                    if (((TileLayer) ml).isUsed(tile)) {
+            for (MapLayer layer : map.getLayers()) {
+                if (layer instanceof TileLayer) {
+                    if (((TileLayer) layer).isUsed(tile)) {
                         used++;
                         break;
                     }

@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.view;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
@@ -23,7 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 /**
  * An orthographic map view.
@@ -113,26 +112,26 @@ public class OrthoMapView extends MapView {
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
-        final Dimension tsize = getLayerTileSize(og);
+    protected void paintObjectGroup(Graphics2D g2d, ObjectLayer objectLayer) {
+        final Dimension tsize = getLayerTileSize(objectLayer);
         assert tsize.width != 0 && tsize.height != 0;
-        final Rectangle bounds = og.getBounds();
-        Iterator<MapObject> itr = og.getObjects();
+        final Rectangle bounds = objectLayer.getBounds();
+
+
+
         g2d.translate(
                 bounds.x * tsize.width,
                 bounds.y * tsize.height);
 
-        while (itr.hasNext()) {
-            MapObject mo = itr.next();
-            double ox = mo.getX() * zoom;
-            double oy = mo.getY() * zoom;
-
-            Image objectImage = mo.getImage(zoom);
+        for (MapObject mapObject : objectLayer.getObjects()) {
+            double ox = mapObject.getX() * zoom;
+            double oy = mapObject.getY() * zoom;
+            Image objectImage = mapObject.getImage(zoom);
             if (objectImage != null) {
                 g2d.drawImage(objectImage, (int) ox, (int) oy, null);
             }
 
-            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+            if (mapObject.getWidth() == 0 || mapObject.getHeight() == 0) {
                 g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -148,15 +147,15 @@ public class OrthoMapView extends MapView {
             } else {
                 g2d.setColor(Color.black);
                 g2d.drawRect((int) ox + 1, (int) oy + 1,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
                 g2d.setColor(Color.orange);
                 g2d.drawRect((int) ox, (int) oy,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
             }
             if (zoom > 0.0625) {
-                final String s = mo.getName() != null ? mo.getName() : "(null)";
+                final String s = mapObject.getName() != null ? mapObject.getName() : "(null)";
                 g2d.setColor(Color.black);
                 g2d.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
                 g2d.setColor(Color.white);

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * An object occupying an {@link ObjectGroup}.
+ * An object occupying an {@link ObjectLayer}.
  */
 public class MapObject implements Cloneable {
     @Setter
@@ -29,7 +29,7 @@ public class MapObject implements Cloneable {
     private Properties properties = new Properties();
     @Getter
     @Setter
-    private ObjectGroup objectGroup;
+    private ObjectLayer objectLayer;
     @Setter
     @Getter
     private Rectangle bounds;
@@ -38,7 +38,7 @@ public class MapObject implements Cloneable {
     private String name = "Object";
     @Setter
     @Getter
-    private String type = "";
+    private MapObjectType type;
     @Getter
     private String imageSource = "";
     private Image image;
@@ -134,6 +134,6 @@ public class MapObject implements Cloneable {
     }
 
     public String toString() {
-        return type + " (" + getX() + "," + getY() + ")";
+        return type.getDescryption() + " (" + getX() + "," + getY() + ")";
     }
 }

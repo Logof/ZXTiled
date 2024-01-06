@@ -13,7 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.undo;
 
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -25,22 +25,22 @@ import javax.swing.undo.CannotUndoException;
  * @version $Id$
  */
 public class AddObjectEdit extends AbstractUndoableEdit {
-    private final ObjectGroup objectGroup;
+    private final ObjectLayer objectLayer;
     private final MapObject mapObject;
 
-    public AddObjectEdit(ObjectGroup objectGroup, MapObject mapObject) {
-        this.objectGroup = objectGroup;
+    public AddObjectEdit(ObjectLayer objectLayer, MapObject mapObject) {
+        this.objectLayer = objectLayer;
         this.mapObject = mapObject;
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        objectGroup.removeObject(mapObject);
+        objectLayer.removeObject(mapObject);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        objectGroup.addObject(mapObject);
+        objectLayer.addObject(mapObject);
     }
 
     public String getPresentationName() {

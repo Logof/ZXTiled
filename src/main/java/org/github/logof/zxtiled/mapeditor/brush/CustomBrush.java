@@ -17,7 +17,6 @@ import org.github.logof.zxtiled.core.MultilayerPlane;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.view.MapView;
 import java.awt.*;
-import java.util.ListIterator;
 
 public class CustomBrush extends AbstractBrush {
     public CustomBrush(MultilayerPlane mlp) {
@@ -68,22 +67,21 @@ public class CustomBrush extends AbstractBrush {
      */
     public Rectangle doPaint(int x, int y) throws Exception {
         int layer = initLayer;
-        int centerx = x - bounds.width / 2;
-        int centery = y - bounds.height / 2;
+        int centerX = x - bounds.width / 2;
+        int centerY = y - bounds.height / 2;
 
         super.doPaint(x, y);
 
-        ListIterator<MapLayer> itr = getListIteratorsLayers();
-        while (itr.hasNext()) {
-            TileLayer tl = (TileLayer) itr.next();
+        for (MapLayer itr : getLayers()) {
+            TileLayer tl = (TileLayer) itr;
             TileLayer tm = (TileLayer) affectedMp.getLayer(layer++);
             if (tm != null && tm.isVisible()) {
-                tl.setOffset(centerx, centery);
+                tl.setOffset(centerX, centerY);
                 tl.mergeOnto(tm);
             }
         }
 
-        return new Rectangle(centerx, centery, bounds.width, bounds.height);
+        return new Rectangle(centerX, centerY, bounds.width, bounds.height);
     }
 
     public void drawPreview(Graphics2D g2d, MapView mv) {

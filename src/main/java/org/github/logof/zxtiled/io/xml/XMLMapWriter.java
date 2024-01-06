@@ -15,7 +15,8 @@ package org.github.logof.zxtiled.io.xml;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.MapObjectType;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
@@ -75,22 +76,18 @@ public class XMLMapWriter implements MapWriter {
         }
     }
 
-    private static void writeObjectGroup(ObjectGroup o, XMLWriter w, String wp)
-            throws IOException {
-        Iterator<MapObject> itr = o.getObjects();
-        while (itr.hasNext()) {
-            writeMapObject(itr.next(), w, wp);
+    private static void writeObjectGroup(ObjectLayer o, XMLWriter xmlWriter, String string) throws IOException {
+        for (MapObject mapObject : o.getObjects()) {
+            writeMapObject(mapObject, xmlWriter, string);
         }
     }
 
-    private static void writeMapObject(MapObject mapObject, XMLWriter w, String wp)
-            throws IOException {
+    private static void writeMapObject(MapObject mapObject, XMLWriter w, String wp) throws IOException {
         w.startElement("object");
         w.writeAttribute("name", mapObject.getName());
 
-        if (!mapObject.getType().isEmpty()) {
-            w.writeAttribute("type", mapObject.getType());
-        }
+        w.writeAttribute("type", Objects.isNull(mapObject.getType()) ? MapObjectType.ENEMY_TYPE_01.getId() : mapObject.getType()
+                                                                                                                      .getId());
 
         w.writeAttribute("x", mapObject.getX());
         w.writeAttribute("y", mapObject.getY());
@@ -291,12 +288,11 @@ public class XMLMapWriter implements MapWriter {
 
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
             w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
-        Iterator<MapLayer> ml = map.getListIteratorsLayers();
-        while (ml.hasNext()) {
-            MapLayer layer = ml.next();
+
+
+        for (MapLayer layer : map.getLayers()) {
             writeMapLayer(layer, w, wp);
         }
-
         w.endElement();
     }
 
@@ -501,7 +497,7 @@ public class XMLMapWriter implements MapWriter {
 
         if (mapLayer.getClass() == SelectionLayer.class) {
             xmlWriter.startElement("selection");
-        } else if (mapLayer instanceof ObjectGroup) {
+        } else if (mapLayer instanceof ObjectLayer) {
             xmlWriter.startElement("objectgroup");
         } else {
             xmlWriter.startElement("layer");
@@ -529,8 +525,8 @@ public class XMLMapWriter implements MapWriter {
 
         writeProperties(mapLayer.getProperties(), xmlWriter);
 
-        if (mapLayer instanceof ObjectGroup) {
-            writeObjectGroup((ObjectGroup) mapLayer, xmlWriter, wp);
+        if (mapLayer instanceof ObjectLayer) {
+            writeObjectGroup((ObjectLayer) mapLayer, xmlWriter, wp);
         } else if (mapLayer instanceof TileLayer) {
             final TileLayer tileLayer = (TileLayer) mapLayer;
             xmlWriter.writeAttribute("tileWidth", tileLayer.getTileWidth());

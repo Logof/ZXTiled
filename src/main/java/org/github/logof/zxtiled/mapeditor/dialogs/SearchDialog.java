@@ -166,14 +166,12 @@ public class SearchDialog extends JDialog implements ActionListener {
 
             sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
             Rectangle bounds = new Rectangle();
-            final Iterator<MapLayer> itr = map.getListIteratorsLayers();
-            while (itr.hasNext()) {
-                MapLayer layer = itr.next();
-                if (layer instanceof TileLayer) {
-                    layer.getBounds(bounds);
+            for (MapLayer mapLayer : map.getLayers()) {
+                if (mapLayer instanceof TileLayer) {
+                    mapLayer.getBounds(bounds);
                     for (int y = 0; y < bounds.height; y++) {
                         for (int x = 0; x < bounds.width; x++) {
-                            if (((TileLayer) layer).getTileAt(x, y) == searchCBox.getSelectedItem()) {
+                            if (((TileLayer) mapLayer).getTileAt(x, y) == searchCBox.getSelectedItem()) {
                                 sl.select(x, y);
                             }
                         }
@@ -194,9 +192,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
                 // run through the layers, look for the first instance of the
                 // tile we need to replace
-                final Iterator<MapLayer> itr = map.getListIteratorsLayers();
-                while (itr.hasNext()) {
-                    MapLayer layer = itr.next();
+                for (MapLayer layer : map.getLayers()) {
                     if (layer instanceof TileLayer) {
                         if (((TileLayer) layer).getTileAt(currentMatch.x, currentMatch.y) == searchCBox.getSelectedItem()) {
                             ((TileLayer) layer).setTileAt(currentMatch.x, currentMatch.y, (Tile) replaceCBox.getSelectedItem());
@@ -214,9 +210,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
     private void replaceAll(Tile f, Tile r) {
         // TODO: Allow for "scopes" of one or more layers, rather than all layers
-        final Iterator<MapLayer> itr = map.getListIteratorsLayers();
-        while (itr.hasNext()) {
-            MapLayer layer = itr.next();
+        for (MapLayer layer : map.getLayers()) {
             if (layer instanceof TileLayer) {
                 ((TileLayer) layer).replaceTile(f, r);
             }
@@ -240,10 +234,8 @@ public class SearchDialog extends JDialog implements ActionListener {
 
         for (int y = starty; y < map.getHeight() && !bFound; y++) {
             for (int x = startx; x < map.getWidth() && !bFound; x++) {
-                final Iterator<MapLayer> itr = map.getListIteratorsLayers();
-                while (itr.hasNext()) {
-                    MapLayer layer = itr.next();
 
+                for (MapLayer layer : map.getLayers()) {
                     if (layer instanceof TileLayer) {
                         layer.getBounds(bounds);
 

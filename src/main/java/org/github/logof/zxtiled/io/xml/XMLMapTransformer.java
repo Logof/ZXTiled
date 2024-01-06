@@ -16,7 +16,8 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.MapObjectType;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
@@ -472,17 +473,17 @@ public class XMLMapTransformer implements MapReader {
 
     private MapObject readMapObject(Node t) throws Exception {
         final String name = getAttributeValue(t, "name");
-        final String type = getAttributeValue(t, "type");
+        final int type = getAttribute(t, "type", 0);
         final int x = getAttribute(t, "x", 0);
         final int y = getAttribute(t, "y", 0);
         final int width = getAttribute(t, "width", 0);
         final int height = getAttribute(t, "height", 0);
 
         MapObject obj = new MapObject(x, y, width, height);
-        if (name != null)
+        if (name != null) {
             obj.setName(name);
-        if (type != null)
-            obj.setType(type);
+        }
+        obj.setType(MapObjectType.getById(type));
 
         NodeList children = t.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -540,9 +541,9 @@ public class XMLMapTransformer implements MapReader {
     }
 
     private MapLayer unmarshalObjectGroup(Node t) throws Exception {
-        ObjectGroup og = null;
+        ObjectLayer og = null;
         try {
-            og = (ObjectGroup) unmarshalClass(ObjectGroup.class, t);
+            og = (ObjectLayer) unmarshalClass(ObjectLayer.class, t);
         } catch (Exception e) {
             e.printStackTrace();
             return og;
