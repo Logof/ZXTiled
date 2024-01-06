@@ -26,6 +26,7 @@ import java.util.Vector;
  */
 @Getter
 public class ObjectLayer extends MapLayer {
+
     private Collection<MapObject> objects = new LinkedList<>();
 
     /**
@@ -46,12 +47,12 @@ public class ObjectLayer extends MapLayer {
      * origin.
      *
      * @param map   the map this object group is part of
-     * @param origx the x origin of this layer
-     * @param origy the y origin of this layer
+     * @param origX the x origin of this layer
+     * @param origY the y origin of this layer
      */
-    public ObjectLayer(Map map, int origx, int origy) {
+    public ObjectLayer(Map map, int origX, int origY) {
         super(map);
-        setBounds(new Rectangle(origx, origy, 0, 0));
+        setBounds(new Rectangle(origX, origY, 0, 0));
     }
 
     /**
@@ -116,13 +117,6 @@ public class ObjectLayer extends MapLayer {
         return clone;
     }
 
-    /**
-     * @deprecated
-     */
-    public MapLayer createDiff(MapLayer ml) {
-        return null;
-    }
-
     public void addObject(MapObject o) {
         objects.add(o);
         o.setObjectLayer(this);
@@ -146,8 +140,8 @@ public class ObjectLayer extends MapLayer {
                 return obj;
             }
 
-            Rectangle rect = new Rectangle(obj.getX() + bounds.x * getMap().getTileWidth(),
-                    obj.getY() + bounds.y * getMap().getTileHeight(),
+            Rectangle rect = new Rectangle(obj.getX() + bounds.x * tileWidth,
+                    obj.getY() + bounds.y * tileHeight,
                     obj.getWidth(), obj.getHeight());
             if (rect.contains(x, y)) {
                 return obj;
@@ -167,7 +161,7 @@ public class ObjectLayer extends MapLayer {
         // FIXME: iterating over all objects is potentially very slow
         // there's room for optimization here by using some sort of space
         // partitioning for object storage
-        Vector<MapObject> result = new Vector<MapObject>();
+        Vector<MapObject> result = new Vector<>();
         Line2D l0 = new Line2D.Float();
         Line2D l1 = new Line2D.Float();
         Line2D l2 = new Line2D.Float();
@@ -197,7 +191,7 @@ public class ObjectLayer extends MapLayer {
      * rectangle.
      */
     public MapObject[] findObjects(Rectangle rect) {
-        Vector<MapObject> result = new Vector<MapObject>();
+        Vector<MapObject> result = new Vector<>();
         for (MapObject o : objects) {
             if (rect.contains(o.getBounds()))
                 result.add(o);
@@ -207,14 +201,14 @@ public class ObjectLayer extends MapLayer {
 
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y) {
-        Rectangle2D mouse = new Rectangle(x * getMap().getTileHeight(),
-                y * getMap().getTileHeight(),
-                getMap().getTileHeight(),
-                getMap().getTileHeight());
+        Rectangle2D mouse = new Rectangle(x * tileWidth,
+                y * tileHeight,
+                tileWidth,
+                tileHeight);
 
         for (MapObject obj : objects) {
-            Shape shape = new Rectangle2D.Double(obj.getX() + bounds.x * getMap().getTileWidth(),
-                    obj.getY() + bounds.y * getMap().getTileHeight(),
+            Shape shape = new Rectangle2D.Double(obj.getX() + bounds.x * tileWidth,
+                    obj.getY() + bounds.y * tileHeight,
                     obj.getWidth(),
                     obj.getHeight());
 

@@ -36,6 +36,9 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
+    protected int tileWidth;
+    protected int tileHeight;
+
     @Getter
     protected String name;
     @Getter
@@ -234,7 +237,7 @@ public abstract class MapLayer implements Cloneable {
 
     public abstract void maskedCopyFrom(MapLayer other, Area mask);
 
-    public abstract MapLayer createDiff(MapLayer ml);
+    //public abstract MapLayer createDiff(MapLayer ml);
 
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging

@@ -1295,7 +1295,8 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         if (paintEdit != null) {
-            if (layer != null) {
+            /*
+                if (layer != null) {
                 try {
                     MapLayer endLayer = paintEdit.getStart().createDiff(layer);
                     paintEdit.end(endLayer);
@@ -1303,7 +1304,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
             paintEdit = null;
         }
 

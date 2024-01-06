@@ -25,14 +25,17 @@ import java.util.Properties;
  */
 public class Tile {
     protected int tileImageId = -1;
-    private Image internalImage, scaledImage;
+    private Image internalImage;
+    private Image scaledImage;
+
     @Getter
     private int id = -1;
-    private int groundHeight;          // Height above/below "ground"
-    private double myZoom = 1.0;
+    private double myZoom = 2.0;
+
     @Setter
     @Getter
     private Properties properties;
+
     private TileSet tileset;
 
     public Tile() {
@@ -54,7 +57,7 @@ public class Tile {
         tileset = tile.tileset;
         if (tileset != null) {
             scaledImage = getImage().getScaledInstance(
-                    -1, -1, Image.SCALE_DEFAULT);
+                    -1, -1, Image.SCALE_FAST);
         }
     }
 
@@ -111,8 +114,7 @@ public class Tile {
         if (img != null) {
             graphics.drawImage(img, x, y - img.getHeight(null), null);
         } else {
-            // TODO: Allow drawing IDs when no image data exists as a
-            // config option
+            // TODO: Allow drawing IDs when no image data exists as a config option
         }
     }
 
@@ -127,8 +129,7 @@ public class Tile {
      */
     public void draw(Graphics graphics, int x, int y, double zoom) {
         // Invoke raw draw function
-        int gnd_h = (int) (groundHeight * zoom);
-        drawRaw(graphics, x, y - gnd_h, zoom);
+        drawRaw(graphics, x, y, zoom);
     }
 
     public int getWidth() {

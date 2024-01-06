@@ -31,7 +31,7 @@ public class AddObjectGroupAction extends AbstractLayerAction {
 
     protected void doPerformAction() {
         Map currentMap = editor.getCurrentMap();
-        currentMap.addObjectGroup();
+        currentMap.addObjectLayer();
         editor.setCurrentLayerIndex(currentMap.getTotalLayers() - 1);
     }
 }

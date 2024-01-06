@@ -18,17 +18,12 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * A TileLayer is a specialized MapLayer, used for tracking two dimensional
- * tile data.
- *
+ * A TileLayer is a specialized MapLayer, used for tracking two dimensional tile data.
  * @version $Id$
  */
 public class TileLayer extends MapLayer {
     protected Tile[][] map;
     protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<>();
-
-    private int tileWidth;
-    private int tileHeight;
 
     /**
      * Default contructor.
@@ -159,14 +154,13 @@ public class TileLayer extends MapLayer {
     }
 
     /**
-     * Creates a diff of the two layers, <code>mapLayer</code> is considered the
-     * significant difference.
+     * Creates a diff of the two layers, <code>mapLayer</code> is considered the significant difference.
      *
      * @param mapLayer Layer of map
      * @return A new MapLayer that represents the difference between this
      * layer, and the argument, or <b>null</b> if no difference exists.
      */
-    public MapLayer createDiff(MapLayer mapLayer) {
+    /*public MapLayer createDiff(MapLayer mapLayer) {
         if (mapLayer == null) {
             return null;
         }
@@ -199,6 +193,7 @@ public class TileLayer extends MapLayer {
         }
     }
 
+    */
     /// gets the tile width specific for this layer. The tile width and height
     /// can be specified individually for layers of this type using
     /// setTileDimensions().
