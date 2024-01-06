@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.core;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import java.awt.*;
 import java.awt.geom.Area;
@@ -35,15 +36,21 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
+    @Getter
     protected String name;
-    protected boolean isVisible = true;
-    protected boolean bLocked = false;
-    protected float opacity = 1.0f;
+    @Getter
+    protected boolean visible = true;
+    @Getter
+    @Setter
+    protected boolean locked = false;
+
     protected Rectangle bounds;
+    @Getter
     private float viewPlaneDistance = 0.0f;
     @Getter
     private boolean viewPlaneInfinitelyFarAway = false;
     private Map myMap;
+    @Getter
     private Properties properties = new Properties();
     private final Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
 
@@ -127,15 +134,6 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * Returns the name of this layer.
-     *
-     * @return the name of the layer
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
      * Sets the name of this layer.
      *
      * @param name the new name
@@ -205,41 +203,6 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * Returns layer opacity.
-     *
-     * @return layer opacity, ranging from 0.0 to 1.0
-     */
-    public float getOpacity() {
-        return opacity;
-    }
-
-    /**
-     * Sets layer opacity. If it is different from the previous value and the
-     * layer is visible, a MapChangedEvent is fired.
-     *
-     * @param opacity the new opacity for this layer
-     */
-    public void setOpacity(float opacity) {
-        if (this.opacity != opacity) {
-            this.opacity = opacity;
-
-            if (isVisible() && getMap() != null) {
-                getMap().fireMapChanged();
-            }
-        }
-    }
-
-    /**
-     * Returns whether this layer is visible.
-     *
-     * @return <code>true</code> if the layer is visible, <code>false</code>
-     * otherwise.
-     */
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    /**
      * Sets the visibility of this map layer. If it changes from its current
      * value, a MapChangedEvent is fired.
      *
@@ -247,8 +210,8 @@ public abstract class MapLayer implements Cloneable {
      *                <code>false</code> to make it invisible
      */
     public void setVisible(boolean visible) {
-        if (isVisible != visible) {
-            isVisible = visible;
+        if (this.visible != visible) {
+            this.visible = visible;
             if (getMap() != null) {
                 getMap().fireMapChanged();
             }
@@ -281,15 +244,13 @@ public abstract class MapLayer implements Cloneable {
      * @see MapLayer#mergeOnto
      */
     public void copyTo(MapLayer other) {
-
         // undo/redo is using this, so it better be accurate...
         other.setName(name);
-        other.setVisible(isVisible);
-        other.setLocked(bLocked);
+        other.setVisible(visible);
+        other.setLocked(locked);
         other.setViewPlaneDistance(getViewPlaneDistance());
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.myMap = myMap;
-        other.setOpacity(opacity);
         other.bounds.setBounds(bounds);
         if (other.properties != properties) {
             other.properties.clear();
@@ -325,37 +286,13 @@ public abstract class MapLayer implements Cloneable {
      */
     public abstract void resize(int width, int height, int dx, int dy);
 
-    /**
-     * Get the locked status of the layer.
-     *
-     * @return whether the layer is locked
-     * @see MapLayer#setLocked(boolean)
-     */
-    public boolean getLocked() {
-        return bLocked;
-    }
-
-    /**
-     * Set the locked status of the layer. A locked layer can't be edited.
-     *
-     * @param lock <code>true</code> to lock the layer, <code>false</code> to
-     *             unlock the layer
-     */
-    public void setLocked(boolean lock) {
-        bLocked = lock;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
     public void setProperties(Properties p) {
         properties.clear();
         properties.putAll(p);
     }
 
     public boolean canEdit() {
-        return !getLocked() && isVisible();
+        return !locked && visible;
     }
 
     /// returns the tile height that applies to this layer. To layers of this
@@ -374,17 +311,11 @@ public abstract class MapLayer implements Cloneable {
         return getMap().getTileWidth();
     }
 
-    public float getViewPlaneDistance() {
-        return viewPlaneDistance;
-    }
-
     public void setViewPlaneDistance(float viewPlaneDistance) {
         if (this.viewPlaneDistance == viewPlaneDistance) {
             return;
         }
         this.viewPlaneDistance = viewPlaneDistance;
-        if (getMap() == null) {
-        }
     }
 
     public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway) {
@@ -392,10 +323,9 @@ public abstract class MapLayer implements Cloneable {
             return;
         }
         this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
-        if (getMap() == null) {
-        }
     }
 
+    // TODO Зачем?
     private void fireRenamed(String newName, String oldName) {
         MapLayerChangeEvent e = MapLayerChangeEvent.createNameChangeEvent(oldName, newName);
         for (MapLayerChangeListener l : listeners)

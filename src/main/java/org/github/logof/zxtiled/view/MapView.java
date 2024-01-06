@@ -491,15 +491,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d, float mapOpacity) {
         for (MapLayer layer : m.getLayers()) {
             if (layer != null) {
-                float opacity = layer.getOpacity() * mapOpacity;
-                if (layer.isVisible() && opacity > 0.0f) {
-                    if (opacity < 1.0f) {
-                        g2d.setComposite(AlphaComposite.getInstance(
-                                AlphaComposite.SRC_ATOP, opacity));
-                    } else {
-                        g2d.setComposite(AlphaComposite.SrcOver);
-                    }
 
+                if (layer.isVisible()) {
+                    g2d.setComposite(AlphaComposite.SrcOver);
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
                     } else if (layer instanceof ObjectLayer) {

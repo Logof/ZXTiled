@@ -519,9 +519,6 @@ public class XMLMapWriter implements MapWriter {
         if (!mapLayer.isVisible()) {
             xmlWriter.writeAttribute("visible", "0");
         }
-        if (mapLayer.getOpacity() < 1.0f) {
-            xmlWriter.writeAttribute("opacity", mapLayer.getOpacity());
-        }
 
         writeProperties(mapLayer.getProperties(), xmlWriter);
 

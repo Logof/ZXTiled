@@ -1577,9 +1577,6 @@ public class MapEditor implements ActionListener, MouseListener,
         // At the moment, this can only be a new layer selection
         if (currentMap != null && selectedRow >= 0) {
             setCurrentLayerIndex(currentMap.getTotalLayers() - selectedRow - 1);
-
-            float opacity = getCurrentLayer().getOpacity();
-            opacitySlider.setValue((int) (opacity * 100));
         } else {
             setCurrentLayerIndex(-1);
         }
@@ -1590,12 +1587,7 @@ public class MapEditor implements ActionListener, MouseListener,
     public void stateChanged(ChangeEvent e) {
         JViewport mapViewport = mapScrollPane.getViewport();
 
-        if (e.getSource() == opacitySlider) {
-            if (currentMap != null && currentLayer >= 0) {
-                MapLayer layer = getCurrentLayer();
-                layer.setOpacity(opacitySlider.getValue() / 100.0f);
-            }
-        } else if (e.getSource() == mapViewport && mapView != null) {
+        if (e.getSource() == mapViewport && mapView != null) {
             // Store the point in the middle for zooming purposes
             Rectangle viewRect = mapViewport.getViewRect();
             relativeMidX = Math.min(1, (viewRect.x + (float) viewRect.width / 2) / (float) mapView.getWidth());

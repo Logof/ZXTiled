@@ -227,7 +227,7 @@ public class TileLayer extends MapLayer {
      * @throws LayerLockedException when this layer is locked
      */
     public void removeTile(Tile tile) throws LayerLockedException {
-        if (getLocked()) {
+        if (isLocked()) {
             throw new LayerLockedException(
                     "Attempted to remove tile when this layer is locked.");
         }
@@ -250,7 +250,7 @@ public class TileLayer extends MapLayer {
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
-        if (bounds.contains(tx, ty) && !getLocked()) {
+        if (bounds.contains(tx, ty) && !isLocked()) {
             map[ty - bounds.y][tx - bounds.x] = ti;
         }
     }
@@ -437,7 +437,7 @@ public class TileLayer extends MapLayer {
      * @see MultilayerPlane#resize
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (getLocked())
+        if (isLocked())
             return;
 
         Tile[][] newMap = new Tile[height][width];

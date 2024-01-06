@@ -594,9 +594,9 @@ public class XMLMapTransformer implements MapReader {
 
         ml.setName(getAttributeValue(t, "name"));
 
-        if (opacity != null) {
+        /*if (opacity != null) {
             ml.setOpacity(Float.parseFloat(opacity));
-        }
+        }*/
 
         readProperties(t.getChildNodes(), ml.getProperties());
 
