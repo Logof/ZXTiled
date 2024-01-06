@@ -1996,27 +1996,6 @@ public class MapEditor implements ActionListener, MouseListener,
         public LayerTransformAction(int transform) {
             this.transform = transform;
             switch (transform) {
-                case MapLayer.ROTATE_90:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate90.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate90.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-90-16.png"));
-                    break;
-                case MapLayer.ROTATE_180:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate180.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate180.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-180-16.png"));
-                    break;
-                case MapLayer.ROTATE_270:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate270.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate270.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-270-16.png"));
-                    break;
                 case MapLayer.MIRROR_VERTICAL:
                     putValue(NAME, Resources.getString("action.layer.transform.vertical.name"));
                     putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.vertical.tooltip"));
