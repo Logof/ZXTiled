@@ -17,7 +17,7 @@ public class MapEditorComponentListener implements ComponentListener {
     public void componentResized(ComponentEvent componentEvent) {
         // This can currently only happen when the map changes size
         String s = (int) (mapEditor.getMapView().getZoom() * 100) + "%";
-        mapEditor.getZoomLabel().setText(s);
+        mapEditor.getStatusBar().getZoomLabel().setText(s);
 
         // Restore the midpoint
         JViewport mapViewPort = mapEditor.getMapScrollPane().getViewport();

@@ -1,6 +1,7 @@
 package org.github.logof.zxtiled.core;
 
 import lombok.Getter;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.selection.ToolSemantic;
@@ -30,10 +31,10 @@ public class PointerStateManager {
                 case PS_POINT:
                 case PS_POUR:
                 case PS_MARQUEE:
-                    mapEditor.getMapView().setCursor(MapEditor.curDefault);
+                    mapEditor.getMapView().setCursor(Constants.CURSOR_DEFAULT);
                     break;
                 case PS_EYED:
-                    mapEditor.getMapView().setCursor(MapEditor.curEyed);
+                    mapEditor.getMapView().setCursor(Constants.CURSOR_EYED);
                     break;
             }
         }

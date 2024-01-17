@@ -1,6 +1,12 @@
 package org.github.logof.zxtiled.mapeditor;
 
+import java.awt.*;
+
 public class Constants {
+    public static final Cursor CURSOR_EYED = new Cursor(Cursor.CROSSHAIR_CURSOR);
+    public static final Cursor CURSOR_DEFAULT = new Cursor(Cursor.DEFAULT_CURSOR);
+
+
     public static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
     public static final String PANEL_TILE_PALETTE = Resources.getString("panel.tilepalette.title");
     public static final String PANEL_LAYERS = Resources.getString("panel.layers.title");

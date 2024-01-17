@@ -62,11 +62,11 @@ import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
 import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
 import org.github.logof.zxtiled.mapeditor.ui.MiniMapViewer;
 import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
+import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
 import org.github.logof.zxtiled.mapeditor.ui.TButton;
 import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
 import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
-import org.github.logof.zxtiled.mapeditor.ui.TimedStatusLabel;
 import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
 import org.github.logof.zxtiled.mapeditor.ui.menu.FileMenu;
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
@@ -112,9 +112,6 @@ public class MapEditor {
 
     public static final Preferences preferences = TiledConfiguration.root();
 
-    public static final Cursor curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
-    public static final Cursor curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
-
     @Getter
     private final UndoHandler undoHandler;
     @Getter
@@ -156,7 +153,9 @@ public class MapEditor {
     @Setter
     private float relativeMidY;
     private JPanel dataPanel;
-    private JPanel statusBar;
+
+    @Getter
+    private StatusBar statusBar;
     private MainMenuBar mainMenuBar;
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem cursorMenuItem;
@@ -174,12 +173,7 @@ public class MapEditor {
 
     @Getter
     private JSlider opacitySlider;
-    @Getter
-    private JLabel zoomLabel;
-    @Getter
-    private JLabel tilePositionLabel;
-    @Getter
-    private TimedStatusLabel statusLabel;
+
     private TabbedTilesetsPane tabbedTilesetsPane;
     private AboutDialog aboutDialog;
     @Getter
@@ -333,7 +327,7 @@ public class MapEditor {
         mapScrollPane.getVerticalScrollBar().addAdjustmentListener(mapScrollPaneAdjustmentListener);
 
         createData();
-        createStatusBar();
+        statusBar = new StatusBar();
 
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
@@ -655,25 +649,7 @@ public class MapEditor {
         dataPanel.add(layerPanel);
     }
 
-    private void createStatusBar() {
-        statusBar = new JPanel();
-        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
 
-        zoomLabel = new JLabel("100%");
-        zoomLabel.setPreferredSize(zoomLabel.getPreferredSize());
-        tilePositionLabel = new JLabel(" ", SwingConstants.CENTER);
-
-        statusBar.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
-        JPanel largePart = new JPanel();
-
-        statusLabel = new TimedStatusLabel(5);
-
-        statusBar.add(statusLabel);
-        statusBar.add(largePart);
-        statusBar.add(tilePositionLabel);
-        statusBar.add(Box.createRigidArea(new Dimension(20, 0)));
-        statusBar.add(zoomLabel);
-    }
 
     public void updateLayerTable() {
         int currentLayerIndex = this.currentLayerIndex;
@@ -790,7 +766,8 @@ public class MapEditor {
         MapLayer l = currentTileMap.getLayer(currentLayerIndex);
         mapView.setCurrentLayer(l);
         Rectangle r = l.getBounds();
-        statusLabel.setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
+        statusBar.getStatusLabel()
+                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
         cursorHighlight.setParent(getCurrentLayer());
 
         pointerStateManager.updateToolSemantics();
@@ -798,9 +775,9 @@ public class MapEditor {
 
     public void updateTileCoordsLabel(Point tile) {
         if (tile != null && currentTileMap.inBounds(tile.x, tile.y)) {
-            tilePositionLabel.setText(tile.x + ", " + tile.y);
+            statusBar.getTilePositionLabel().setText(tile.x + ", " + tile.y);
         } else {
-            tilePositionLabel.setText(" ");
+            statusBar.getTilePositionLabel().setText(" ");
         }
     }
 
@@ -1103,7 +1080,7 @@ public class MapEditor {
                     msg,
                     Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
-            statusLabel.setErrorText(msg);
+            statusBar.getStatusLabel().setErrorText(msg);
             return false;
         }
 
@@ -1113,7 +1090,7 @@ public class MapEditor {
             if (tileMap != null) {
                 setCurrentTileMap(tileMap);
                 updateRecent(file);
-                statusLabel.setInfoText(Constants.STATUS_FILE_INFO_LOAD_SUCCESS);
+                statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_INFO_LOAD_SUCCESS);
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
@@ -1131,7 +1108,7 @@ public class MapEditor {
             e.printStackTrace();
         }
 
-        statusLabel.setInfoText(Constants.STATUS_FILE_ERROR_LOAD_FAILURE);
+        statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_ERROR_LOAD_FAILURE);
         return false;
     }
 
@@ -1173,9 +1150,9 @@ public class MapEditor {
             mapScrollPane.setViewportView(Box.createRigidArea(
                     new Dimension(0, 0)));
             pointerStateManager.setCurrentPointerState(PointerStateEnum.PS_POINT);
-            tilePositionLabel.setPreferredSize(null);
-            tilePositionLabel.setText(" ");
-            zoomLabel.setText(" ");
+            statusBar.getTilePositionLabel().setPreferredSize(null);
+            statusBar.getTilePositionLabel().setText(" ");
+            statusBar.getZoomLabel().setText(" ");
             setCurrentTile(null);
         } else {
             final Preferences display = preferences.node("display");
@@ -1205,14 +1182,14 @@ public class MapEditor {
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
 
-            tilePositionLabel.setText((currentTileMap.getWidth() - 1)
+            statusBar.getTilePositionLabel().setText((currentTileMap.getWidth() - 1)
                     + ", " + (currentTileMap.getHeight() - 1));
-            tilePositionLabel.setPreferredSize(null);
-            Dimension size = tilePositionLabel.getPreferredSize();
-            tilePositionLabel.setText(" ");
-            tilePositionLabel.setMinimumSize(new Dimension(20, 50));
-            tilePositionLabel.setPreferredSize(size);
-            zoomLabel.setText(((int) (mapView.getZoom() * 100)) + "%");
+            statusBar.getTilePositionLabel().setPreferredSize(null);
+            Dimension size = statusBar.getTilePositionLabel().getPreferredSize();
+            statusBar.getTilePositionLabel().setText(" ");
+            statusBar.getTilePositionLabel().setMinimumSize(new Dimension(20, 50));
+            statusBar.getTilePositionLabel().setPreferredSize(size);
+            statusBar.getZoomLabel().setText(((int) (mapView.getZoom() * 100)) + "%");
 
             // Get the first non-null tile from the first tileset containing
             // non-null tiles.

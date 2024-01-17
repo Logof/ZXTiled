@@ -204,13 +204,16 @@ public class MapEditorMouseListener implements MouseListener,
                         try {
                             mapEditor.getMapView().repaintRegion(
                                     layer, mapEditor.getCurrentBrush().doPaint(tile.x, tile.y));
-                            mapEditor.getStatusLabel().clearText();
+                            mapEditor.getStatusBar().getStatusLabel().clearText();
                         } catch (LayerLockedBrushException llx) {
-                            mapEditor.getStatusLabel().setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_LOCKED);
+                            mapEditor.getStatusBar().getStatusLabel()
+                                     .setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_LOCKED);
                         } catch (LayerInvisibleBrushException llx) {
-                            mapEditor.getStatusLabel().setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_INVISIBLE);
+                            mapEditor.getStatusBar().getStatusLabel()
+                                     .setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_INVISIBLE);
                         } catch (BrushException bx) {
-                            mapEditor.getStatusLabel().setErrorText(Constants.STATUS_PAINT_ERROR_GENERAL);
+                            mapEditor.getStatusBar().getStatusLabel()
+                                     .setErrorText(Constants.STATUS_PAINT_ERROR_GENERAL);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -248,7 +251,7 @@ public class MapEditorMouseListener implements MouseListener,
                     layer.translate(translation.x, translation.y);
                     moveDist.translate(translation.x, translation.y);
                     mapEditor.getMapView().repaint();
-                    mapEditor.getStatusLabel()
+                    mapEditor.getStatusBar().getStatusLabel()
                              .setInfoText(String.format(Constants.STATUS_LAYER_MOVED_FORMAT, layer.getBounds().x, layer.getBounds().y));
                     break;
                 }
@@ -456,7 +459,7 @@ public class MapEditorMouseListener implements MouseListener,
 
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
-        mapEditor.getTilePositionLabel().setText(" ");
+        mapEditor.getStatusBar().getTilePositionLabel().setText(" ");
         mapEditor.updateCursorHighlight(null);
     }
 
