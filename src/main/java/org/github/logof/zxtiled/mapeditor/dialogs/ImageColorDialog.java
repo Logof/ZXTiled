@@ -13,12 +13,10 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.widget.ImageViewPanel;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
+import org.github.logof.zxtiled.mapeditor.ui.ImageViewPanel;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -93,11 +91,9 @@ public class ImageColorDialog extends JDialog implements MouseListener,
         setContentPane(mainPanel);
 
         //create actionlisteners
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                color = null;
-                dispose();
-            }
+        cancelButton.addActionListener(actionEvent -> {
+            color = null;
+            dispose();
         });
     }
 

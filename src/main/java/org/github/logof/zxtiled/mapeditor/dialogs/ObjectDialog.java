@@ -14,9 +14,9 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
-import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;

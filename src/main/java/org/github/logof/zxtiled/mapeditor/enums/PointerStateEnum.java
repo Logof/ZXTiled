@@ -1,6 +1,6 @@
 package org.github.logof.zxtiled.mapeditor.enums;
 
-public enum ActionModesEnum {
+public enum PointerStateEnum {
     PS_POINT,
     PS_PAINT,
     PS_ERASE,

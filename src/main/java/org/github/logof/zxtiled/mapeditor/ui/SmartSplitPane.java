@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;

@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmableFileFilter;
@@ -48,7 +48,7 @@ public class SaveAsImageAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if (editor.getCurrentMap() == null)
+        if (editor.getCurrentTileMap() == null)
             return;
 
         JFileChooser chooser = new ConfirmingFileChooser();
@@ -83,8 +83,8 @@ public class SaveAsImageAction extends AbstractAction {
      * @param filename Image filename to save map render to.
      */
     private void saveMapImage(String filename) {
-        final Map currentMap = editor.getCurrentMap();
-        final MapView myView = MapView.createViewforMap(currentMap);
+        final TileMap currentTileMap = editor.getCurrentTileMap();
+        final MapView myView = MapView.createViewforMap(currentTileMap);
         myView.setMode(MapView.PF_NO_SPECIAL, true);
 
         // Take grid and zoom level from the current map view

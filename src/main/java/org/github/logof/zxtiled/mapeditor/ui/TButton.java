@@ -10,8 +10,9 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
+import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 
@@ -21,6 +22,7 @@ import java.awt.*;
  *
  * @version $Id$
  */
+@Setter
 public class TButton extends JButton {
     private boolean showText;
 
@@ -40,10 +42,6 @@ public class TButton extends JButton {
     public TButton(Action action, boolean showText) {
         this(showText);
         setAction(action);
-    }
-
-    public void setShowText(boolean showText) {
-        this.showText = showText;
     }
 
     public void setText(String text) {

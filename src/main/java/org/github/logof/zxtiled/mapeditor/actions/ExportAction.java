@@ -1,6 +1,6 @@
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
@@ -21,8 +21,8 @@ public class ExportAction extends SaveAsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Map currentMap = editor.getCurrentMap();
-        String filePath = currentMap.getFilename();
+        TileMap currentTileMap = editor.getCurrentTileMap();
+        String filePath = currentTileMap.getFilename();
 
         if (filePath != null) {
             int dotIndex = filePath.lastIndexOf('.');

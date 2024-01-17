@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.undo.DeleteLayerEdit;
@@ -36,14 +36,14 @@ public class DeleteLayerAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Map map = editor.getCurrentMap();
+        TileMap tileMap = editor.getCurrentTileMap();
         int layerIndex = editor.getCurrentLayerIndex();
-        int totalLayers = map.getTotalLayers();
+        int totalLayers = tileMap.getTotalLayers();
 
-        UndoableEdit layerDeleteEdit = new DeleteLayerEdit(editor, map, layerIndex);
+        UndoableEdit layerDeleteEdit = new DeleteLayerEdit(editor, tileMap, layerIndex);
 
         if (layerIndex >= 0) {
-            map.removeLayer(layerIndex);
+            tileMap.removeLayer(layerIndex);
 
             // If the topmost layer was selected, the layer index is invalid
             // after removing that layer. The right thing to do is to reset it

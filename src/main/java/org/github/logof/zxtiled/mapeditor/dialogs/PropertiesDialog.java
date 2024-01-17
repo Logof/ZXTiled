@@ -13,9 +13,9 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.ChangePropertiesEdit;
 import org.github.logof.zxtiled.mapeditor.util.PropertiesTableModel;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.undo.UndoableEdit;

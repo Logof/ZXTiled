@@ -98,14 +98,14 @@ public class SaveAsAction extends AbstractAction {
     protected void saveFile(TiledFileFilter saver, String filename) {
         try {
             if (saver.getType() == TiledFileFilter.FILTER_EXT) {
-                MapHelper.saveMap(editor.getCurrentMap(), filename);
+                MapHelper.saveMap(editor.getCurrentTileMap(), filename);
             } else {
-                MapHelper.saveMap(editor.getCurrentMap(), saver.getPlugin(), filename);
+                MapHelper.saveMap(editor.getCurrentTileMap(), saver.getPlugin(), filename);
             }
 
             // The file was saved successfully, update some things.
             // todo: this could probably be done a bit neater
-            editor.getCurrentMap().setFilename(filename);
+            editor.getCurrentTileMap().setFilename(filename);
             editor.updateRecent(filename);
             editor.getUndoHandler().commitSave();
             editor.updateTitle();

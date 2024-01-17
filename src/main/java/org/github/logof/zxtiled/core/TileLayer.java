@@ -65,7 +65,7 @@ public class TileLayer extends MapLayer {
      * @param w width in tiles
      * @param h height in tiles
      */
-    public TileLayer(Map m, int w, int h) {
+    public TileLayer(TileMap m, int w, int h) {
         super(w, h);
         setTileDimensions(m.getTileWidth(), m.getTileHeight());
         setMap(m);

@@ -13,10 +13,10 @@
  *  by Matthias Totz <mtotz@users.sourceforge.net>
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeAdapter;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
@@ -44,7 +44,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
             new HashMap<TileSet, TilePalettePanel>();
     private final MyChangeListener listener = new MyChangeListener();
     private final MapEditor mapEditor;
-    private Map map;
+    private TileMap tileMap;
 
     /**
      * Constructor.
@@ -59,24 +59,24 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Sets the tiles panes to the the ones from this map.
      *
-     * @param map the map of which to display the tilesets
+     * @param tileMap the map of which to display the tilesets
      */
-    public void setMap(Map map) {
-        if (this.map == map)
+    public void setMap(TileMap tileMap) {
+        if (this.tileMap == tileMap)
             return;
 
-        if (this.map != null) {
-            this.map.removeMapChangeListener(listener);
+        if (this.tileMap != null) {
+            this.tileMap.removeMapChangeListener(listener);
         }
 
-        if (map == null) {
+        if (tileMap == null) {
             removeAll();
         } else {
-            recreateTabs(map.getTilesets());
-            map.addMapChangeListener(listener);
+            recreateTabs(tileMap.getTilesets());
+            tileMap.addMapChangeListener(listener);
         }
 
-        this.map = map;
+        this.tileMap = tileMap;
     }
 
     /**
@@ -185,7 +185,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
         public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
             TileSet set = event.getTileset();
-            int index = map.getTilesets().indexOf(set);
+            int index = tileMap.getTilesets().indexOf(set);
 
             setTitleAt(index, newName);
         }

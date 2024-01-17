@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
@@ -34,8 +34,8 @@ public class SaveAction extends SaveAsAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Map currentMap = editor.getCurrentMap();
-        String filePath = currentMap.getFilename();
+        TileMap currentTileMap = editor.getCurrentTileMap();
+        String filePath = currentTileMap.getFilename();
 
         // todo: Fix the case where the plugin cannot be determined by the
         // todo: current filename. This can happen when the user has used

@@ -15,12 +15,12 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.ColorButton;
+import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.BorderTileCutter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.TileCutter;
-import org.github.logof.zxtiled.mapeditor.widget.ColorButton;
-import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -72,7 +72,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     private JLabel tilebmpFileLabel, cutterLabel, tileHeightLabel;
     private JCheckBox tilebmpCheck;
     private JCheckBox transCheck;
-    private JComboBox cutterBox;
+    private JComboBox<String> cutterBox;
     private JButton previewButton;
     private JButton browseButton;
     private JButton propsButton;
@@ -125,7 +125,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         tileHeight.setEnabled(false);
         tileWidthLabel.setEnabled(false);
 
-        cutterBox = new JComboBox(new String[]{"Basic", "Border"});
+        cutterBox = new JComboBox<>(new String[]{"Basic", "Border"});
         cutterBox.setEditable(false);
         cutterBox.setEnabled(false);
         cutterLabel.setEnabled(false);

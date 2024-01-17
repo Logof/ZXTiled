@@ -12,10 +12,10 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
+import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,7 @@ public class NewMapDialog extends JDialog implements ActionListener {
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String ORTHOGONAL_MAP_TYPE = Resources.getString("general.maptype.orthogonal");
     private final Preferences preferences = TiledConfiguration.node("dialog/newmap");
-    private Map newMap;
+    private TileMap newTileMap;
     private IntegerSpinner mapWidth;
     private IntegerSpinner mapHeight;
     private IntegerSpinner tileWidth;
@@ -161,22 +161,22 @@ public class NewMapDialog extends JDialog implements ActionListener {
         getRootPane().setDefaultButton(okButton);
     }
 
-    public Map create() {
+    public TileMap create() {
         setVisible(true);
-        return newMap;
+        return newTileMap;
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals(OK_BUTTON)) {
             int width = mapWidth.intValue();
             int height = mapHeight.intValue();
-            int orientation = Map.MDO_ORTHOGONAL;
+            int orientation = TileMap.MDO_ORTHOGONAL;
 
-            newMap = new Map(width * 15, height * 10);
-            newMap.setTileWidth(16);
-            newMap.setTileHeight(16);
-            newMap.addLayer();
-            newMap.setOrientation(orientation);
+            newTileMap = new TileMap(width * 15, height * 10);
+            newTileMap.setTileWidth(16);
+            newTileMap.setTileHeight(16);
+            newTileMap.addLayer();
+            newTileMap.setOrientation(orientation);
 
             // Save dialog options
 

@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.dungeon;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 
 public class CorridorBuilder extends Builder {
     public void iterate() {
@@ -22,6 +22,6 @@ public class CorridorBuilder extends Builder {
         return null;
     }
 
-    public void store(Map m) {
+    public void store(TileMap m) {
     }
 }

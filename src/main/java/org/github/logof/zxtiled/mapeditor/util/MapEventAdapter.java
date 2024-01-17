@@ -14,17 +14,12 @@ package org.github.logof.zxtiled.mapeditor.util;
 
 import java.awt.*;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class MapEventAdapter {
-    public static final int ME_MAPACTIVE = 1;
-    public static final int ME_MAPINACTIVE = 2;
+    public static final int MAP_EVENT_MAP_ACTIVE = 1;
+    public static final int MAP_EVENT_MAP_INACTIVE = 2;
 
-    private final LinkedList listeners;
-
-    public MapEventAdapter() {
-        listeners = new LinkedList();
-    }
+    private static final LinkedList<Component> listeners = new LinkedList<>();
 
     /**
      * Adds a Component to the list of listeners of map events. Checks that
@@ -32,7 +27,7 @@ public class MapEventAdapter {
      *
      * @param obj the listener to add
      */
-    public void addListener(Component obj) {
+    public static void addListener(Component obj) {
         /* Small sanity check - don't add it if it's already there.
          * Really only useful to the removeListener() func, as
          * LinkedList.remove() only removes the first instance of a given
@@ -48,7 +43,7 @@ public class MapEventAdapter {
      *
      * @param obj the Component to remove
      */
-    public void removeListener(Component obj) {
+    public static void removeListener(Component obj) {
         listeners.remove(obj);
     }
 
@@ -57,31 +52,27 @@ public class MapEventAdapter {
      *
      * @param type the event type
      */
-    public void fireEvent(int type) {
-        //TODO: the idea is to extend this to allow for a multitude of
-        // different event types at some point...
-        if (type == ME_MAPACTIVE) {
-            enableEvent();
-        } else if (type == ME_MAPINACTIVE) {
-            disableEvent();
+    public static void fireEvent(int type) {
+        //TODO: the idea is to extend this to allow for a multitude of different event types at some point...
+        switch (type) {
+            case MAP_EVENT_MAP_ACTIVE:
+                enableEvent();
+                break;
+            case MAP_EVENT_MAP_INACTIVE:
+                disableEvent();
+                break;
         }
     }
 
-    private void enableEvent() {
-        Component c;
-        ListIterator li = listeners.listIterator();
-        while (li.hasNext()) {
-            c = (Component) li.next();
-            c.setEnabled(true);
+    private static void enableEvent() {
+        for (Component listener : listeners) {
+            listener.setEnabled(true);
         }
     }
 
-    private void disableEvent() {
-        Component c;
-        ListIterator li = listeners.listIterator();
-        while (li.hasNext()) {
-            c = (Component) li.next();
-            c.setEnabled(false);
+    private static void disableEvent() {
+        for (Component listener : listeners) {
+            listener.setEnabled(false);
         }
     }
 }

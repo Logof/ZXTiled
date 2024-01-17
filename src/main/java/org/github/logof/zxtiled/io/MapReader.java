@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.io;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import java.io.FileFilter;
 import java.io.InputStream;
@@ -21,17 +21,17 @@ import java.io.InputStream;
 /**
  * Used by Tiled to denote a plugin for reading maps. The map file
  * can have any format, as long as the MapReader implementor returns
- * instances of {@link Map} and {@link TileSet}.
+ * instances of {@link TileMap} and {@link TileSet}.
  */
 public interface MapReader extends PluggableMapIO, FileFilter {
     /**
      * Loads a map from a file.
      *
      * @param filename the filename of the map file
-     * @return A {@link Map} instance with the relevant data
+     * @return A {@link TileMap} instance with the relevant data
      * @throws Exception
      */
-    Map readMap(String filename) throws Exception;
+    TileMap readMap(String filename) throws Exception;
 
     /**
      * Loads a tileset from a file.
@@ -47,10 +47,10 @@ public interface MapReader extends PluggableMapIO, FileFilter {
      * for maps which are part of a larger binary dataset
      *
      * @param in
-     * @return A {@link Map} object with the relevant data
+     * @return A {@link TileMap} object with the relevant data
      * @throws Exception
      */
-    Map readMap(InputStream in) throws Exception;
+    TileMap readMap(InputStream in) throws Exception;
 
     /**
      * Overload this to load a tileset from an open stream.

@@ -13,7 +13,7 @@
 package org.github.logof.zxtiled.core.event;
 
 import lombok.Getter;
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import java.util.EventObject;
 
 /**
@@ -24,22 +24,22 @@ public class MapChangedEvent extends EventObject {
     private int layerIndex;
     private final int oldLayerIndex;
 
-    public MapChangedEvent(Map map) {
-        this(map, -1);
+    public MapChangedEvent(TileMap tileMap) {
+        this(tileMap, -1);
         layerIndex = -1;
     }
 
-    public MapChangedEvent(Map map, int layerIndex) {
-        this(map, layerIndex, -1);
+    public MapChangedEvent(TileMap tileMap, int layerIndex) {
+        this(tileMap, layerIndex, -1);
     }
 
-    public MapChangedEvent(Map map, int layerIndex, int oldLayerIndex) {
-        super(map);
+    public MapChangedEvent(TileMap tileMap, int layerIndex, int oldLayerIndex) {
+        super(tileMap);
         this.layerIndex = layerIndex;
         this.oldLayerIndex = oldLayerIndex;
     }
 
-    public Map getMap() {
-        return (Map) getSource();
+    public TileMap getMap() {
+        return (TileMap) getSource();
     }
 }

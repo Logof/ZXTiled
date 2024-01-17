@@ -31,6 +31,6 @@ public class CloseMapAction extends AbstractFileAction {
     }
 
     protected void doPerformAction() {
-        editor.setCurrentMap(null);
+        editor.setCurrentTileMap(null);
     }
 }

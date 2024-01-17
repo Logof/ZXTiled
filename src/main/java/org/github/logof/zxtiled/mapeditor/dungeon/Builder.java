@@ -12,7 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.dungeon;
 
-import org.github.logof.zxtiled.core.Map;
+import lombok.Getter;
+import org.github.logof.zxtiled.core.TileMap;
 
 abstract public class Builder {
     public static final int NORTH = 1;
@@ -26,6 +27,7 @@ abstract public class Builder {
             floorTileId = 0,
             doorTileId = 0;
     protected int mapx, mapy;
+    @Getter
     private int ttl;
 
     public Builder() {
@@ -41,13 +43,10 @@ abstract public class Builder {
         ttl--;
     }
 
-    public int getTtl() {
-        return ttl;
-    }
 
     public abstract void iterate();
 
     public abstract Builder spawn();
 
-    public abstract void store(Map m);
+    public abstract void store(TileMap m);
 }

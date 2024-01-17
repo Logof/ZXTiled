@@ -12,15 +12,15 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.MultisetListRenderer;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -40,7 +40,7 @@ public class SearchDialog extends JDialog implements ActionListener {
     private static final String REPLACE_BUTTON = Resources.getString("dialog.search.replace.button");
     private static final String REPLACE_ALL_BUTTON = Resources.getString("dialog.search.replaceall.button");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
-    private final Map map;
+    private final TileMap tileMap;
     private JComboBox searchCBox, replaceCBox;
     private Point currentMatch;
     private SelectionLayer sl;
@@ -49,9 +49,9 @@ public class SearchDialog extends JDialog implements ActionListener {
         this(parent, null);
     }
 
-    public SearchDialog(JFrame parent, Map map) {
+    public SearchDialog(JFrame parent, TileMap tileMap) {
         super(parent, DIALOG_TITLE, false);
-        this.map = map;
+        this.tileMap = tileMap;
         init();
         setLocationRelativeTo(parent);
     }
@@ -138,7 +138,7 @@ public class SearchDialog extends JDialog implements ActionListener {
     }
 
     private void queryTiles(JComboBox b) {
-        for (TileSet set : map.getTilesets()) {
+        for (TileSet set : tileMap.getTilesets()) {
             b.addItem(set);
 
             final Iterator<Object> tileIterator = set.iterator();
@@ -153,7 +153,7 @@ public class SearchDialog extends JDialog implements ActionListener {
         String command = e.getActionCommand();
 
         if (command.equals(CLOSE_BUTTON)) {
-            map.removeLayerSpecial(sl);
+            tileMap.removeLayerSpecial(sl);
             dispose();
         } else if (command.equals(FIND_BUTTON)) {
             if (searchCBox.getSelectedItem() instanceof Tile) {
@@ -161,12 +161,12 @@ public class SearchDialog extends JDialog implements ActionListener {
             }
         } else if (command.equals(FIND_ALL_BUTTON)) {
             if (sl != null) {
-                map.removeLayerSpecial(sl);
+                tileMap.removeLayerSpecial(sl);
             }
 
-            sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
+            sl = new SelectionLayer(tileMap.getWidth(), tileMap.getHeight(), tileMap.getTileWidth(), tileMap.getTileHeight());
             Rectangle bounds = new Rectangle();
-            final Iterator<MapLayer> itr = map.getLayers();
+            final Iterator<MapLayer> itr = tileMap.getLayers();
             while (itr.hasNext()) {
                 MapLayer layer = itr.next();
                 if (layer instanceof TileLayer) {
@@ -180,8 +180,8 @@ public class SearchDialog extends JDialog implements ActionListener {
                     }
                 }
             }
-            map.addLayerSpecial(sl);
-            map.touch();
+            tileMap.addLayerSpecial(sl);
+            tileMap.touch();
 
         } else if (command.equals(REPLACE_ALL_BUTTON)) {
             if (!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
@@ -194,7 +194,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 
                 // run through the layers, look for the first instance of the
                 // tile we need to replace
-                final Iterator<MapLayer> itr = map.getLayers();
+                final Iterator<MapLayer> itr = tileMap.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
                     if (layer instanceof TileLayer) {
@@ -214,33 +214,33 @@ public class SearchDialog extends JDialog implements ActionListener {
 
     private void replaceAll(Tile f, Tile r) {
         // TODO: Allow for "scopes" of one or more layers, rather than all layers
-        final Iterator<MapLayer> itr = map.getLayers();
+        final Iterator<MapLayer> itr = tileMap.getLayers();
         while (itr.hasNext()) {
             MapLayer layer = itr.next();
             if (layer instanceof TileLayer) {
                 ((TileLayer) layer).replaceTile(f, r);
             }
         }
-        map.touch();
+        tileMap.touch();
     }
 
     private void find(Tile f) {
         boolean bFound = false;
 
         if (sl != null) {
-            map.removeLayerSpecial(sl);
-            map.touch();
+            tileMap.removeLayerSpecial(sl);
+            tileMap.touch();
         }
 
-        sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
+        sl = new SelectionLayer(tileMap.getWidth(), tileMap.getHeight(), tileMap.getTileWidth(), tileMap.getTileHeight());
         Rectangle bounds = new Rectangle();
 
         int startx = currentMatch == null ? 0 : currentMatch.x;
         int starty = currentMatch == null ? 0 : currentMatch.y;
 
-        for (int y = starty; y < map.getHeight() && !bFound; y++) {
-            for (int x = startx; x < map.getWidth() && !bFound; x++) {
-                final Iterator<MapLayer> itr = map.getLayers();
+        for (int y = starty; y < tileMap.getHeight() && !bFound; y++) {
+            for (int x = startx; x < tileMap.getWidth() && !bFound; x++) {
+                final Iterator<MapLayer> itr = tileMap.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = itr.next();
 
@@ -264,8 +264,8 @@ public class SearchDialog extends JDialog implements ActionListener {
         }
 
         if (bFound) {
-            map.addLayerSpecial(sl);
-            map.touch();
+            tileMap.addLayerSpecial(sl);
+            tileMap.touch();
         }
     }
 }

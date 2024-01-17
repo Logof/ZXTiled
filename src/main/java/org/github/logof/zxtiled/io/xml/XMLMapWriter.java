@@ -12,12 +12,12 @@
 
 package org.github.logof.zxtiled.io.xml;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectGroup;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapWriter;
@@ -198,7 +198,7 @@ public class XMLMapWriter implements MapWriter {
      *
      * @param filename the filename of the map file
      */
-    public void writeMap(Map map, String filename) throws Exception {
+    public void writeMap(TileMap tileMap, String filename) throws Exception {
         OutputStream os = new FileOutputStream(filename);
 
         if (filename.endsWith(".tmx.gz")) {
@@ -209,7 +209,7 @@ public class XMLMapWriter implements MapWriter {
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
-        writeMap(map, xmlWriter, filename);
+        writeMap(tileMap, xmlWriter, filename);
         xmlWriter.endDocument();
 
         writer.flush();
@@ -238,12 +238,12 @@ public class XMLMapWriter implements MapWriter {
         writer.flush();
     }
 
-    public void writeMap(Map map, OutputStream out) throws Exception {
+    public void writeMap(TileMap tileMap, OutputStream out) throws Exception {
         Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
-        writeMap(map, xmlWriter, "/.");
+        writeMap(tileMap, xmlWriter, "/.");
         xmlWriter.endDocument();
 
         writer.flush();
@@ -260,29 +260,29 @@ public class XMLMapWriter implements MapWriter {
         writer.flush();
     }
 
-    private void writeMap(Map map, XMLWriter w, String wp) throws IOException {
+    private void writeMap(TileMap tileMap, XMLWriter w, String wp) throws IOException {
         w.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
         w.startElement("map");
 
         w.writeAttribute("version", "1.0");
 
-        if (map.getOrientation() == Map.MDO_ORTHOGONAL) {
+        if (tileMap.getOrientation() == TileMap.MDO_ORTHOGONAL) {
             w.writeAttribute("orientation", "orthogonal");
         }
 
-        w.writeAttribute("width", map.getWidth());
-        w.writeAttribute("height", map.getHeight());
-        w.writeAttribute("tilewidth", map.getTileWidth());
-        w.writeAttribute("tileheight", map.getTileHeight());
+        w.writeAttribute("width", tileMap.getWidth());
+        w.writeAttribute("height", tileMap.getHeight());
+        w.writeAttribute("tilewidth", tileMap.getTileWidth());
+        w.writeAttribute("tileheight", tileMap.getTileHeight());
 
-        w.writeAttribute("eyeDistance", map.getEyeDistance());
-        w.writeAttribute("viewportWidth", map.getViewportWidth());
-        w.writeAttribute("viewportHeight", map.getViewportHeight());
+        w.writeAttribute("eyeDistance", tileMap.getEyeDistance());
+        w.writeAttribute("viewportWidth", tileMap.getViewportWidth());
+        w.writeAttribute("viewportHeight", tileMap.getViewportHeight());
 
-        writeProperties(map.getProperties(), w);
+        writeProperties(tileMap.getProperties(), w);
 
         int firstgid = 1;
-        for (TileSet tileset : map.getTilesets()) {
+        for (TileSet tileset : tileMap.getTilesets()) {
             tileset.setFirstGid(firstgid);
             writeTilesetReference(tileset, w, wp);
             firstgid += tileset.getMaxTileId() + 1;
@@ -290,7 +290,7 @@ public class XMLMapWriter implements MapWriter {
 
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
             w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
-        Iterator<MapLayer> ml = map.getLayers();
+        Iterator<MapLayer> ml = tileMap.getLayers();
         while (ml.hasNext()) {
             MapLayer layer = ml.next();
             writeMapLayer(layer, w, wp);

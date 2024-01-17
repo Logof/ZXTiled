@@ -12,8 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import java.text.MessageFormat;
@@ -34,7 +34,7 @@ public class CloneLayerAction extends AbstractLayerAction {
 
     protected void doPerformAction() {
         MapLayer currentLayer = editor.getCurrentLayer();
-        Map currentMap = editor.getCurrentMap();
+        TileMap currentTileMap = editor.getCurrentTileMap();
 
         if (currentLayer != null) {
             try {
@@ -42,8 +42,8 @@ public class CloneLayerAction extends AbstractLayerAction {
                 String newName = Resources.getString(
                         "action.layer.duplicate.newlayer.name");
                 clone.setName(MessageFormat.format(newName, clone.getName()));
-                currentMap.addLayer(clone);
-                editor.setCurrentLayerIndex(currentMap.getTotalLayers() - 1);
+                currentTileMap.addLayer(clone);
+                editor.setCurrentLayerIndex(currentTileMap.getTotalLayers() - 1);
             } catch (CloneNotSupportedException ex) {
                 ex.printStackTrace();
             }
