@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.io;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import java.io.FileFilter;
 import java.io.OutputStream;
@@ -20,7 +20,7 @@ import java.io.OutputStream;
 /**
  * Used by Tiled to denote a plugin for writing maps. The map file
  * can have any format, as long as the MapWriter implementor accepts
- * instances of {@link Map} and {@link TileSet}.
+ * instances of {@link TileMap} and {@link TileSet}.
  * <p>
  * $Id$
  */
@@ -28,11 +28,11 @@ public interface MapWriter extends PluggableMapIO, FileFilter {
     /**
      * Saves a map to a file.
      *
-     * @param map
+     * @param tileMap
      * @param filename the filename of the map file
      * @throws Exception
      */
-    void writeMap(Map map, String filename) throws Exception;
+    void writeMap(TileMap tileMap, String filename) throws Exception;
 
     /**
      * Saves a tileset to a file.
@@ -47,11 +47,11 @@ public interface MapWriter extends PluggableMapIO, FileFilter {
      * Writes a map to an already opened stream. Useful
      * for maps which are part of a larger binary dataset
      *
-     * @param map the Map to be written
+     * @param tileMap the Map to be written
      * @param out
      * @throws Exception
      */
-    void writeMap(Map map, OutputStream out) throws Exception;
+    void writeMap(TileMap tileMap, OutputStream out) throws Exception;
 
     /**
      * Overload this to write a tileset to an open stream.

@@ -12,12 +12,12 @@
 
 package org.github.logof.zxtiled.view;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectGroup;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import javax.swing.*;
 import java.awt.*;
@@ -34,10 +34,10 @@ public class OrthoMapView extends MapView {
     /**
      * Creates a new orthographic map view that displays the specified map.
      *
-     * @param map the map to be displayed by this map view
+     * @param tileMap the map to be displayed by this map view
      */
-    public OrthoMapView(Map map) {
-        super(map);
+    public OrthoMapView(TileMap tileMap) {
+        super(tileMap);
         propPoly = new Polygon();
         propPoly.addPoint(0, 0);
         propPoly.addPoint(12, 0);
@@ -67,8 +67,8 @@ public class OrthoMapView extends MapView {
 
     public Dimension getPreferredSize() {
         return new Dimension(
-                map.getWidth() * getMapTileSize().width,
-                map.getHeight() * getMapTileSize().height);
+                tileMap.getWidth() * getMapTileSize().width,
+                tileMap.getHeight() * getMapTileSize().height);
     }
 
 
@@ -260,7 +260,7 @@ public class OrthoMapView extends MapView {
             return;
         }
         int maxExtraHeight =
-                (int) (map.getTileHeightMax() * zoom - tsize.height);
+                (int) (tileMap.getTileHeightMax() * zoom - tsize.height);
 
         // Calculate the visible corners of the region
         Point start = tileToScreenCoords(layer, region.x, region.y);
@@ -292,8 +292,8 @@ public class OrthoMapView extends MapView {
 
     protected Dimension getMapTileSize() {
         return new Dimension(
-                (int) (map.getTileWidth() * zoom),
-                (int) (map.getTileHeight() * zoom));
+                (int) (tileMap.getTileWidth() * zoom),
+                (int) (tileMap.getTileHeight() * zoom));
     }
 
     protected Polygon createGridPolygon(Dimension tileDimension, int tileX, int tileY, int border) {

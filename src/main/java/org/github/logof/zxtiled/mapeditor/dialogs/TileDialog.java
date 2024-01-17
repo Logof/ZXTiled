@@ -13,14 +13,14 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.Tile;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.ImageCellRenderer;
 import org.github.logof.zxtiled.mapeditor.util.PropertiesTableModel;
 import org.github.logof.zxtiled.mapeditor.util.TileDialogListRenderer;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -60,7 +60,7 @@ public class TileDialog extends JDialog
     private static final String TILES_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
     private Tile currentTile;
     private TileSet tileset;
-    private final Map map;
+    private final TileMap tileMap;
     private JList tileList;
     private JList imageList;
     private JTable tileProperties;
@@ -77,11 +77,11 @@ public class TileDialog extends JDialog
     private int currentImageIndex = -1;
 
 
-    public TileDialog(Dialog parent, TileSet tileset, Map map) {
+    public TileDialog(Dialog parent, TileSet tileset, TileMap tileMap) {
         super(parent, DIALOG_TITLE + " '" + tileset.getName() + "'", true);
         location = "";
         this.tileset = tileset;    //unofficial
-        this.map = map;        //also unofficial
+        this.tileMap = tileMap;        //also unofficial
         init();
         setTileset(tileset);
         setCurrentTile(null);
@@ -285,8 +285,8 @@ public class TileDialog extends JDialog
             // Find new tile images at the location of the tileset
             if (tileset.getSource() != null) {
                 location = tileset.getSource();
-            } else if (map != null) {
-                location = map.getFilename();
+            } else if (tileMap != null) {
+                location = tileMap.getFilename();
             }
             tilesetNameEntry.setText(tileset.getName());
         }

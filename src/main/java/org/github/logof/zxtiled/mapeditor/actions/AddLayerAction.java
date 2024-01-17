@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 
@@ -30,8 +30,8 @@ public class AddLayerAction extends AbstractLayerAction {
     }
 
     protected void doPerformAction() {
-        Map currentMap = editor.getCurrentMap();
-        currentMap.addLayer();
-        editor.setCurrentLayerIndex(currentMap.getTotalLayers() - 1);
+        TileMap currentTileMap = editor.getCurrentTileMap();
+        currentTileMap.addLayer();
+        editor.setCurrentLayerIndex(currentTileMap.getTotalLayers() - 1);
     }
 }

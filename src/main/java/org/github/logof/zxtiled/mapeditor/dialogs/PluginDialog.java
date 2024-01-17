@@ -16,7 +16,7 @@ import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;

@@ -15,8 +15,8 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.ImageCellRenderer;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

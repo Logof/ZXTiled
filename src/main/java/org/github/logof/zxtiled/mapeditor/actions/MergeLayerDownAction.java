@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.*;
@@ -32,11 +32,11 @@ public class MergeLayerDownAction extends AbstractLayerAction {
     }
 
     protected void doPerformAction() {
-        Map map = editor.getCurrentMap();
+        TileMap tileMap = editor.getCurrentTileMap();
         int layerIndex = editor.getCurrentLayerIndex();
 
         if (layerIndex > 0) {
-            map.mergeLayerDown(layerIndex);
+            tileMap.mergeLayerDown(layerIndex);
             editor.setCurrentLayerIndex(layerIndex - 1);
         }
     }

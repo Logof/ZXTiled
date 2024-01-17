@@ -12,12 +12,12 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.widget.ResizePanel;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
+import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.ui.ResizePanel;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -43,7 +43,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
     private static final String HEIGHT_LABEL = Resources.getString("dialog.resizemap.height.label");
     private static final String CURRENT_SIZE_TITLE = Resources.getString("dialog.resizemap.currentsize.title");
     private static final String RESIZE_LAYERS_TITLE = Resources.getString("dialog.resizemap.resizelayers.title");
-    private final Map currentMap;
+    private final TileMap currentTileMap;
     private IntegerSpinner width, height, offsetX, offsetY;
     private JCheckBox resizeLayersCheckBox;
     private JButton bOk, bCancel;
@@ -51,7 +51,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
 
     public ResizeDialog(JFrame parent, MapEditor m) {
         super(parent, DIALOG_TITLE, true);
-        currentMap = m.getCurrentMap();
+        currentTileMap = m.getCurrentTileMap();
         init();
         setLocationRelativeTo(getOwner());
     }
@@ -62,8 +62,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
         bOk = new JButton(OK_BUTTON);
         bCancel = new JButton(CANCEL_BUTTON);
 
-        width = new IntegerSpinner(currentMap.getWidth(), 1);
-        height = new IntegerSpinner(currentMap.getHeight(), 1);
+        width = new IntegerSpinner(currentTileMap.getWidth(), 1);
+        height = new IntegerSpinner(currentTileMap.getHeight(), 1);
         offsetX = new IntegerSpinner();
         offsetY = new IntegerSpinner();
         resizeLayersCheckBox = new JCheckBox(RESIZE_LAYERS_TITLE, true);
@@ -72,7 +72,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
         offsetY.addChangeListener(this);
         resizeLayersCheckBox.addActionListener(this);
 
-        orient = new ResizePanel(currentMap);
+        orient = new ResizePanel(currentTileMap);
         orient.addPropertyChangeListener(this);
 
         // Offset panel
@@ -146,9 +146,9 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c.insets = new Insets(5, 10, 0, 0);
         c.gridx = 1;
         c.gridy = 0;
-        origSizePanel.add(new JLabel(String.valueOf(currentMap.getWidth())), c);
+        origSizePanel.add(new JLabel(String.valueOf(currentTileMap.getWidth())), c);
         c.gridy = 1;
-        origSizePanel.add(new JLabel(String.valueOf(currentMap.getHeight())), c);
+        origSizePanel.add(new JLabel(String.valueOf(currentTileMap.getHeight())), c);
 
         // Putting two size panels next to eachother
         JPanel sizePanels = new VerticalStaticJPanel(new GridBagLayout());
@@ -203,10 +203,11 @@ public class ResizeDialog extends JDialog implements ActionListener,
             boolean resizeLayers = resizeLayersCheckBox.isSelected();
 
             // Math works out in MapLayer#resize
-            if (resizeLayers)
-                currentMap.resize(nwidth, nheight, dx, dy);
-            else
-                currentMap.resize(nwidth, nheight);
+            if (resizeLayers) {
+                currentTileMap.resize(nwidth, nheight, dx, dy);
+            } else {
+                currentTileMap.resize(nwidth, nheight);
+            }
 
             dispose();
         } else if (src == bCancel) {
@@ -225,10 +226,10 @@ public class ResizeDialog extends JDialog implements ActionListener,
 
         if (evt.getPropertyName().equalsIgnoreCase("offsetX")) {
             int val = (Integer) evt.getNewValue();
-            offsetX.setValue((int) (val / (currentMap.getTileWidth() * zoom)));
+            offsetX.setValue((int) (val / (currentTileMap.getTileWidth() * zoom)));
         } else if (evt.getPropertyName().equalsIgnoreCase("offsetY")) {
             int val = (Integer) evt.getNewValue();
-            offsetY.setValue((int) (val / (currentMap.getTileHeight() * zoom)));
+            offsetY.setValue((int) (val / (currentTileMap.getTileHeight() * zoom)));
         }
     }
 
@@ -241,8 +242,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
             double zoom = orient.getZoom();
 
             orient.moveMap(
-                    (int) (dx * currentMap.getTileWidth() * zoom),
-                    (int) (dy * currentMap.getTileHeight() * zoom));
+                    (int) (dx * currentTileMap.getTileWidth() * zoom),
+                    (int) (dy * currentTileMap.getTileHeight() * zoom));
         }
     }
 }

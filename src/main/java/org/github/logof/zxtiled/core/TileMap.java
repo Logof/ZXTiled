@@ -30,7 +30,7 @@ import java.util.Vector;
  *
  * @version $Id$
  */
-public class Map extends MultilayerPlane implements MapLayerChangeListener {
+public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     /**
      * Orthogonal.
      */
@@ -68,7 +68,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener {
      * @param width  the map width in tiles.
      * @param height the map height in tiles.
      */
-    public Map(int width, int height) {
+    public TileMap(int width, int height) {
         super(width, height);
         properties = new Properties();
         tilesets = new Vector<>();

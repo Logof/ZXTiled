@@ -12,8 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerStateEdit;
 import javax.swing.*;
@@ -55,16 +55,16 @@ public abstract class AbstractLayerAction extends AbstractAction {
      */
     public final void actionPerformed(ActionEvent e) {
         // Capture the layers before the operation is executed.
-        Map map = editor.getCurrentMap();
-        Vector<MapLayer> layersBefore = new Vector<MapLayer>(map.getLayerVector());
+        TileMap tileMap = editor.getCurrentTileMap();
+        Vector<MapLayer> layersBefore = new Vector<MapLayer>(tileMap.getLayerVector());
 
         doPerformAction();
 
         // Capture the layers after the operation is executed and create the
         // layer state edit instance.
-        Vector<MapLayer> layersAfter = new Vector<MapLayer>(map.getLayerVector());
+        Vector<MapLayer> layersAfter = new Vector<MapLayer>(tileMap.getLayerVector());
         MapLayerStateEdit mapLayerStateEdit =
-                new MapLayerStateEdit(map, layersBefore, layersAfter,
+                new MapLayerStateEdit(tileMap, layersBefore, layersAfter,
                         e.getActionCommand());
         editor.getUndoSupport().postEdit(mapLayerStateEdit);
     }

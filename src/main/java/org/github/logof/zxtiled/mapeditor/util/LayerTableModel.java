@@ -12,11 +12,11 @@
 
 package org.github.logof.zxtiled.mapeditor.util;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapChangeAdapter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MultilayerPlane;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -58,7 +58,7 @@ public class LayerTableModel extends AbstractTableModel {
         }
         if (this.map != null) {
             try {
-                ((Map) map).removeMapChangeListener(listener);
+                ((TileMap) map).removeMapChangeListener(listener);
             } catch (ClassCastException ignored) {
 
             }
@@ -66,7 +66,7 @@ public class LayerTableModel extends AbstractTableModel {
 
         this.map = map;
         if (Objects.nonNull(map)) {
-            ((Map) map).addMapChangeListener(listener);
+            ((TileMap) map).addMapChangeListener(listener);
         }
         fireTableDataChanged();
     }

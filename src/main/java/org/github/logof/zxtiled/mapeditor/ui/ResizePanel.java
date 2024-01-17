@@ -10,9 +10,9 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -27,7 +27,7 @@ import java.awt.event.MouseEvent;
  */
 public class ResizePanel extends JPanel {
     private MapView inner;
-    private Map currentMap;
+    private TileMap currentTileMap;
     private Dimension oldDim, newDim;
     private int offsetX, offsetY;
     private Point startPress;
@@ -38,14 +38,14 @@ public class ResizePanel extends JPanel {
         setBorder(BorderFactory.createLoweredBevelBorder());
     }
 
-    public ResizePanel(Map map) {
+    public ResizePanel(TileMap tileMap) {
         this();
         zoom = 0.1;
-        currentMap = map;
+        currentTileMap = tileMap;
 
         DragHandler dragHandler = new DragHandler();
 
-        inner = MapView.createViewforMap(map);
+        inner = MapView.createViewforMap(tileMap);
         inner.setZoom(zoom);
         inner.addMouseListener(dragHandler);
         inner.addMouseMotionListener(dragHandler);
@@ -57,8 +57,8 @@ public class ResizePanel extends JPanel {
         setSize(old);
     }
 
-    public ResizePanel(Dimension size, Map map) {
-        this(map);
+    public ResizePanel(Dimension size, TileMap tileMap) {
+        this(tileMap);
         oldDim = size;
         newDim = size;
         setSize(size);
@@ -67,8 +67,8 @@ public class ResizePanel extends JPanel {
     public void moveMap(int x, int y) {
         // snap!
         inner.setLocation(
-                (int) (x * (currentMap.getTileWidth() * zoom)),
-                (int) (y * (currentMap.getTileHeight() * zoom)));
+                (int) (x * (currentTileMap.getTileWidth() * zoom)),
+                (int) (y * (currentTileMap.getTileHeight() * zoom)));
     }
 
     public void setNewDimensions(Dimension n) {
@@ -97,8 +97,8 @@ public class ResizePanel extends JPanel {
             int newOffsetX = offsetX + (e.getX() - startPress.x);
             int newOffsetY = offsetY + (e.getY() - startPress.y);
 
-            newOffsetX /= currentMap.getTileWidth() * zoom;
-            newOffsetY /= currentMap.getTileHeight() * zoom;
+            newOffsetX /= currentTileMap.getTileWidth() * zoom;
+            newOffsetY /= currentTileMap.getTileHeight() * zoom;
 
             if (newOffsetX != offsetX) {
                 firePropertyChange("offsetX", offsetX, newOffsetX);

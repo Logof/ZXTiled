@@ -34,22 +34,22 @@ public class ObjectGroup extends MapLayer {
     }
 
     /**
-     * @param map the map this object group is part of
+     * @param tileMap the map this object group is part of
      */
-    public ObjectGroup(Map map) {
-        super(map);
+    public ObjectGroup(TileMap tileMap) {
+        super(tileMap);
     }
 
     /**
      * Creates an object group that is part of the given map and has the given
      * origin.
      *
-     * @param map   the map this object group is part of
+     * @param tileMap   the map this object group is part of
      * @param origx the x origin of this layer
      * @param origy the y origin of this layer
      */
-    public ObjectGroup(Map map, int origx, int origy) {
-        super(map);
+    public ObjectGroup(TileMap tileMap, int origx, int origy) {
+        super(tileMap);
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
 

@@ -13,12 +13,12 @@
 package org.github.logof.zxtiled.view;
 
 import lombok.Getter;
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
 import org.github.logof.zxtiled.core.ObjectGroup;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.brush.Brush;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelection;
@@ -50,7 +50,7 @@ public abstract class MapView extends JPanel implements Scrollable {
     public static int ZOOM_NORMAL_SIZE = 1;
     protected static double[] zoomLevels = {1.0, 1.5, 2.0, 3.0, 4.0};
     protected static Image propertyFlagImage;
-    protected Map map;
+    protected TileMap tileMap;
     protected Brush currentBrush;
     protected int modeFlags;
     @Getter
@@ -81,9 +81,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
      *
-     * @param map the map to be displayed by this map view
+     * @param tileMap the map to be displayed by this map view
      */
-    protected MapView(Map map) {
+    protected MapView(TileMap tileMap) {
         // Setup static bits on first invocation
         if (MapView.propertyFlagImage == null) {
             try {
@@ -93,7 +93,7 @@ public abstract class MapView extends JPanel implements Scrollable {
             }
         }
 
-        this.map = map;
+        this.tileMap = tileMap;
         setOpaque(true);
     }
 
@@ -103,13 +103,13 @@ public abstract class MapView extends JPanel implements Scrollable {
      *
      * @param p the Map to create a view for
      * @return a suitable instance of a MapView for the given Map
-     * @see Map#getOrientation()
+     * @see TileMap#getOrientation()
      */
-    public static MapView createViewforMap(Map p) {
+    public static MapView createViewforMap(TileMap p) {
         MapView mapView = null;
 
         int orientation = p.getOrientation();
-        if (orientation == Map.MDO_ORTHOGONAL) {
+        if (orientation == TileMap.MDO_ORTHOGONAL) {
             mapView = new OrthoMapView(p);
         }
         return mapView;
@@ -208,7 +208,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         // only issue full repaint if we have layers with parallax enabled -
         // otherwise setting the view center will have no effect.
         boolean hasLayerWithParallaxOffset = false;
-        for (MapLayer l : map.getLayerVector())
+        for (MapLayer l : tileMap.getLayerVector())
             hasLayerWithParallaxOffset = hasLayerWithParallaxOffset || l.getViewPlaneDistance() != 0.0f || l.isViewPlaneInfinitelyFarAway();
 
         if (hasLayerWithParallaxOffset)
@@ -259,8 +259,8 @@ public abstract class MapView extends JPanel implements Scrollable {
         // The map's coordinate system is assumed to be the same as the view
         // plane's.
 
-        int mapWidthPx = map.getWidth() * map.getTileWidth();
-        int mapHeightPx = map.getHeight() * map.getTileHeight();
+        int mapWidthPx = tileMap.getWidth() * tileMap.getTileWidth();
+        int mapHeightPx = tileMap.getHeight() * tileMap.getTileHeight();
         float originPosX = (float) mapWidthPx / 2;
         float originPosY = (float) mapHeightPx / 2;
         float viewOffsetX = (viewportCenterX * mapWidthPx - originPosX);
@@ -273,8 +273,9 @@ public abstract class MapView extends JPanel implements Scrollable {
 
         // parallax offset
         float parallaxScale = 1.0f;
-        if (!layer.isViewPlaneInfinitelyFarAway())
-            parallaxScale = layer.getViewPlaneDistance() / (map.getEyeDistance() + layer.getViewPlaneDistance());
+        if (!layer.isViewPlaneInfinitelyFarAway()) {
+            parallaxScale = layer.getViewPlaneDistance() / (tileMap.getEyeDistance() + layer.getViewPlaneDistance());
+        }
         float layerOffsetX = viewOffsetX * parallaxScale;
         float layerOffsetY = viewOffsetY * parallaxScale;
         float x = layerOffsetX + originPosX - (float) layerWidthPx / 2;
@@ -427,10 +428,10 @@ public abstract class MapView extends JPanel implements Scrollable {
         g2d.setColor(DEFAULT_BACKGROUND_COLOR);
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-        paintSubMap(map, g2d, 1.0f);
+        paintSubMap(tileMap, g2d, 1.0f);
 
         if (!getMode(PF_NO_SPECIAL)) {
-            Iterator<MapLayer> li = map.getLayersSpecial();
+            Iterator<MapLayer> li = tileMap.getLayersSpecial();
 
             while (li.hasNext()) {
                 layer = li.next();

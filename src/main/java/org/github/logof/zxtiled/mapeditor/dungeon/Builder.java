@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.dungeon;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 
 abstract public class Builder {
     public static final int NORTH = 1;
@@ -49,5 +49,5 @@ abstract public class Builder {
 
     public abstract Builder spawn();
 
-    public abstract void store(Map m);
+    public abstract void store(TileMap m);
 }

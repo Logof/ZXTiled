@@ -11,7 +11,7 @@
  *  Rainer Deyke <rainerd@eldwood.com>
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;

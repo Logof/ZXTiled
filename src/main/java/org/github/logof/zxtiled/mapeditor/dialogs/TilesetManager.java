@@ -14,10 +14,10 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.LayerLockedException;
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.io.MapWriter;
@@ -53,15 +53,15 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     private static final Icon SAVE_AS_BUTTON_ICON = Resources.getIcon("icon/document-save-as.png");
     private static final Icon EDIT_BUTTON_ICON = Resources.getIcon("icon/gtk-edit.png");
     private static final Icon SAVE_BUTTON_ICON = Resources.getIcon("icon/document-save.png");
-    private final Map map;
+    private final TileMap tileMap;
     private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
     private JButton moveUpButton, moveDownButton, closeButton;
     private TilesetTableModel tilesetTableModel;
     private JTable tilesetTable;
 
-    public TilesetManager(JFrame parent, Map map) {
+    public TilesetManager(JFrame parent, TileMap tileMap) {
         super(parent, DIALOG_TITLE, true);
-        this.map = map;
+        this.tileMap = tileMap;
         init();
         pack();
         setLocationRelativeTo(getOwner());
@@ -69,7 +69,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
 
     private void init() {
         // Create the tileset table
-        tilesetTableModel = new TilesetTableModel(map);
+        tilesetTableModel = new TilesetTableModel(tileMap);
         tilesetTable = new JTable(tilesetTableModel);
         tilesetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tilesetTable.getSelectionModel().addListSelectionListener(this);
@@ -153,7 +153,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         int selectedRow = tilesetTable.getSelectedRow();
-        Vector tilesets = map.getTilesets();
+        Vector tilesets = tileMap.getTilesets();
         TileSet set = null;
         try {
             set = (TileSet) tilesets.get(selectedRow);
@@ -164,8 +164,8 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         if (command.equals(CLOSE_BUTTON)) {
             dispose();
         } else if (command.equals(EDIT_BUTTON)) {
-            if (map != null && selectedRow >= 0) {
-                TileDialog tileDialog = new TileDialog(this, set, map);
+            if (tileMap != null && selectedRow >= 0) {
+                TileDialog tileDialog = new TileDialog(this, set, tileMap);
                 tileDialog.setVisible(true);
             }
         } else if (command.equals(REMOVE_BUTTON)) {
@@ -179,7 +179,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
                 }
             }
             try {
-                map.removeTileset(set);
+                tileMap.removeTileset(set);
                 updateTilesetTable();
             } catch (LayerLockedException e) {
                 JOptionPane.showMessageDialog(this,
@@ -188,7 +188,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
                         JOptionPane.ERROR_MESSAGE);
             }
         } else if (command.equals(SAVE_AS_BUTTON)) {
-            JFileChooser ch = new ConfirmingFileChooser(map.getFilename());
+            JFileChooser ch = new ConfirmingFileChooser(tileMap.getFilename());
 
             MapWriter[] writers = PluginClassLoader.getInstance().getWriters();
             for (MapWriter writer : writers) {
@@ -226,13 +226,13 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         } else if (command.equals(MOVE_UP_BUTTON)) {
             if (selectedRow > 0) {
                 int newRow = selectedRow - 1;
-                map.swapTileSets(selectedRow, newRow);
+                tileMap.swapTileSets(selectedRow, newRow);
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         } else if (command.equals(MOVE_DOWN_BUTTON)) {
             if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
                 int newRow = selectedRow + 1;
-                map.swapTileSets(selectedRow, newRow);
+                tileMap.swapTileSets(selectedRow, newRow);
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         }
@@ -248,7 +248,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile) tileIterator.next();
-            Iterator layerIterator = map.getLayers();
+            Iterator layerIterator = tileMap.getLayers();
 
             while (layerIterator.hasNext()) {
                 MapLayer ml = (MapLayer) layerIterator.next();
@@ -275,7 +275,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
 
         moveDownButton.setEnabled(selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1);
 
-        Vector tilesets = map.getTilesets();
+        Vector tilesets = tileMap.getTilesets();
         TileSet set = null;
         try {
             set = (TileSet) tilesets.get(selectedRow);

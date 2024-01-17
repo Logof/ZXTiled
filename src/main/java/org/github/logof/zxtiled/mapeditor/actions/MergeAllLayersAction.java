@@ -12,8 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.util.TileMergeHelper;
@@ -33,10 +33,10 @@ public class MergeAllLayersAction extends AbstractLayerAction {
     }
 
     protected void doPerformAction() {
-        Map map = editor.getCurrentMap();
+        TileMap tileMap = editor.getCurrentTileMap();
 
         // check if all layer's tiles have the same size as the map (otherwise, merging won't work and will be cancelled)
-        if (!TileMergeHelper.areTileSizesUniform(map)) {
+        if (!TileMergeHelper.areTileSizesUniform(tileMap)) {
             JOptionPane.showMessageDialog(editor.getAppFrame(), "Layer tile sizes inconsistent", "The tile size of some layers is different to the default tile size of the map. Layers can't be merged.", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -47,18 +47,18 @@ public class MergeAllLayersAction extends AbstractLayerAction {
                 "Merge Tiles?", JOptionPane.YES_NO_CANCEL_OPTION);
 
         if (ret == JOptionPane.YES_OPTION) {
-            TileMergeHelper tmh = new TileMergeHelper(map);
-            int len = map.getTotalLayers();
+            TileMergeHelper tmh = new TileMergeHelper(tileMap);
+            int len = tileMap.getTotalLayers();
             //TODO: Add a dialog option: "Yes, visible only"
             TileLayer newLayer = tmh.merge(0, len, true);
-            map.removeAllLayers();
-            map.addLayer(newLayer);
+            tileMap.removeAllLayers();
+            tileMap.addLayer(newLayer);
             newLayer.setName("Merged Layer");
-            map.addTileset(tmh.getSet());
+            tileMap.addTileset(tmh.getSet());
             editor.setCurrentLayerIndex(0);
         } else if (ret == JOptionPane.NO_OPTION) {
-            while (map.getTotalLayers() > 1) {
-                map.mergeLayerDown(editor.getCurrentLayerIndex());
+            while (tileMap.getTotalLayers() > 1) {
+                tileMap.mergeLayerDown(editor.getCurrentLayerIndex());
             }
             editor.setCurrentLayerIndex(0);
         }

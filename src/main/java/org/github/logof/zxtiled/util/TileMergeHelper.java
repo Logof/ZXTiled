@@ -12,10 +12,10 @@
 
 package org.github.logof.zxtiled.util;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import java.awt.*;
 import java.util.Iterator;
@@ -25,20 +25,20 @@ import java.util.Vector;
  * This class facilitates physically merging tiles.
  */
 public class TileMergeHelper {
-    private final Map myMap;
+    private final TileMap myTileMap;
     private final TileSet myTs;
     private final Vector<Cell> cells;
 
-    public TileMergeHelper(Map map) {
-        myMap = map;
+    public TileMergeHelper(TileMap tileMap) {
+        myTileMap = tileMap;
         cells = new Vector();
         myTs = new TileSet();
         myTs.setName("Merged Set");
     }
 
-    public static boolean areTileSizesUniform(Map map) {
-        for (MapLayer l : map.getLayerVector()) {
-            if (l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()) {
+    public static boolean areTileSizesUniform(TileMap tileMap) {
+        for (MapLayer l : tileMap.getLayerVector()) {
+            if (l.getTileWidth() != tileMap.getTileWidth() || l.getTileHeight() != tileMap.getTileHeight()) {
                 return false;
             }
         }
@@ -46,11 +46,11 @@ public class TileMergeHelper {
     }
 
     public TileLayer merge(int start, int len, boolean all) {
-        Rectangle r = myMap.getBounds();
-        TileLayer mergedLayer = new TileLayer(r, myMap.getTileWidth(), myMap.getTileHeight());
+        Rectangle r = myTileMap.getBounds();
+        TileLayer mergedLayer = new TileLayer(r, myTileMap.getTileWidth(), myTileMap.getTileHeight());
 
         // make sure all tile sizes are the same as the map's default tile size, otherwise the result will be a large mess..
-        assert areTileSizesUniform(myMap);
+        assert areTileSizesUniform(myTileMap);
 
         for (int i = 0; i < r.height; i++) {
             for (int j = 0; j < r.width; j++) {
@@ -66,7 +66,7 @@ public class TileMergeHelper {
     }
 
     public Tile createCell(int tx, int ty, int start, int len, boolean all) {
-        Cell c = new Cell(myMap, tx, ty, start, len, all);
+        Cell c = new Cell(myTileMap, tx, ty, start, len, all);
         Iterator<Cell> itr = cells.iterator();
         Tile tile;
 
@@ -99,10 +99,10 @@ public class TileMergeHelper {
         private final Vector<Tile> sandwich;
         private Tile myTile;
 
-        public Cell(Map map, int posx, int posy, int start, int len, boolean all) {
+        public Cell(TileMap tileMap, int posx, int posy, int start, int len, boolean all) {
             sandwich = new Vector<Tile>();
             for (int i = 0; i < len; i++) {
-                MapLayer ml = map.getLayer(start + i);
+                MapLayer ml = tileMap.getLayer(start + i);
                 if (ml instanceof TileLayer) {
                     TileLayer l = (TileLayer) ml;
                     if (l.isVisible() || all) {

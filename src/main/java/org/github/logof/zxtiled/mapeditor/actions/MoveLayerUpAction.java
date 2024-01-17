@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.*;
@@ -33,12 +33,12 @@ public class MoveLayerUpAction extends AbstractLayerAction {
     }
 
     protected void doPerformAction() {
-        Map map = editor.getCurrentMap();
+        TileMap tileMap = editor.getCurrentTileMap();
         int layerIndex = editor.getCurrentLayerIndex();
-        int totalLayers = map.getTotalLayers();
+        int totalLayers = tileMap.getTotalLayers();
 
         if (layerIndex < totalLayers - 1) {
-            map.swapLayerUp(layerIndex);
+            tileMap.swapLayerUp(layerIndex);
             editor.setCurrentLayerIndex(layerIndex + 1);
         }
     }

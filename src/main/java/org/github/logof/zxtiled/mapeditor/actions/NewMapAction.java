@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.dialogs.NewMapDialog;
@@ -32,9 +32,9 @@ public class NewMapAction extends AbstractFileAction {
 
     protected void doPerformAction() {
         NewMapDialog nmd = new NewMapDialog(editor.getAppFrame());
-        Map newMap = nmd.create();
-        if (newMap != null) {
-            editor.setCurrentMap(newMap);
+        TileMap newTileMap = nmd.create();
+        if (newTileMap != null) {
+            editor.setCurrentTileMap(newTileMap);
         }
     }
 }

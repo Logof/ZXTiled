@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.io;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.xml.XMLMapTransformer;
@@ -50,11 +50,11 @@ public class MapHelper {
      * plugin. (Unlikely)
      *
      * @param filename   filename to save the current map to
-     * @param currentMap {@link Map} instance to save to the file
+     * @param currentTileMap {@link TileMap} instance to save to the file
      * @throws Exception
-     * @see MapWriter#writeMap(Map, String)
+     * @see MapWriter#writeMap(TileMap, String)
      */
-    public static void saveMap(Map currentMap, String filename) throws Exception {
+    public static void saveMap(TileMap currentTileMap, String filename) throws Exception {
         MapWriter mapWriter;
         if (filename.endsWith(".tmx") || filename.endsWith(".tmx.gz")) {
             // Override, so people can't overtake our format
@@ -67,8 +67,8 @@ public class MapHelper {
 
         PluginLogger logger = new PluginLogger();
         mapWriter.setLogger(logger);
-        mapWriter.writeMap(currentMap, filename);
-        currentMap.setFilename(filename);
+        mapWriter.writeMap(currentTileMap, filename);
+        currentTileMap.setFilename(filename);
         reportPluginMessages(logger);
     }
 
@@ -108,19 +108,19 @@ public class MapHelper {
      * passed plugin to write the file. Plugins can still refuse to save the file
      * based on the extension, but this is not recommended practice.
      *
-     * @param currentMap
+     * @param currentTileMap
      * @param pmio
      * @param filename
      * @throws Exception
      */
-    public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename)
+    public static void saveMap(TileMap currentTileMap, PluggableMapIO pmio, String filename)
             throws Exception {
         MapWriter mw = (MapWriter) pmio;
 
         PluginLogger logger = new PluginLogger();
         mw.setLogger(logger);
-        mw.writeMap(currentMap, filename);
-        currentMap.setFilename(filename);
+        mw.writeMap(currentTileMap, filename);
+        currentTileMap.setFilename(filename);
         reportPluginMessages(logger);
     }
 
@@ -134,8 +134,8 @@ public class MapHelper {
      * @throws Exception
      * @see MapReader#readMap(String)
      */
-    public static Map loadMap(String file) throws Exception {
-        Map ret = null;
+    public static TileMap loadMap(String file) throws Exception {
+        TileMap ret = null;
         try {
             MapReader mr;
             if (file.endsWith(".tmx") || file.endsWith(".tmx.gz")) {

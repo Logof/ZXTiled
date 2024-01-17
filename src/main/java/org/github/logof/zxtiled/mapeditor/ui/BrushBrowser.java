@@ -10,8 +10,9 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.mapeditor.widget;
+package org.github.logof.zxtiled.mapeditor.ui;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.mapeditor.brush.Brush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import javax.swing.*;
@@ -27,10 +28,11 @@ import java.util.LinkedList;
 public class BrushBrowser extends JPanel {
     private final LinkedList<Brush> brushes;
     private final int maxWidth = 25;
+    @Getter
     private Brush selectedBrush;
 
     public BrushBrowser() {
-        brushes = new LinkedList<Brush>();
+        brushes = new LinkedList<>();
         initPresets();
 
         MouseInputAdapter listener = new MouseInputAdapter() {
@@ -38,8 +40,7 @@ public class BrushBrowser extends JPanel {
                 int perLine = getWidth() / maxWidth;
                 int x = e.getX() / maxWidth;
                 int y = e.getY() / maxWidth;
-                int selectedIndex =
-                        y * perLine + (x > perLine - 1 ? perLine - 1 : x);
+                int selectedIndex = y * perLine + (Math.min(x, perLine - 1));
 
                 if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
                     Brush previousBrush = selectedBrush;
@@ -115,10 +116,6 @@ public class BrushBrowser extends JPanel {
                 x = 0;
             }
         }
-    }
-
-    public Brush getSelectedBrush() {
-        return selectedBrush;
     }
 
     public void setSelectedBrush(Brush selectedBrush) {

@@ -13,8 +13,8 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.widget.ImageViewPanel;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
+import org.github.logof.zxtiled.mapeditor.ui.ImageViewPanel;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

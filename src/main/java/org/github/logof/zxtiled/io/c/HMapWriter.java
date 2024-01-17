@@ -1,8 +1,8 @@
 package org.github.logof.zxtiled.io.c;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
@@ -18,13 +18,13 @@ public class HMapWriter implements MapWriter {
     private final List<String> boltMapList = new ArrayList<>();
 
     @Override
-    public void writeMap(Map map, String filename) throws Exception {
+    public void writeMap(TileMap tileMap, String filename) throws Exception {
         FileWriter writer = new FileWriter(filename);
 
         writeHeader(writer);
 
         writer.write("unsigned char mapa [] = {" + System.lineSeparator());
-        mapToByte(map, writer);
+        mapToByte(tileMap, writer);
         writer.write("};" + System.lineSeparator());
 
         // We write the array of locks
@@ -61,12 +61,12 @@ public class HMapWriter implements MapWriter {
         writer.write("// Copyleft 2024 by Logof" + System.lineSeparator());
     }
 
-    private void mapToByte(Map map, FileWriter writer) throws IOException {
-        Rectangle bounds = map.getLayer(0).getBounds();
-        final TileLayer tileLayer = (TileLayer) map.getLayer(0);
+    private void mapToByte(TileMap tileMap, FileWriter writer) throws IOException {
+        Rectangle bounds = tileMap.getLayer(0).getBounds();
+        final TileLayer tileLayer = (TileLayer) tileMap.getLayer(0);
 
-        for (int screenY = 0; screenY < map.getHeight() / 10; screenY++) {
-            for (int screenX = 0; screenX < map.getWidth() / 15; screenX++) {
+        for (int screenY = 0; screenY < tileMap.getHeight() / 10; screenY++) {
+            for (int screenX = 0; screenX < tileMap.getWidth() / 15; screenX++) {
                 int result = 0;
                 boolean isHighByte = true;
 
@@ -87,8 +87,8 @@ public class HMapWriter implements MapWriter {
                         writer.write(String.valueOf(result));
                         isHighByte = !isHighByte;
 
-                        if (screenY < (map.getHeight() / 10) - 1 ||
-                                screenX < (map.getWidth() / 15) - 1 ||
+                        if (screenY < (tileMap.getHeight() / 10) - 1 ||
+                                screenX < (tileMap.getWidth() / 15) - 1 ||
                                 y < 9 || x < 14) {
                             writer.write(",");
                         }
@@ -107,7 +107,7 @@ public class HMapWriter implements MapWriter {
     }
 
     @Override
-    public void writeMap(Map map, OutputStream out) throws Exception {
+    public void writeMap(TileMap tileMap, OutputStream out) throws Exception {
 
     }
 

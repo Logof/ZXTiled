@@ -22,7 +22,7 @@ import java.util.Vector;
 /**
  * A layer of a map.
  *
- * @see Map
+ * @see TileMap
  * @see MultilayerPlane
  */
 public abstract class MapLayer implements Cloneable {
@@ -56,7 +56,7 @@ public abstract class MapLayer implements Cloneable {
     private float viewPlaneDistance = 0.0f;
     @Getter
     private boolean viewPlaneInfinitelyFarAway = false;
-    private Map myMap;
+    private TileMap myTileMap;
     private Properties properties = new Properties();
     private final Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
 
@@ -82,23 +82,23 @@ public abstract class MapLayer implements Cloneable {
      * Creates a new MapLayer instance for the given map.
      * The width and height are set to the width and height of the map.
      *
-     * @param map the map this layer is part of
+     * @param tileMap the map this layer is part of
      */
-    MapLayer(Map map) {
-        this(map.getWidth(), map.getHeight());
-        setMap(map);
+    MapLayer(TileMap tileMap) {
+        this(tileMap.getWidth(), tileMap.getHeight());
+        setMap(tileMap);
     }
 
     /**
      * Creates a new MapLayer instance for the given map.
      *
-     * @param map the map this layer is part of
+     * @param tileMap the map this layer is part of
      * @param w   width in tiles
      * @param h   height in tiles
      */
-    public MapLayer(Map map, int w, int h) {
+    public MapLayer(TileMap tileMap, int w, int h) {
         this(w, h);
-        setMap(map);
+        setMap(tileMap);
     }
 
     /**
@@ -116,17 +116,17 @@ public abstract class MapLayer implements Cloneable {
 
     public abstract void mirror(int dir);
 
-    public Map getMap() {
-        return myMap;
+    public TileMap getMap() {
+        return myTileMap;
     }
 
     /**
      * Sets the map this layer is part of.
      *
-     * @param map the Map object
+     * @param tileMap the Map object
      */
-    public void setMap(Map map) {
-        myMap = map;
+    public void setMap(TileMap tileMap) {
+        myTileMap = tileMap;
     }
 
     /**
@@ -303,7 +303,7 @@ public abstract class MapLayer implements Cloneable {
         other.setLocked(bLocked);
         other.setViewPlaneDistance(getViewPlaneDistance());
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
-        other.myMap = myMap;
+        other.myTileMap = myTileMap;
         other.setOpacity(opacity);
         other.bounds.setBounds(bounds);
         if (other.properties != properties) {

@@ -12,8 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
-import org.github.logof.zxtiled.core.Map;
 import org.github.logof.zxtiled.core.MapLayer;
+import org.github.logof.zxtiled.core.TileMap;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -24,16 +24,16 @@ import java.util.Vector;
  * the layer stack of a map.
  */
 public class MapLayerStateEdit extends AbstractUndoableEdit {
-    private final Map map;
+    private final TileMap tileMap;
     private final Vector<MapLayer> layersBefore;
     private final Vector<MapLayer> layersAfter;
     private final String name;
 
-    public MapLayerStateEdit(Map m,
+    public MapLayerStateEdit(TileMap m,
                              Vector<MapLayer> before,
                              Vector<MapLayer> after,
                              String name) {
-        map = m;
+        tileMap = m;
         layersBefore = before;
         layersAfter = after;
         this.name = name;
@@ -41,12 +41,12 @@ public class MapLayerStateEdit extends AbstractUndoableEdit {
 
     public void undo() throws CannotUndoException {
         super.undo();
-        map.setLayerVector(layersBefore);
+        tileMap.setLayerVector(layersBefore);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        map.setLayerVector(layersAfter);
+        tileMap.setLayerVector(layersAfter);
     }
 
     public String getPresentationName() {

@@ -5,7 +5,7 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.undo.AbstractUndoableEdit;
 import java.util.logging.Level;
@@ -17,12 +17,12 @@ import java.util.logging.Logger;
 public class MapViewportSettingsEdit extends AbstractUndoableEdit {
     private ViewportState backupState;
     private boolean undone = false;
-    private final Map map;
+    private final TileMap tileMap;
 
-    public MapViewportSettingsEdit(Map map) {
+    public MapViewportSettingsEdit(TileMap tileMap) {
         backupState = new ViewportState();
-        backupState.readFrom(map);
-        this.map = map;
+        backupState.readFrom(tileMap);
+        this.tileMap = tileMap;
     }
 
     public void undo() {
@@ -41,8 +41,8 @@ public class MapViewportSettingsEdit extends AbstractUndoableEdit {
 
     private void swapViewportState() {
         ViewportState s = backupState.duplicate();
-        s.readFrom(map);
-        backupState.writeTo(map);
+        s.readFrom(tileMap);
+        backupState.writeTo(tileMap);
         backupState = s;
     }
 
@@ -56,15 +56,15 @@ public class MapViewportSettingsEdit extends AbstractUndoableEdit {
         public int viewportHeight;
         public float eyeDistance;
 
-        public void readFrom(Map map) {
-            viewportWidth = map.getViewportWidth();
-            viewportHeight = map.getViewportHeight();
-            eyeDistance = map.getEyeDistance();
+        public void readFrom(TileMap tileMap) {
+            viewportWidth = tileMap.getViewportWidth();
+            viewportHeight = tileMap.getViewportHeight();
+            eyeDistance = tileMap.getEyeDistance();
         }
 
-        public void writeTo(Map map) {
-            map.setViewportWidth(viewportWidth);
-            map.setViewportHeight(viewportHeight);
+        public void writeTo(TileMap tileMap) {
+            tileMap.setViewportWidth(viewportWidth);
+            tileMap.setViewportHeight(viewportHeight);
         }
 
         public ViewportState duplicate() {

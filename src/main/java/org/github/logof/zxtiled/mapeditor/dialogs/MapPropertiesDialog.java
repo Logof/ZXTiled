@@ -5,11 +5,11 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.Map;
+import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.MapViewportSettingsEdit;
-import org.github.logof.zxtiled.mapeditor.widget.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.widget.VerticalStaticJPanel;
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
@@ -23,12 +23,12 @@ public class MapPropertiesDialog extends PropertiesDialog {
     private static final String DIALOG_TITLE = Resources.getString("dialog.mapproperites.title");
     private static final String WIDTH_LABEL = Resources.getString("dialog.mapproperites.viewport.width.label");
     private static final String HEIGHT_LABEL = Resources.getString("dialog.mapproperites.viewport.height.label");
-    private final Map map;
+    private final TileMap tileMap;
     private IntegerSpinner viewportWidthSpinner, viewportHeightSpinner;
 
-    public MapPropertiesDialog(JFrame parent, Map map, UndoableEditSupport undoSupport) {
-        super(parent, map.getProperties(), undoSupport, false);
-        this.map = map;
+    public MapPropertiesDialog(JFrame parent, TileMap tileMap, UndoableEditSupport undoSupport) {
+        super(parent, tileMap.getProperties(), undoSupport, false);
+        this.tileMap = tileMap;
         init();
         setTitle(DIALOG_TITLE);
         pack();
@@ -70,8 +70,8 @@ public class MapPropertiesDialog extends PropertiesDialog {
 
     public void updateInfo() {
         super.updateInfo();
-        viewportWidthSpinner.setValue(map.getViewportWidth());
-        viewportHeightSpinner.setValue(map.getViewportHeight());
+        viewportWidthSpinner.setValue(tileMap.getViewportWidth());
+        viewportHeightSpinner.setValue(tileMap.getViewportHeight());
     }
 
     protected UndoableEdit commit() {
@@ -80,8 +80,8 @@ public class MapPropertiesDialog extends PropertiesDialog {
         UndoableEdit propertyEdit = super.commit();
 
         boolean viewportDimensionsChanged =
-                viewportWidthSpinner.intValue() != map.getViewportWidth()
-                        || viewportHeightSpinner.intValue() != map.getViewportHeight();
+                viewportWidthSpinner.intValue() != tileMap.getViewportWidth()
+                        || viewportHeightSpinner.intValue() != tileMap.getViewportHeight();
 
         if (!viewportDimensionsChanged)
             return propertyEdit;
@@ -90,9 +90,9 @@ public class MapPropertiesDialog extends PropertiesDialog {
         if (propertyEdit != null)
             ce.addEdit(propertyEdit);
 
-        ce.addEdit(new MapViewportSettingsEdit(map));
-        map.setViewportWidth(viewportWidthSpinner.intValue());
-        map.setViewportHeight(viewportHeightSpinner.intValue());
+        ce.addEdit(new MapViewportSettingsEdit(tileMap));
+        tileMap.setViewportWidth(viewportWidthSpinner.intValue());
+        tileMap.setViewportHeight(viewportHeightSpinner.intValue());
 
         ce.end();
 
