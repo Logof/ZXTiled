@@ -9,7 +9,6 @@ public class MapEditorAction {
     public static SaveAsAction saveAsAction;
     public static SaveAsImageAction saveAsImageAction;
     public static ExportAction exportAction;
-
     public static Action exitAction;
     public static Action zoomInAction;
     public static Action zoomOutAction;
@@ -28,6 +27,15 @@ public class MapEditorAction {
     public static Action mergeAllLayersAction;
     public static Action addObjectGroupAction;
     public static Action showLayerPropertiesAction;
+
+    public static NewMapAction newMapAction;
+    public static OpenMapAction openMapAction;
+    public static CloseMapAction closeMapAction;
+
+    public static CopyAction copyAction;
+    public static CopyAllAction copyAllAction;
+    public static CutAction cutAction;
+    public static PasteAction pasteAction;
 
     public static void init(MapEditor mapEditor) {
         saveAction = new SaveAction(mapEditor);
@@ -53,5 +61,15 @@ public class MapEditorAction {
         addObjectGroupAction = new AddObjectGroupAction(mapEditor);
         showLayerPropertiesAction = new ShowLayerPropertiesAction(mapEditor);
 
+        // File menu
+        newMapAction = new NewMapAction(mapEditor, saveAction);
+        openMapAction = new OpenMapAction(mapEditor, saveAction);
+        closeMapAction = new CloseMapAction(mapEditor, saveAction);
+
+        // Edit menu
+        copyAction = new CopyAction(mapEditor);
+        copyAllAction = new CopyAllAction(mapEditor);
+        cutAction = new CutAction(mapEditor);
+        pasteAction = new PasteAction(mapEditor);
     }
 }

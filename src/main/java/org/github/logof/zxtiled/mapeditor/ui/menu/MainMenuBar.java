@@ -6,5 +6,10 @@ public class MainMenuBar extends JMenuBar {
 
     public MainMenuBar() {
         super();
+        //FileMenu fileMenu = new FileMenu();
+        //EditMenu editMenu = new EditMenu();
+
+        //this.add(fileMenu);
+        //this.add(editMenu);
     }
 }

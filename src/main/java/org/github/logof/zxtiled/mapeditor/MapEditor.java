@@ -36,23 +36,20 @@ import org.github.logof.zxtiled.mapeditor.actions.OpenMapAction;
 import org.github.logof.zxtiled.mapeditor.actions.OpenRecentAction;
 import org.github.logof.zxtiled.mapeditor.actions.PasteAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
-import org.github.logof.zxtiled.mapeditor.brush.BrushException;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
-import org.github.logof.zxtiled.mapeditor.brush.LayerInvisibleBrushException;
-import org.github.logof.zxtiled.mapeditor.brush.LayerLockedBrushException;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import org.github.logof.zxtiled.mapeditor.dialogs.AboutDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.BrushDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.ConfigurationDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.MapPropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.NewTilesetDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.ObjectDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.PluginDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.ResizeDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.SearchDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.TilesetManager;
 import org.github.logof.zxtiled.mapeditor.enums.ActionModesEnum;
+import org.github.logof.zxtiled.mapeditor.listener.MapMouseListener;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
@@ -70,11 +67,7 @@ import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
 import org.github.logof.zxtiled.mapeditor.ui.TimedStatusLabel;
 import org.github.logof.zxtiled.mapeditor.ui.menu.FileMenu;
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
-import org.github.logof.zxtiled.mapeditor.undo.AddObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
-import org.github.logof.zxtiled.mapeditor.undo.MoveLayerEdit;
-import org.github.logof.zxtiled.mapeditor.undo.MoveObjectEdit;
-import org.github.logof.zxtiled.mapeditor.undo.RemoveObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.UndoHandler;
 import org.github.logof.zxtiled.mapeditor.util.LayerTableModel;
 import org.github.logof.zxtiled.mapeditor.util.MapEventAdapter;
@@ -93,16 +86,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.Area;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -117,9 +104,9 @@ import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
  * The main class for the Tiled Map Editor.
  */
 public class MapEditor implements ActionListener,
-                                  MouseListener,
+                                  /*MouseListener,
                                   MouseMotionListener,
-                                  MouseWheelListener,
+                                  MouseWheelListener,*/
                                   MapChangeListener,
                                   ListSelectionListener,
                                   ChangeListener,
@@ -139,6 +126,7 @@ public class MapEditor implements ActionListener,
     private final UndoableEditSupport undoSupport;
     @Getter
     private final PluginClassLoader pluginLoader;
+    @Getter
     private final SelectionLayer cursorHighlight;
     @Getter
     private final ApplicationFrame appFrame;
@@ -149,18 +137,16 @@ public class MapEditor implements ActionListener,
     private TileMap currentTileMap;
     @Getter
     private MapView mapView;
+    @Getter
     private ActionModesEnum currentPointerState;
+    @Getter
     private Tile currentTile;
+    @Getter
+    @Setter
     private MapObject currentObject = null;
     private int currentLayer = -1;
-    private boolean bMouseIsDown;
-    private boolean bMouseIsDragging;
-    private Point mousePressLocation;
-    private Point mouseInitialPressLocation;
-    private Point mouseLastPixelLocation;
-    private Point mouseInitialScreenLocation;
-    private Point moveDist;
-    private int mouseButton;
+
+    @Getter
     private AbstractBrush currentBrush;
     @Getter
     @Setter
@@ -176,6 +162,7 @@ public class MapEditor implements ActionListener,
     private JCheckBoxMenuItem cursorMenuItem;
     private JCheckBoxMenuItem coordinatesMenuItem;
     private JMenu recentMenu;
+    @Getter
     private JScrollPane mapScrollPane;
     private JTable layerTable;
     private JPopupMenu layerPopupMenu;
@@ -185,7 +172,9 @@ public class MapEditor implements ActionListener,
     private BrushPreview brushPreview;
     private JSlider opacitySlider;
     private JLabel zoomLabel;
+    @Getter
     private JLabel tilePositionLabel;
+    @Getter
     private TimedStatusLabel statusLabel;
     private AbstractButton paintButton;
     private AbstractButton eraseButton;
@@ -198,13 +187,18 @@ public class MapEditor implements ActionListener,
     private AbstractButton objectRemoveButton;
     private TabbedTilesetsPane tabbedTilesetsPane;
     private AboutDialog aboutDialog;
+    @Getter
+    @Setter
     private MapLayerEdit paintEdit;
     private FloatablePanel layersPanel;
     private FloatablePanel tilesetPanel;
     private ToolSemantic currentToolSemantic;
 
+    private final MapMouseListener mouseListener;
+
     public MapEditor() {
         MapEditorAction.init(this);
+        mouseListener = new MapMouseListener(this);
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
@@ -528,7 +522,7 @@ public class MapEditor implements ActionListener,
         mainMenuBar.add(mapMenu);
         mainMenuBar.add(layerMenu);
         mainMenuBar.add(tilesetMenu);
-        //menuBar.add(objectMenu);
+        //mainMenuBar.add(objectMenu);
         mainMenuBar.add(helpMenu);
     }
 
@@ -781,21 +775,21 @@ public class MapEditor implements ActionListener,
         opacitySlider.setEnabled(validSelection);
     }
 
-    private JMenuItem createMenuItem(String name, Icon icon, String tt) {
+    private JMenuItem createMenuItem(String name, Icon icon, String tipText) {
         JMenuItem menuItem = new JMenuItem(name);
         menuItem.addActionListener(this);
         if (icon != null) {
             menuItem.setIcon(icon);
         }
-        if (tt != null) {
-            menuItem.setToolTipText(tt);
+        if (tipText != null) {
+            menuItem.setToolTipText(tipText);
         }
         return menuItem;
     }
 
-    private JMenuItem createMenuItem(String name, Icon icon, String tt,
+    private JMenuItem createMenuItem(String name, Icon icon, String tipText,
                                      String keyStroke) {
-        JMenuItem menuItem = createMenuItem(name, icon, tt);
+        JMenuItem menuItem = createMenuItem(name, icon, tipText);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(keyStroke));
         return menuItem;
     }
@@ -858,430 +852,7 @@ public class MapEditor implements ActionListener,
         updateToolSemantics();
     }
 
-    private void doMouse(MouseEvent event) {
-        if (currentTileMap == null || currentLayer < 0) {
-            return;
-        }
-
-        MapLayer layer = getCurrentLayer();
-        if (layer == null) {
-            return;
-        }
-
-        Point tile = mapView.screenToTileCoords(layer, event.getX(), event.getY());
-
-        if (mouseButton == MouseEvent.BUTTON3) {
-            if (layer instanceof TileLayer) {
-                if (!bMouseIsDragging) {
-                    // Click event is sent before the drag event
-                    // so this one always happens
-                    Tile newTile = ((TileLayer) layer).getTileAt(tile.x, tile.y);
-                    setCurrentTile(newTile);
-                } else if (currentPointerState == ActionModesEnum.PS_PAINT) {
-                    // In case we are dragging to create a custom brush, let
-                    // the user know where we are creating it from
-                    if (marqueeSelection == null) {
-                        marqueeSelection = new SelectionLayer(layer);
-                        currentTileMap.addLayerSpecial(marqueeSelection);
-                    }
-
-                    Point limp = mouseInitialPressLocation;
-                    Rectangle oldArea =
-                            marqueeSelection.getSelectedAreaBounds();
-                    int minx = Math.min(limp.x, tile.x);
-                    int miny = Math.min(limp.y, tile.y);
-
-                    Rectangle selRect = new Rectangle(
-                            minx, miny,
-                            (Math.max(limp.x, tile.x) - minx) + 1,
-                            (Math.max(limp.y, tile.y) - miny) + 1);
-
-                    marqueeSelection.selectRegion(selRect);
-                    if (oldArea != null) {
-                        oldArea.add(marqueeSelection.getSelectedAreaBounds());
-                        mapView.repaintRegion(layer, oldArea);
-                    }
-                }
-            } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
-                // Get the object on this location and display the relative options dialog
-                ObjectGroup group = (ObjectGroup) layer;
-                Point pos = mapView.screenToPixelCoords(
-                        layer, event.getX(), event.getY());
-                MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
-                if (obj != null) {
-                    ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
-                    od.getProps();
-                }
-            }
-        } else if (mouseButton == MouseEvent.BUTTON2 ||
-                (mouseButton == MouseEvent.BUTTON1 &&
-                        (event.getModifiersEx() & MouseEvent.ALT_DOWN_MASK) != 0)) {
-            // Scroll with middle mouse button
-            int dx = event.getX() - mouseInitialScreenLocation.x;
-            int dy = event.getY() - mouseInitialScreenLocation.y;
-            JViewport mapViewPort = mapScrollPane.getViewport();
-            Point currentPosition = mapViewPort.getViewPosition();
-            mouseInitialScreenLocation = new Point(
-                    event.getX() - dx,
-                    event.getY() - dy);
-
-            Point newPosition = new Point(
-                    currentPosition.x - dx,
-                    currentPosition.y - dy);
-
-            // Take into account map boundaries in order to prevent
-            // scrolling past them
-            int maxX = java.lang.Math.max(0, mapView.getWidth() - mapViewPort.getWidth());
-            int maxY = java.lang.Math.max(0, mapView.getHeight() - mapViewPort.getHeight());
-            newPosition.x = Math.min(maxX, Math.max(0, newPosition.x));
-            newPosition.y = Math.min(maxY, Math.max(0, newPosition.y));
-
-            mapViewPort.setViewPosition(newPosition);
-        } else if (mouseButton == MouseEvent.BUTTON1) {
-            switch (currentPointerState) {
-                case PS_PAINT:
-                    paintEdit.setPresentationName(Constants.TOOL_PAINT);
-                    if (layer instanceof TileLayer) {
-                        try {
-                            mapView.repaintRegion(
-                                    layer, currentBrush.doPaint(tile.x, tile.y));
-                            statusLabel.clearText();
-                        } catch (LayerLockedBrushException llx) {
-                            statusLabel.setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_LOCKED);
-                        } catch (LayerInvisibleBrushException llx) {
-                            statusLabel.setErrorText(Constants.STATUS_PAINT_ERROR_LAYER_INVISIBLE);
-                        } catch (BrushException bx) {
-                            statusLabel.setErrorText(Constants.STATUS_PAINT_ERROR_GENERAL);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case PS_ERASE:
-                    paintEdit.setPresentationName(Constants.TOOL_ERASE);
-                    if (layer instanceof TileLayer) {
-                        ((TileLayer) layer).setTileAt(tile.x, tile.y, null);
-                        mapView.repaintRegion(layer, new Rectangle(
-                                tile.x, tile.y, 1, 1));
-                    }
-                    break;
-                case PS_POUR:
-                    paintEdit = null;
-                    if (layer instanceof TileLayer) {
-                        TileLayer tileLayer = (TileLayer) layer;
-                        Tile oldTile = tileLayer.getTileAt(tile.x, tile.y);
-                        pour(tileLayer, tile.x, tile.y, currentTile, oldTile);
-                        mapView.repaint();
-                    }
-                    break;
-                case PS_EYED:
-                    if (layer instanceof TileLayer) {
-                        TileLayer tileLayer = (TileLayer) layer;
-                        Tile newTile = tileLayer.getTileAt(tile.x, tile.y);
-                        setCurrentTile(newTile);
-                    }
-                    break;
-                case PS_MOVE: {
-                    Point translation = new Point(
-                            tile.x - mousePressLocation.x,
-                            tile.y - mousePressLocation.y);
-
-                    layer.translate(translation.x, translation.y);
-                    moveDist.translate(translation.x, translation.y);
-                    mapView.repaint();
-                    statusLabel.setInfoText(String.format(Constants.STATUS_LAYER_MOVED_FORMAT, layer.getBounds().x, layer.getBounds().y));
-                    break;
-                }
-                case PS_MARQUEE:
-                    if (!(layer instanceof TileLayer)) {
-                        break;
-                    }
-                    if (marqueeSelection != null) {
-                        Point limp = mouseInitialPressLocation;
-                        Rectangle oldArea =
-                                marqueeSelection.getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
-
-                        Rectangle selRect = new Rectangle(
-                                minx, miny,
-                                (Math.max(limp.x, tile.x) - minx) + 1,
-                                (Math.max(limp.y, tile.y) - miny) + 1);
-
-                        if (event.isShiftDown()) {
-                            marqueeSelection.add(new Area(selRect));
-                        } else if (event.isControlDown()) {
-                            marqueeSelection.subtract(new Area(selRect));
-                        } else {
-                            marqueeSelection.selectRegion(selRect);
-                        }
-                        if (oldArea != null) {
-                            oldArea.add(
-                                    marqueeSelection.getSelectedAreaBounds());
-                            mapView.repaintRegion(layer, oldArea);
-                        }
-                    }
-                    break;
-                case PS_ADD_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        if (marqueeSelection == null) {
-                            marqueeSelection = new SelectionLayer(getCurrentLayer());
-                            currentTileMap.addLayerSpecial(marqueeSelection);
-                        }
-
-                        Point limp = mouseInitialPressLocation;
-                        Rectangle oldArea =
-                                marqueeSelection.getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
-
-                        Rectangle selRect = new Rectangle(
-                                minx, miny,
-                                (Math.max(limp.x, tile.x) - minx) + 1,
-                                (Math.max(limp.y, tile.y) - miny) + 1);
-
-                        marqueeSelection.selectRegion(selRect);
-                        if (oldArea != null) {
-                            oldArea.add(marqueeSelection.getSelectedAreaBounds());
-                            mapView.repaintRegion(layer, oldArea);
-                        }
-                    }
-                    break;
-                case PS_REMOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        ObjectGroup group = (ObjectGroup) layer;
-                        Point pos = mapView.screenToPixelCoords(
-                                layer, event.getX(), event.getY());
-                        MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
-                        if (obj != null) {
-                            undoSupport.postEdit(new RemoveObjectEdit(group, obj));
-                            group.removeObject(obj);
-                            // TODO: repaint only affected area
-                            mapView.repaint();
-                        }
-                    }
-                    break;
-                case PS_MOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        Point pos = mapView.screenToPixelCoords(
-                                layer, event.getX(), event.getY());
-                        if (currentObject == null) {
-                            ObjectGroup group = (ObjectGroup) layer;
-                            currentObject = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
-                            if (currentObject == null) { // No object to move
-                                break;
-                            }
-                            mouseLastPixelLocation = pos;
-                            moveDist = new Point(0, 0);
-                            break;
-                        }
-                        Point translation = new Point(
-                                pos.x - mouseLastPixelLocation.x,
-                                pos.y - mouseLastPixelLocation.y);
-                        currentObject.translate(translation.x, translation.y);
-                        moveDist.translate(translation.x, translation.y);
-                        mouseLastPixelLocation = pos;
-                        mapView.repaint();
-                    }
-                    break;
-            }
-        }
-    }
-
-    public void mouseExited(MouseEvent e) {
-        tilePositionLabel.setText(" ");
-        updateCursorHighlight(null);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-        MapLayer layer = getCurrentLayer();
-
-        Point tile = mapView.screenToTileCoords(layer, e.getX(), e.getY());
-        mouseButton = e.getButton();
-        bMouseIsDown = true;
-        bMouseIsDragging = false;
-        mousePressLocation = mapView.screenToTileCoords(layer, e.getX(), e.getY());
-        mouseInitialPressLocation = mousePressLocation;
-
-        if (mouseButton == MouseEvent.BUTTON2 ||
-                (mouseButton == MouseEvent.BUTTON1 &&
-                        (e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK) != 0)) {
-            // Remember screen location for scrolling with middle mouse button
-            mouseInitialScreenLocation = new Point(e.getX(), e.getY());
-        } else if (mouseButton == MouseEvent.BUTTON1) {
-            switch (currentPointerState) {
-                case PS_PAINT:
-                    if (layer instanceof TileLayer) {
-                        currentBrush.startPaint(currentTileMap, tile.x, tile.y,
-                                mouseButton, currentLayer);
-                    }
-                case PS_ERASE:
-                case PS_POUR:
-                    paintEdit =
-                            new MapLayerEdit(layer, createLayerCopy(layer),
-                                    null);
-                    break;
-                default:
-            }
-        }
-
-        if (currentPointerState == ActionModesEnum.PS_MARQUEE) {
-            boolean contains = marqueeSelection != null && marqueeSelection.getSelectedArea().contains(tile.x, tile.y);
-
-            if (marqueeSelection == null && !contains) {
-                marqueeSelection = new SelectionLayer(getCurrentLayer());
-                currentTileMap.addLayerSpecial(marqueeSelection);
-            } else if (marqueeSelection != null && e.getModifiers() == InputEvent.BUTTON1_MASK) {
-                currentTileMap.removeLayerSpecial(marqueeSelection);
-                if (contains) {
-                    marqueeSelection = null;
-                } else {
-                    marqueeSelection = new SelectionLayer(getCurrentLayer());
-                    currentTileMap.addLayerSpecial(marqueeSelection);
-                }
-            }
-        } else if (currentPointerState == ActionModesEnum.PS_MOVE) {
-            // Initialize move distance to (0, 0)
-            moveDist = new Point(0, 0);
-        }
-
-        doMouse(e);
-    }
-
-    public void mouseReleased(MouseEvent event) {
-        final MapLayer layer = getCurrentLayer();
-        final Point limp = mouseInitialPressLocation;
-
-        if (currentPointerState == ActionModesEnum.PS_MOVE) {
-            if (layer != null && (moveDist.x != 0 || moveDist.y != 0)) {
-                undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
-            }
-        } else if (currentPointerState == ActionModesEnum.PS_PAINT) {
-            if (layer instanceof TileLayer) {
-                currentBrush.endPaint();
-            }
-        } else if (currentPointerState == ActionModesEnum.PS_MOVE_OBJ) {
-            if (layer instanceof ObjectGroup && currentObject != null &&
-                    (moveDist.x != 0 || moveDist.y != 0)) {
-                undoSupport.postEdit(
-                        new MoveObjectEdit(currentObject, moveDist));
-            }
-        }
-
-        if (currentPointerState == ActionModesEnum.PS_PAINT ||
-                currentPointerState == ActionModesEnum.PS_ADD_OBJ) {
-            Point tile = mapView.screenToTileCoords(
-                    layer, event.getX(), event.getY());
-            int minx = Math.min(limp.x, tile.x);
-            int miny = Math.min(limp.y, tile.y);
-
-            Rectangle bounds = new Rectangle(
-                    minx, miny,
-                    (Math.max(limp.x, tile.x) - minx) + 1,
-                    (Math.max(limp.y, tile.y) - miny) + 1);
-
-            // STAMP
-            if (mouseButton == MouseEvent.BUTTON3 &&
-                    layer instanceof TileLayer) {
-
-                // Right mouse button dragged: create and set custom brush
-                MapLayer cl = getCurrentLayer();
-                TileLayer brushLayer = new TileLayer(bounds, cl.getTileWidth(), cl.getTileHeight());
-                brushLayer.copyFrom(getCurrentLayer());
-                brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
-                        tile.y - (int) bounds.getHeight() / 2);
-
-                // Do a quick check to make sure the selection is not empty
-                if (brushLayer.isEmpty()) {
-                    JOptionPane.showMessageDialog(appFrame,
-                            Resources.getString("dialog.selection.empty"),
-                            Resources.getString("dialog.selection.empty"),
-                            JOptionPane.WARNING_MESSAGE);
-                } else {
-                    setBrush(new CustomBrush(brushLayer));
-                    cursorHighlight.setOffset(
-                            tile.x - (int) bounds.getWidth() / 2,
-                            tile.y - (int) bounds.getHeight() / 2);
-                }
-            } else if (mouseButton == MouseEvent.BUTTON1 &&
-                    layer instanceof ObjectGroup) {
-                // TODO: Fix this to use pixels in the first place
-                // (with optional snap to grid)
-                int w = currentTileMap.getTileWidth();
-                int h = currentTileMap.getTileHeight();
-                MapObject object = new MapObject(
-                        bounds.x * w,
-                        bounds.y * h,
-                        bounds.width * w,
-                        bounds.height * h);
-                ObjectGroup group = (ObjectGroup) layer;
-                undoSupport.postEdit(new AddObjectEdit(group, object));
-                group.addObject(object);
-                mapView.repaint();
-            }
-
-            //get rid of any visible marquee
-            if (marqueeSelection != null) {
-                currentTileMap.removeLayerSpecial(marqueeSelection);
-                marqueeSelection = null;
-            }
-        }
-
-        if (paintEdit != null) {
-            if (layer != null) {
-                try {
-                    MapLayer endLayer = paintEdit.getStart().createDiff(layer);
-                    paintEdit.end(endLayer);
-                    undoSupport.postEdit(paintEdit);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            paintEdit = null;
-        }
-
-        currentObject = null;
-
-        mouseButton = MouseEvent.NOBUTTON;
-        bMouseIsDown = false;
-        bMouseIsDragging = false;
-    }
-
-    public void mouseMoved(MouseEvent e) {
-        // Update state of mouse buttons
-        bMouseIsDown = e.getButton() != MouseEvent.NOBUTTON;
-        if (bMouseIsDown) {
-            doMouse(e);
-        }
-
-        Point tile = null;
-        MapLayer currentLayer = getCurrentLayer();
-        if (currentLayer != null)
-            tile = mapView.screenToTileCoords(getCurrentLayer(), e.getX(), e.getY());
-        updateTileCoordsLabel(tile);
-        updateCursorHighlight(tile);
-    }
-
-    public void mouseDragged(MouseEvent e) {
-        bMouseIsDragging = true;
-
-        doMouse(e);
-
-        MapLayer layer = getCurrentLayer();
-        mousePressLocation = mapView.screenToTileCoords(layer, e.getX(), e.getY());
-        Point tile = mapView.screenToTileCoords(layer, e.getX(), e.getY());
-
-        updateTileCoordsLabel(tile);
-        updateCursorHighlight(tile);
-    }
-
-    private void updateTileCoordsLabel(Point tile) {
+    public void updateTileCoordsLabel(Point tile) {
         if (tile != null && currentTileMap.inBounds(tile.x, tile.y)) {
             tilePositionLabel.setText(tile.x + ", " + tile.y);
         } else {
@@ -1289,7 +860,7 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    private void updateCursorHighlight(Point tile) {
+    public void updateCursorHighlight(Point tile) {
         boolean highlightActive = tile != null && preferences.getBoolean("cursorhighlight", true);
         cursorHighlight.setVisible(highlightActive);
 
@@ -1597,7 +1168,7 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    private void pour(TileLayer layer, int x, int y,
+    public void pour(TileLayer layer, int x, int y,
                       Tile newTile, Tile oldTile) {
         if (newTile == oldTile || !layer.canEdit()) return;
 
@@ -1809,9 +1380,11 @@ public class MapEditor implements ActionListener,
             final Preferences display = preferences.node("display");
             MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_ACTIVE);
             mapView = MapView.createViewforMap(currentTileMap);
-            mapView.addMouseListener(this);
-            mapView.addMouseMotionListener(this);
-            mapView.addMouseWheelListener(this);
+
+            mapView.addMouseListener(mouseListener);
+            mapView.addMouseMotionListener(mouseListener);
+            mapView.addMouseWheelListener(mouseListener);
+
             mapView.addComponentListener(this);
             mapView.setSelectionSet(getSelectionSet());
             mapView.setGridOpacity(display.getInt("gridOpacity", 255));
@@ -1912,21 +1485,5 @@ public class MapEditor implements ActionListener,
         }
 
         updateToolSemantics();
-    }
-
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        // only accept events from mapView. Ctrl key must be pressed as well.
-        if (e.getComponent() != mapView)
-            return;
-
-        // if we're not processing event, pass it in to mapView's scroll pane
-        if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0) {
-            for (MouseWheelListener l : mapScrollPane.getMouseWheelListeners())
-                l.mouseWheelMoved(e);
-            return;
-        }
-        int amount = e.getWheelRotation();
-        mapView.setZoomLevel(mapView.getZoomLevel() - amount);
-        MapEditorAction.zoomNormalAction.setEnabled(mapView.getZoomLevel() != ZOOM_NORMAL_SIZE);
     }
 }
