@@ -23,8 +23,6 @@ import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
-import org.github.logof.zxtiled.core.event.MapChangedEvent;
-import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.mapeditor.actions.CloseMapAction;
@@ -51,13 +49,16 @@ import org.github.logof.zxtiled.mapeditor.dialogs.SearchDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.TilesetManager;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorActionListener;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorChangeListener;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorComponentListener;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorListSelectionListener;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorMapChangeListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorMouseListener;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
 import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
-import org.github.logof.zxtiled.mapeditor.ui.BrushPreview;
 import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
 import org.github.logof.zxtiled.mapeditor.ui.MiniMapViewer;
 import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
@@ -77,15 +78,12 @@ import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -104,20 +102,14 @@ import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
 /**
  * The main class for the Tiled Map Editor.
  */
-public class MapEditor implements /*ActionListener,
-                                  /*MouseListener,
-                                  MouseMotionListener,
-                                  MouseWheelListener,*/
-                                  MapChangeListener,
-                                  ListSelectionListener,
-                                  ChangeListener,
-                                  ComponentListener {
+public class MapEditor {
     // Constants and the like
 
     /**
      * Current release version.
      */
     public static final String version = "0.0.1";
+
     public static final Preferences preferences = TiledConfiguration.root();
 
     public static final Cursor curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
@@ -146,6 +138,7 @@ public class MapEditor implements /*ActionListener,
     @Getter
     @Setter
     private MapObject currentObject = null;
+    @Getter
     private int currentLayerIndex = -1;
 
     @Getter
@@ -156,7 +149,12 @@ public class MapEditor implements /*ActionListener,
     @Getter
     @Setter
     private MapLayer clipboardLayer;
-    private float relativeMidX, relativeMidY;
+    @Getter
+    @Setter
+    private float relativeMidX;
+    @Getter
+    @Setter
+    private float relativeMidY;
     private JPanel dataPanel;
     private JPanel statusBar;
     private MainMenuBar mainMenuBar;
@@ -166,13 +164,17 @@ public class MapEditor implements /*ActionListener,
     private JMenu recentMenu;
     @Getter
     private JScrollPane mapScrollPane;
+
+    @Getter
     private JTable layerTable;
     private JPopupMenu layerPopupMenu;
     private SmartSplitPane rightSplit;
     private SmartSplitPane mainSplit;
     private SmartSplitPane paletteSplit;
-    private BrushPreview brushPreview;
+
+    @Getter
     private JSlider opacitySlider;
+    @Getter
     private JLabel zoomLabel;
     @Getter
     private JLabel tilePositionLabel;
@@ -198,18 +200,24 @@ public class MapEditor implements /*ActionListener,
     @Getter
     private final ToolBar toolBar;
 
+    private final ListSelectionListener listSelectionListener;
+    private final MapChangeListener mapChangeListener;
+    private final ChangeListener changeListener;
+    private final ComponentListener componentListener;
     public MapEditor() {
         MapEditorAction.init(this);
         mouseListener = new MapEditorMouseListener(this);
         actionListener = new MapEditorActionListener(this);
+        listSelectionListener = new MapEditorListSelectionListener(this);
 
         toolBar = new ToolBar();
 
         pointerStateManager = new PointerStateManager(this);
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
-
-
+        mapChangeListener = new MapEditorMapChangeListener(this);
+        changeListener = new MapEditorChangeListener(this);
+        componentListener = new MapEditorComponentListener(this);
 
         undoHandler = new UndoHandler(this);
         undoSupport = new UndoableEditSupport();
@@ -533,8 +541,6 @@ public class MapEditor implements /*ActionListener,
 
     /**
      * Creates the tool bar.
-     *
-     * @return the created tool bar
      */
 
     private void createData() {
@@ -568,7 +574,7 @@ public class MapEditor implements /*ActionListener,
         layerTable = new JTable(new LayerTableModel());
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        layerTable.getSelectionModel().addListSelectionListener(this);
+        layerTable.getSelectionModel().addListSelectionListener(listSelectionListener);
         layerTable.addMouseListener(new MouseAdapter() {
             // mouse listener for popup menu in layerTable
             public void mousePressed(MouseEvent e) {
@@ -583,7 +589,7 @@ public class MapEditor implements /*ActionListener,
 
         // Opacity slider
         opacitySlider = new JSlider(0, 100, 100);
-        opacitySlider.addChangeListener(this);
+        opacitySlider.addChangeListener(changeListener);
         JLabel opacityLabel = new JLabel(
                 Resources.getString("dialog.main.opacity.label"));
         opacityLabel.setLabelFor(opacitySlider);
@@ -669,7 +675,7 @@ public class MapEditor implements /*ActionListener,
         statusBar.add(zoomLabel);
     }
 
-    private void updateLayerTable() {
+    public void updateLayerTable() {
         int currentLayerIndex = this.currentLayerIndex;
         if (layerTable.isEditing()) {
             layerTable.getCellEditor(layerTable.getEditingRow(),
@@ -760,15 +766,6 @@ public class MapEditor implements /*ActionListener,
      */
     public MapLayer getCurrentLayer() {
         return currentTileMap.getLayer(currentLayerIndex);
-    }
-
-    /**
-     * Returns the currently selected layer index.
-     *
-     * @return the currently selected layer index
-     */
-    public int getCurrentLayerIndex() {
-        return currentLayerIndex;
     }
 
     public void setCurrentLayerIndex(int index) {
@@ -895,7 +892,7 @@ public class MapEditor implements /*ActionListener,
                     }
                 }
                 mapView.repaint();
-                brushPreview.setBrush(currentBrush);
+                ToolBar.getBrushPreview().setBrush(currentBrush);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentTileMap != null) {
@@ -941,89 +938,6 @@ public class MapEditor implements /*ActionListener,
         }
     }
 
-    public void componentHidden(ComponentEvent event) {
-    }
-
-    public void componentMoved(ComponentEvent event) {
-    }
-
-    public void componentResized(ComponentEvent event) {
-        // This can currently only happen when the map changes size
-        String s = (int) (mapView.getZoom() * 100) + "%";
-        zoomLabel.setText(s);
-
-        // Restore the midpoint
-        JViewport mapViewPort = mapScrollPane.getViewport();
-        Rectangle viewRect = mapViewPort.getViewRect();
-        int absMidX = Math.max(0, Math.round(relativeMidX * mapView.getWidth()) - viewRect.width / 2);
-        int absMidY = Math.max(0, Math.round(relativeMidY * mapView.getHeight()) - viewRect.height / 2);
-        mapViewPort.setViewPosition(new Point(absMidX, absMidY));
-    }
-
-    public void componentShown(ComponentEvent event) {
-    }
-
-    public void mapChanged(MapChangedEvent e) {
-        if (e.getMap() == currentTileMap) {
-            mapScrollPane.setViewportView(mapView);
-            updateLayerTable();
-            mapView.repaint();
-        }
-    }
-
-    public void layerAdded(MapChangedEvent e) {
-    }
-
-    public void layerRemoved(MapChangedEvent e) {
-    }
-
-    public void layerMoved(MapChangedEvent e) {
-    }
-
-    public void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent) {
-    }
-
-    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
-    }
-
-    public void tilesetRemoved(MapChangedEvent e, int index) {
-        mapView.repaint();
-    }
-
-    public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {
-    }
-
-    public void valueChanged(ListSelectionEvent e) {
-        int selectedRow = layerTable.getSelectedRow();
-
-        // At the moment, this can only be a new layer selection
-        if (currentTileMap != null && selectedRow >= 0) {
-            setCurrentLayerIndex(currentTileMap.getTotalLayers() - selectedRow - 1);
-
-            float opacity = getCurrentLayer().getOpacity();
-            opacitySlider.setValue((int) (opacity * 100));
-        } else {
-            setCurrentLayerIndex(-1);
-        }
-
-        updateLayerOperations();
-    }
-
-    public void stateChanged(ChangeEvent e) {
-        JViewport mapViewport = mapScrollPane.getViewport();
-
-        if (e.getSource() == opacitySlider) {
-            if (currentTileMap != null && currentLayerIndex >= 0) {
-                MapLayer layer = getCurrentLayer();
-                layer.setOpacity(opacitySlider.getValue() / 100.0f);
-            }
-        } else if (e.getSource() == mapViewport && mapView != null) {
-            // Store the point in the middle for zooming purposes
-            Rectangle viewRect = mapViewport.getViewRect();
-            relativeMidX = Math.min(1, (viewRect.x + (float) viewRect.width / 2) / (float) mapView.getWidth());
-            relativeMidY = Math.min(1, (viewRect.y + (float) viewRect.height / 2) / (float) mapView.getHeight());
-        }
-    }
 
     /**
      * Called when the editor is exiting.
@@ -1272,7 +1186,7 @@ public class MapEditor implements /*ActionListener,
             mapView.addMouseMotionListener(mouseListener);
             mapView.addMouseWheelListener(mouseListener);
 
-            mapView.addComponentListener(this);
+            mapView.addComponentListener(componentListener);
             mapView.setSelectionSet(getSelectionSet());
             mapView.setGridOpacity(display.getInt("gridOpacity", 255));
             mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
@@ -1281,11 +1195,11 @@ public class MapEditor implements /*ActionListener,
             mapView.setShowGrid(display.getBoolean("showGrid", true));
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
-            mapViewport.addChangeListener(this);
+            mapViewport.addChangeListener(changeListener);
             mapScrollPane.setViewport(mapViewport);
             pointerStateManager.setCurrentPointerState(PointerStateEnum.PS_PAINT);
 
-            currentTileMap.addMapChangeListener(this);
+            currentTileMap.addMapChangeListener(mapChangeListener);
 
             gridMenuItem.setState(mapView.getShowGrid());
             coordinatesMenuItem.setState(

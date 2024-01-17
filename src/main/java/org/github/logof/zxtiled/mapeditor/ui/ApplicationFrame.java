@@ -6,6 +6,7 @@ import org.github.logof.zxtiled.mapeditor.listener.ApplicationFrameWindowAdapter
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.util.prefs.Preferences;
 
 public class ApplicationFrame extends JFrame {
@@ -15,7 +16,7 @@ public class ApplicationFrame extends JFrame {
 
     private int state = 0;
 
-    ApplicationFrameWindowAdapter windowAdapter = new ApplicationFrameWindowAdapter();
+    WindowAdapter windowAdapter = new ApplicationFrameWindowAdapter();
 
     public ApplicationFrame() {
         super(Resources.getString("dialog.main.title"));
