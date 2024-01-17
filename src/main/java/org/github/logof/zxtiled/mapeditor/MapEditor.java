@@ -18,6 +18,7 @@ import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
@@ -48,13 +49,13 @@ import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.ResizeDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.SearchDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.TilesetManager;
-import org.github.logof.zxtiled.mapeditor.enums.ActionModesEnum;
-import org.github.logof.zxtiled.mapeditor.listener.MapMouseListener;
+import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorActionListener;
+import org.github.logof.zxtiled.mapeditor.listener.MapEditorMouseListener;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
-import org.github.logof.zxtiled.mapeditor.selection.ToolSemantic;
 import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
 import org.github.logof.zxtiled.mapeditor.ui.BrushPreview;
 import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
@@ -65,6 +66,7 @@ import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
 import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
 import org.github.logof.zxtiled.mapeditor.ui.TimedStatusLabel;
+import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
 import org.github.logof.zxtiled.mapeditor.ui.menu.FileMenu;
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
@@ -82,7 +84,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -103,7 +104,7 @@ import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
 /**
  * The main class for the Tiled Map Editor.
  */
-public class MapEditor implements ActionListener,
+public class MapEditor implements /*ActionListener,
                                   /*MouseListener,
                                   MouseMotionListener,
                                   MouseWheelListener,*/
@@ -118,8 +119,10 @@ public class MapEditor implements ActionListener,
      */
     public static final String version = "0.0.1";
     public static final Preferences preferences = TiledConfiguration.root();
-    private final Cursor curDefault;
-    private final Cursor curEyed;
+
+    public static final Cursor curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
+    public static final Cursor curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
+
     @Getter
     private final UndoHandler undoHandler;
     @Getter
@@ -130,6 +133,7 @@ public class MapEditor implements ActionListener,
     private final SelectionLayer cursorHighlight;
     @Getter
     private final ApplicationFrame appFrame;
+    @Getter
     private final ObjectSelectionToolSemantic objectSelectionToolSemantic;
     @Getter
     private final SelectionSet selectionSet = new SelectionSet();
@@ -138,13 +142,11 @@ public class MapEditor implements ActionListener,
     @Getter
     private MapView mapView;
     @Getter
-    private ActionModesEnum currentPointerState;
-    @Getter
     private Tile currentTile;
     @Getter
     @Setter
     private MapObject currentObject = null;
-    private int currentLayer = -1;
+    private int currentLayerIndex = -1;
 
     @Getter
     private AbstractBrush currentBrush;
@@ -176,15 +178,6 @@ public class MapEditor implements ActionListener,
     private JLabel tilePositionLabel;
     @Getter
     private TimedStatusLabel statusLabel;
-    private AbstractButton paintButton;
-    private AbstractButton eraseButton;
-    private AbstractButton pourButton;
-    private AbstractButton eyedButton;
-    private AbstractButton marqueeButton;
-    private AbstractButton moveButton;
-    private AbstractButton objectMoveButton;
-    private AbstractButton objectAddButton;
-    private AbstractButton objectRemoveButton;
     private TabbedTilesetsPane tabbedTilesetsPane;
     private AboutDialog aboutDialog;
     @Getter
@@ -192,18 +185,31 @@ public class MapEditor implements ActionListener,
     private MapLayerEdit paintEdit;
     private FloatablePanel layersPanel;
     private FloatablePanel tilesetPanel;
-    private ToolSemantic currentToolSemantic;
 
-    private final MapMouseListener mouseListener;
+
+    private final MapEditorMouseListener mouseListener;
+
+    @Getter
+    private static MapEditorActionListener actionListener;
+
+    @Getter
+    private final PointerStateManager pointerStateManager;
+
+    @Getter
+    private final ToolBar toolBar;
 
     public MapEditor() {
         MapEditorAction.init(this);
-        mouseListener = new MapMouseListener(this);
+        mouseListener = new MapEditorMouseListener(this);
+        actionListener = new MapEditorActionListener(this);
+
+        toolBar = new ToolBar();
+
+        pointerStateManager = new PointerStateManager(this);
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
-        curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
-        curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
+
 
         undoHandler = new UndoHandler(this);
         undoSupport = new UndoableEditSupport();
@@ -258,8 +264,7 @@ public class MapEditor implements ActionListener,
 
 
         // Make sure the map view is redrawn when grid preferences change.
-        // todo: move this functionality out of here somehow, but not back into
-        // MapView
+        // todo: move this functionality out of here somehow, but not back into MapView
         final Preferences display = preferences.node("display");
         display.addPreferenceChangeListener(event -> {
             if (mapView == null) return;
@@ -351,7 +356,7 @@ public class MapEditor implements ActionListener,
 
         // GUI components
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(createToolBar(), BorderLayout.WEST);
+        mainPanel.add(toolBar, BorderLayout.WEST);
         mainPanel.add(paletteSplit, BorderLayout.CENTER);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
@@ -477,22 +482,22 @@ public class MapEditor implements ActionListener,
         selectMenu.add(new TMenuItem(MapEditorAction.inverseAction, true));
 
         gridMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.grid"));
-        gridMenuItem.addActionListener(this);
+        gridMenuItem.addActionListener(actionListener);
         gridMenuItem.setToolTipText(Resources.getString("menu.view.grid.tooltip"));
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
 
         cursorMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.cursor"));
         cursorMenuItem.setSelected(preferences.getBoolean("cursorhighlight", true));
-        cursorMenuItem.addActionListener(this);
+        cursorMenuItem.addActionListener(actionListener);
         cursorMenuItem.setToolTipText(Resources.getString("menu.view.cursor.tooltip"));
 
         JCheckBoxMenuItem boundaryMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.boundaries"));
-        boundaryMenuItem.addActionListener(this);
+        boundaryMenuItem.addActionListener(actionListener);
         boundaryMenuItem.setToolTipText(Resources.getString("menu.view.boundaries.tooltip"));
         boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
 
         coordinatesMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.coordinates"));
-        coordinatesMenuItem.addActionListener(this);
+        coordinatesMenuItem.addActionListener(actionListener);
         coordinatesMenuItem.setToolTipText(Resources.getString("menu.view.coordinates.tooltip"));
 
         JMenu viewMenu = new JMenu(Resources.getString("menu.view"));
@@ -531,59 +536,6 @@ public class MapEditor implements ActionListener,
      *
      * @return the created tool bar
      */
-    private JToolBar createToolBar() {
-        Icon iconMove = Resources.getIcon("icon/gimp-tool-move-22.png");
-        Icon iconPaint = Resources.getIcon("icon/gimp-tool-pencil-22.png");
-        Icon iconErase = Resources.getIcon("icon/gimp-tool-eraser-22.png");
-        Icon iconPour = Resources.getIcon("icon/gimp-tool-bucket-fill-22.png");
-        Icon iconEyed = Resources.getIcon("icon/gimp-tool-color-picker-22.png");
-        Icon iconMarquee = Resources.getIcon("icon/gimp-tool-rect-select-22.png");
-        Icon iconAddObject = Resources.getIcon("icon/gnome-list-add-22.png");
-        Icon iconRemoveObject = Resources.getIcon("icon/gnome-list-remove-22.png");
-        Icon iconMoveObject = Resources.getIcon("icon/gimp-tool-object-move-22.png");
-
-        paintButton = createToggleButton(iconPaint, "paint", Constants.TOOL_PAINT);
-        eraseButton = createToggleButton(iconErase, "erase", Constants.TOOL_ERASE);
-        pourButton = createToggleButton(iconPour, "pour", Constants.TOOL_FILL);
-        eyedButton = createToggleButton(iconEyed, "eyed", Constants.TOOL_EYE_DROPPER);
-        marqueeButton = createToggleButton(iconMarquee, "marquee", Constants.TOOL_SELECT);
-        moveButton = createToggleButton(iconMove, "move", Constants.TOOL_MOVE_LAYER);
-        objectAddButton = createToggleButton(iconAddObject, "addobject", Constants.TOOL_ADD_OBJECT);
-        objectRemoveButton = createToggleButton(iconRemoveObject, "removeobject", Constants.TOOL_REMOVE_OBJECT);
-        objectMoveButton = createToggleButton(iconMoveObject, "moveobject", Constants.TOOL_MOVE_OBJECT);
-
-        MapEventAdapter.addListener(moveButton);
-        MapEventAdapter.addListener(paintButton);
-        MapEventAdapter.addListener(eraseButton);
-        MapEventAdapter.addListener(pourButton);
-        MapEventAdapter.addListener(eyedButton);
-        MapEventAdapter.addListener(marqueeButton);
-        MapEventAdapter.addListener(objectMoveButton);
-
-        JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
-        toolBar.setFloatable(true);
-        toolBar.add(moveButton);
-        toolBar.add(paintButton);
-        toolBar.add(eraseButton);
-        toolBar.add(pourButton);
-        toolBar.add(eyedButton);
-        toolBar.add(marqueeButton);
-        toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
-        toolBar.add(objectAddButton);
-        toolBar.add(objectRemoveButton);
-        toolBar.add(objectMoveButton);
-        toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
-        toolBar.add(new TButton(MapEditorAction.zoomInAction));
-        toolBar.add(new TButton(MapEditorAction.zoomOutAction));
-        toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
-        toolBar.add(Box.createGlue());
-
-        brushPreview = new BrushPreview();
-        MapEventAdapter.addListener(brushPreview);
-        toolBar.add(brushPreview);
-
-        return toolBar;
-    }
 
     private void createData() {
         dataPanel = new JPanel(new BorderLayout());
@@ -718,7 +670,7 @@ public class MapEditor implements ActionListener,
     }
 
     private void updateLayerTable() {
-        int cl = currentLayer;
+        int currentLayerIndex = this.currentLayerIndex;
         if (layerTable.isEditing()) {
             layerTable.getCellEditor(layerTable.getEditingRow(),
                     layerTable.getEditingColumn()).cancelCellEditing();
@@ -726,11 +678,11 @@ public class MapEditor implements ActionListener,
         ((LayerTableModel) layerTable.getModel()).setMap(currentTileMap);
 
         if (currentTileMap != null) {
-            if (currentTileMap.getTotalLayers() > 0 && cl == -1) {
-                cl = 0;
+            if (currentTileMap.getTotalLayers() > 0 && currentLayerIndex == -1) {
+                currentLayerIndex = 0;
             }
 
-            setCurrentLayerIndex(cl);
+            setCurrentLayerIndex(currentLayerIndex);
         }
 
         updateLayerOperations();
@@ -743,9 +695,9 @@ public class MapEditor implements ActionListener,
             nrLayers = currentTileMap.getTotalLayers();
         }
 
-        final boolean validSelection = currentLayer >= 0;
-        final boolean notBottom = currentLayer > 0;
-        final boolean notTop = currentLayer < nrLayers - 1 && validSelection;
+        final boolean validSelection = currentLayerIndex >= 0;
+        final boolean notBottom = currentLayerIndex > 0;
+        final boolean notTop = currentLayerIndex < nrLayers - 1 && validSelection;
         final boolean tileLayer =
                 validSelection && getCurrentLayer() instanceof TileLayer;
         final boolean objectGroup =
@@ -755,15 +707,9 @@ public class MapEditor implements ActionListener,
             MapLayer l = getCurrentLayer();
             cursorHighlight.setTileDimensions(l.getTileWidth(), l.getTileHeight());
         }
-
-        paintButton.setEnabled(tileLayer);
-        eraseButton.setEnabled(tileLayer);
-        pourButton.setEnabled(tileLayer);
-        eyedButton.setEnabled(tileLayer);
-        moveButton.setEnabled(validSelection);
-        objectAddButton.setEnabled(objectGroup);
-        objectRemoveButton.setEnabled(objectGroup);
-        objectMoveButton.setEnabled(objectGroup);
+        toolBar.updateTileLayerOperations(tileLayer);
+        toolBar.updateValidSelectionOperations(validSelection);
+        toolBar.updateObjectGroupOperations(objectGroup);
 
         MapEditorAction.cloneLayerAction.setEnabled(validSelection);
         MapEditorAction.deleteLayerAction.setEnabled(validSelection);
@@ -777,7 +723,7 @@ public class MapEditor implements ActionListener,
 
     private JMenuItem createMenuItem(String name, Icon icon, String tipText) {
         JMenuItem menuItem = new JMenuItem(name);
-        menuItem.addActionListener(this);
+        menuItem.addActionListener(actionListener);
         if (icon != null) {
             menuItem.setIcon(icon);
         }
@@ -800,7 +746,7 @@ public class MapEditor implements ActionListener,
         button = new JToggleButton("", icon);
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setActionCommand(command);
-        button.addActionListener(this);
+        button.addActionListener(actionListener);
         if (tt != null) {
             button.setToolTipText(tt);
         }
@@ -813,7 +759,7 @@ public class MapEditor implements ActionListener,
      * @return the currently selected layer
      */
     public MapLayer getCurrentLayer() {
-        return currentTileMap.getLayer(currentLayer);
+        return currentTileMap.getLayer(currentLayerIndex);
     }
 
     /**
@@ -822,34 +768,35 @@ public class MapEditor implements ActionListener,
      * @return the currently selected layer index
      */
     public int getCurrentLayerIndex() {
-        return currentLayer;
+        return currentLayerIndex;
     }
 
     public void setCurrentLayerIndex(int index) {
-        if (currentLayer == index)    // no change => no work to do!
+        if (currentLayerIndex == index) {    // no change => no work to do!
             return;
+        }
 
         if (currentTileMap == null) {    // no current map => no layer selected currently
-            currentLayer = -1;
+            currentLayerIndex = -1;
             return;
         }
 
         // boundary check
         int totalLayers = currentTileMap.getTotalLayers();
         if (index < 0 || totalLayers <= index) {
-            currentLayer = -1;
+            currentLayerIndex = -1;
             return;
         }
-        currentLayer = index;
-        layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
+        currentLayerIndex = index;
+        layerTable.changeSelection(totalLayers - currentLayerIndex - 1, 0,
                 false, false);
-        MapLayer l = currentTileMap.getLayer(currentLayer);
+        MapLayer l = currentTileMap.getLayer(currentLayerIndex);
         mapView.setCurrentLayer(l);
         Rectangle r = l.getBounds();
         statusLabel.setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
         cursorHighlight.setParent(getCurrentLayer());
 
-        updateToolSemantics();
+        pointerStateManager.updateToolSemantics();
     }
 
     public void updateTileCoordsLabel(Point tile) {
@@ -890,46 +837,9 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    public void actionPerformed(ActionEvent event) {
-        String command = event.getActionCommand();
-
-        if ("paint".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_PAINT);
-            resetBrush();
-        } else if ("erase".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_ERASE);
-            resetBrush();
-        } else if ("point".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_POINT);
-            resetBrush();
-        } else if ("pour".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_POUR);
-            resetBrush();
-        } else if ("eyed".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_EYED);
-            resetBrush();
-        } else if ("marquee".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_MARQUEE);
-            resetBrush();
-        } else if ("move".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_MOVE);
-            resetBrush();
-        } else if ("addobject".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_ADD_OBJ);
-            resetBrush();
-        } else if ("removeobject".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_REMOVE_OBJ);
-            resetBrush();
-        } else if ("moveobject".equals(command)) {
-            setCurrentPointerState(ActionModesEnum.PS_MOVE_OBJ);
-            resetBrush();
-        } else {
-            handleEvent(event);
-        }
-    }
 
     // TODO: Most if not all of the below should be moved into action objects
-    private void handleEvent(ActionEvent event) {
+    public void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
         if (command.equals(Resources.getString("menu.edit.brush"))) {
@@ -1103,7 +1013,7 @@ public class MapEditor implements ActionListener,
         JViewport mapViewport = mapScrollPane.getViewport();
 
         if (e.getSource() == opacitySlider) {
-            if (currentTileMap != null && currentLayer >= 0) {
+            if (currentTileMap != null && currentLayerIndex >= 0) {
                 MapLayer layer = getCurrentLayer();
                 layer.setOpacity(opacitySlider.getValue() / 100.0f);
             }
@@ -1144,29 +1054,6 @@ public class MapEditor implements ActionListener,
         aboutDialog.setVisible(true);
     }
 
-    private void updateToolSemantics() {
-        // FIXME: this is currently very simple, but should be replaced
-        // by something that is more powerful - when the tools are refactored
-        // and moved out of MapEditor altogether..
-        ToolSemantic ts;
-        if (currentPointerState == ActionModesEnum.PS_MARQUEE && ObjectGroup.class.isAssignableFrom(getCurrentLayer().getClass())) {
-            ts = objectSelectionToolSemantic;
-        } else {
-            ts = null;
-        }
-        if (ts == currentToolSemantic) {
-            return;
-        }
-        if (currentToolSemantic != null) {
-            currentToolSemantic.deactivate();
-        }
-
-        currentToolSemantic = ts;
-
-        if (currentToolSemantic != null) {
-            currentToolSemantic.activate();
-        }
-    }
 
     public void pour(TileLayer layer, int x, int y,
                       Tile newTile, Tile oldTile) {
@@ -1371,7 +1258,7 @@ public class MapEditor implements ActionListener,
             mapView = null;
             mapScrollPane.setViewportView(Box.createRigidArea(
                     new Dimension(0, 0)));
-            setCurrentPointerState(ActionModesEnum.PS_POINT);
+            pointerStateManager.setCurrentPointerState(PointerStateEnum.PS_POINT);
             tilePositionLabel.setPreferredSize(null);
             tilePositionLabel.setText(" ");
             zoomLabel.setText(" ");
@@ -1396,7 +1283,7 @@ public class MapEditor implements ActionListener,
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);
             mapScrollPane.setViewport(mapViewport);
-            setCurrentPointerState(ActionModesEnum.PS_PAINT);
+            pointerStateManager.setCurrentPointerState(PointerStateEnum.PS_PAINT);
 
             currentTileMap.addMapChangeListener(this);
 
@@ -1450,40 +1337,7 @@ public class MapEditor implements ActionListener,
             if (currentBrush instanceof ShapeBrush) {
                 ((ShapeBrush) currentBrush).setTile(tile);
             }
-            brushPreview.setBrush(currentBrush);
+            ToolBar.getBrushPreview().setBrush(currentBrush);
         }
-    }
-
-    private void setCurrentPointerState(ActionModesEnum state) {
-        currentPointerState = state;
-
-        // Select the matching button
-        paintButton.setSelected(state == ActionModesEnum.PS_PAINT);
-        eraseButton.setSelected(state == ActionModesEnum.PS_ERASE);
-        pourButton.setSelected(state == ActionModesEnum.PS_POUR);
-        eyedButton.setSelected(state == ActionModesEnum.PS_EYED);
-        marqueeButton.setSelected(state == ActionModesEnum.PS_MARQUEE);
-        moveButton.setSelected(state == ActionModesEnum.PS_MOVE);
-        objectAddButton.setSelected(state == ActionModesEnum.PS_ADD_OBJ);
-        objectRemoveButton.setSelected(state == ActionModesEnum.PS_REMOVE_OBJ);
-        objectMoveButton.setSelected(state == ActionModesEnum.PS_MOVE_OBJ);
-
-        // Set the matching cursor
-        if (mapView != null) {
-            switch (currentPointerState) {
-                case PS_PAINT:
-                case PS_ERASE:
-                case PS_POINT:
-                case PS_POUR:
-                case PS_MARQUEE:
-                    mapView.setCursor(curDefault);
-                    break;
-                case PS_EYED:
-                    mapView.setCursor(curEyed);
-                    break;
-            }
-        }
-
-        updateToolSemantics();
     }
 }

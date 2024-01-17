@@ -3,6 +3,7 @@ package org.github.logof.zxtiled.mapeditor.listener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.Constants;
@@ -14,7 +15,7 @@ import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.LayerInvisibleBrushException;
 import org.github.logof.zxtiled.mapeditor.brush.LayerLockedBrushException;
 import org.github.logof.zxtiled.mapeditor.dialogs.ObjectDialog;
-import org.github.logof.zxtiled.mapeditor.enums.ActionModesEnum;
+import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.undo.AddObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
@@ -31,12 +32,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
 
-import static org.github.logof.zxtiled.mapeditor.enums.ActionModesEnum.PS_PAINT;
+import static org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum.PS_PAINT;
 import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
 
-public class MapMouseListener implements MouseListener,
-                                         MouseMotionListener,
-                                         MouseWheelListener {
+public class MapEditorMouseListener implements MouseListener,
+                                               MouseMotionListener,
+                                               MouseWheelListener {
 
     private int mouseButton;
     private boolean bMouseIsDown;
@@ -49,7 +50,7 @@ public class MapMouseListener implements MouseListener,
 
     private final MapEditor mapEditor;
 
-    public MapMouseListener(MapEditor mapEditor) {
+    public MapEditorMouseListener(MapEditor mapEditor) {
         this.mapEditor = mapEditor;
     }
 
@@ -76,7 +77,7 @@ public class MapMouseListener implements MouseListener,
             // Remember screen location for scrolling with middle mouse button
             mouseInitialScreenLocation = new Point(mouseEvent.getX(), mouseEvent.getY());
         } else if (mouseButton == MouseEvent.BUTTON1) {
-            switch (mapEditor.getCurrentPointerState()) {
+            switch (PointerStateManager.getCurrentPointerState()) {
                 case PS_PAINT:
                     if (mapLayer instanceof TileLayer) {
                         mapEditor.getCurrentBrush().startPaint(mapEditor.getCurrentTileMap(), tile.x, tile.y,
@@ -91,7 +92,7 @@ public class MapMouseListener implements MouseListener,
             }
         }
 
-        if (mapEditor.getCurrentPointerState() == ActionModesEnum.PS_MARQUEE) {
+        if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MARQUEE) {
             boolean contains = mapEditor.getMarqueeSelection() != null && mapEditor.getMarqueeSelection()
                                                                                    .getSelectedArea()
                                                                                    .contains(tile.x, tile.y);
@@ -108,7 +109,7 @@ public class MapMouseListener implements MouseListener,
                     mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
                 }
             }
-        } else if (mapEditor.getCurrentPointerState() == ActionModesEnum.PS_MOVE) {
+        } else if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MOVE) {
             // Initialize move distance to (0, 0)
             moveDist = new Point(0, 0);
         }
@@ -135,7 +136,7 @@ public class MapMouseListener implements MouseListener,
                     // so this one always happens
                     Tile newTile = ((TileLayer) layer).getTileAt(tile.x, tile.y);
                     mapEditor.setCurrentTile(newTile);
-                } else if (mapEditor.getCurrentPointerState() == PS_PAINT) {
+                } else if (PointerStateManager.getCurrentPointerState() == PS_PAINT) {
                     // In case we are dragging to create a custom brush, let
                     // the user know where we are creating it from
                     if (mapEditor.getMarqueeSelection() == null) {
@@ -196,7 +197,7 @@ public class MapMouseListener implements MouseListener,
 
             mapViewPort.setViewPosition(newPosition);
         } else if (mouseButton == MouseEvent.BUTTON1) {
-            switch (mapEditor.getCurrentPointerState()) {
+            switch (PointerStateManager.getCurrentPointerState()) {
                 case PS_PAINT:
                     mapEditor.getPaintEdit().setPresentationName(Constants.TOOL_PAINT);
                     if (layer instanceof TileLayer) {
@@ -353,15 +354,15 @@ public class MapMouseListener implements MouseListener,
         final MapLayer layer = mapEditor.getCurrentLayer();
         final Point limp = mouseInitialPressLocation;
 
-        if (mapEditor.getCurrentPointerState() == ActionModesEnum.PS_MOVE) {
+        if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MOVE) {
             if (layer != null && (moveDist.x != 0 || moveDist.y != 0)) {
                 mapEditor.getUndoSupport().postEdit(new MoveLayerEdit(layer, moveDist));
             }
-        } else if (mapEditor.getCurrentPointerState() == PS_PAINT) {
+        } else if (PointerStateManager.getCurrentPointerState() == PS_PAINT) {
             if (layer instanceof TileLayer) {
                 mapEditor.getCurrentBrush().endPaint();
             }
-        } else if (mapEditor.getCurrentPointerState() == ActionModesEnum.PS_MOVE_OBJ) {
+        } else if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MOVE_OBJ) {
             if (layer instanceof ObjectGroup && mapEditor.getCurrentObject() != null &&
                     (moveDist.x != 0 || moveDist.y != 0)) {
                 mapEditor.getUndoSupport().postEdit(
@@ -369,8 +370,8 @@ public class MapMouseListener implements MouseListener,
             }
         }
 
-        if (mapEditor.getCurrentPointerState() == PS_PAINT ||
-                mapEditor.getCurrentPointerState() == ActionModesEnum.PS_ADD_OBJ) {
+        if (PointerStateManager.getCurrentPointerState() == PS_PAINT ||
+                PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ) {
             Point tile = mapEditor.getMapView().screenToTileCoords(
                     layer, mouseEvent.getX(), mouseEvent.getY());
             int minx = Math.min(limp.x, tile.x);
