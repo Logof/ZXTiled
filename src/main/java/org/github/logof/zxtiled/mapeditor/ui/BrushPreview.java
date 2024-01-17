@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.ui;
 
+import lombok.Setter;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import javax.swing.*;
 import java.awt.*;
@@ -19,15 +20,12 @@ import java.awt.*;
 /**
  * @version $Id$
  */
+@Setter
 public class BrushPreview extends JPanel {
     private AbstractBrush brush;
 
     public BrushPreview() {
         setPreferredSize(new Dimension(22, 22));
-    }
-
-    public void setBrush(AbstractBrush brush) {
-        this.brush = brush;
     }
 
     public void paint(Graphics graphics) {

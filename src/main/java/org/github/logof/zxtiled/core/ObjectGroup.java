@@ -25,7 +25,7 @@ import java.util.Vector;
  * A layer containing {@link MapObject map objects}.
  */
 public class ObjectGroup extends MapLayer {
-    private LinkedList<MapObject> objects = new LinkedList<MapObject>();
+    private LinkedList<MapObject> objects = new LinkedList<>();
 
     /**
      * Default constructor.
@@ -112,7 +112,7 @@ public class ObjectGroup extends MapLayer {
 
     public Object clone() throws CloneNotSupportedException {
         ObjectGroup clone = (ObjectGroup) super.clone();
-        clone.objects = new LinkedList<MapObject>();
+        clone.objects = new LinkedList<>();
         for (MapObject object : objects) {
             final MapObject objectClone = (MapObject) object.clone();
             clone.objects.add(objectClone);
@@ -175,7 +175,7 @@ public class ObjectGroup extends MapLayer {
         // FIXME: iterating over all objects is potentially very slow
         // there's room for optimization here by using some sort of space
         // partitioning for object storage
-        Vector<MapObject> result = new Vector<MapObject>();
+        Vector<MapObject> result = new Vector<>();
         Line2D l0 = new Line2D.Float();
         Line2D l1 = new Line2D.Float();
         Line2D l2 = new Line2D.Float();
@@ -205,7 +205,7 @@ public class ObjectGroup extends MapLayer {
      * rectangle.
      */
     public MapObject[] findObjects(Rectangle rect) {
-        Vector<MapObject> result = new Vector<MapObject>();
+        Vector<MapObject> result = new Vector<>();
         for (MapObject o : objects) {
             if (rect.contains(o.getBounds()))
                 result.add(o);

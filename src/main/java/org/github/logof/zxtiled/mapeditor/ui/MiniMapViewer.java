@@ -13,6 +13,7 @@
 
 package org.github.logof.zxtiled.mapeditor.ui;
 
+import lombok.Setter;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,7 @@ public class MiniMapViewer extends JPanel {
     public static final int MAX_HEIGHT = 150;
 
     private MapView myView;
+    @Setter
     private JScrollPane mainPanel;
     private final double scale = 0.0625;
     private BufferedImage renderedMap;
@@ -56,10 +58,6 @@ public class MiniMapViewer extends JPanel {
 
     public Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
-    }
-
-    public void setMainPanel(JScrollPane main) {
-        mainPanel = main;
     }
 
     public void refresh() {

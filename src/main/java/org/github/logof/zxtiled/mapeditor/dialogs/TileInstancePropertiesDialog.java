@@ -25,8 +25,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -44,7 +42,7 @@ public class TileInstancePropertiesDialog extends JDialog
     /**
      * Holds all currently selected Properties.
      */
-    private final LinkedList<Point> propertiesCoordinates = new LinkedList<Point>();
+    private final LinkedList<Point> propertiesCoordinates = new LinkedList<>();
     private final Properties mergedProperties = new Properties();
     private JTable propertiesTable;
     private final PropertiesTableModel tableModel = new PropertiesTableModel();
@@ -113,17 +111,9 @@ public class TileInstancePropertiesDialog extends JDialog
         getRootPane().setDefaultButton(applyButton);
 
         //create actionlisteners
-        applyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                buildPropertiesAndApply();
-            }
-        });
+        applyButton.addActionListener(actionEvent -> buildPropertiesAndApply());
 
-        deleteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                deleteSelected();
-            }
-        });
+        deleteButton.addActionListener(actionEvent -> deleteSelected());
     }
 
     public void setSelection(SelectionLayer selection) {

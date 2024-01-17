@@ -72,7 +72,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     private JLabel tilebmpFileLabel, cutterLabel, tileHeightLabel;
     private JCheckBox tilebmpCheck;
     private JCheckBox transCheck;
-    private JComboBox cutterBox;
+    private JComboBox<String> cutterBox;
     private JButton previewButton;
     private JButton browseButton;
     private JButton propsButton;
@@ -125,7 +125,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         tileHeight.setEnabled(false);
         tileWidthLabel.setEnabled(false);
 
-        cutterBox = new JComboBox(new String[]{"Basic", "Border"});
+        cutterBox = new JComboBox<>(new String[]{"Basic", "Border"});
         cutterBox.setEditable(false);
         cutterBox.setEnabled(false);
         cutterLabel.setEnabled(false);

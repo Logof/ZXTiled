@@ -31,7 +31,7 @@ public class TileMergeHelper {
 
     public TileMergeHelper(TileMap tileMap) {
         myTileMap = tileMap;
-        cells = new Vector();
+        cells = new Vector<>();
         myTs = new TileSet();
         myTs.setName("Merged Set");
     }
@@ -100,7 +100,7 @@ public class TileMergeHelper {
         private Tile myTile;
 
         public Cell(TileMap tileMap, int posx, int posy, int start, int len, boolean all) {
-            sandwich = new Vector<Tile>();
+            sandwich = new Vector<>();
             for (int i = 0; i < len; i++) {
                 MapLayer ml = tileMap.getLayer(start + i);
                 if (ml instanceof TileLayer) {

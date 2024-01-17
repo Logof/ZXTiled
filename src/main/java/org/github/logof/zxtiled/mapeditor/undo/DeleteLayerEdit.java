@@ -21,7 +21,7 @@ public class DeleteLayerEdit extends AbstractUndoableEdit {
 
     private final TileMap tileMap;
     private final int index;
-    private MapLayer layer = null;
+    private MapLayer layer;
 
     public DeleteLayerEdit(MapEditor editor, TileMap tileMap, int index) {
         this.editor = editor;

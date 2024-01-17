@@ -153,11 +153,11 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         int selectedRow = tilesetTable.getSelectedRow();
-        Vector tilesets = tileMap.getTilesets();
+        Vector<TileSet> tilesets = tileMap.getTilesets();
         TileSet set = null;
         try {
-            set = (TileSet) tilesets.get(selectedRow);
-        } catch (IndexOutOfBoundsException e) {
+            set = tilesets.get(selectedRow);
+        } catch (IndexOutOfBoundsException ignored) {
         }
 
 

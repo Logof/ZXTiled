@@ -32,6 +32,7 @@ public class OrthoMapView extends MapView {
     private final Polygon propPoly;
 
     /**
+     *
      * Creates a new orthographic map view that displays the specified map.
      *
      * @param tileMap the map to be displayed by this map view
