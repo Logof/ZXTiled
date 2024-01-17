@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.mapeditor;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
@@ -25,24 +26,15 @@ import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.io.MapReader;
-import org.github.logof.zxtiled.mapeditor.actions.AddLayerAction;
-import org.github.logof.zxtiled.mapeditor.actions.AddObjectGroupAction;
-import org.github.logof.zxtiled.mapeditor.actions.CloneLayerAction;
 import org.github.logof.zxtiled.mapeditor.actions.CloseMapAction;
-import org.github.logof.zxtiled.mapeditor.actions.DeleteLayerAction;
-import org.github.logof.zxtiled.mapeditor.actions.ExitAction;
-import org.github.logof.zxtiled.mapeditor.actions.ExportAction;
-import org.github.logof.zxtiled.mapeditor.actions.MergeAllLayersAction;
-import org.github.logof.zxtiled.mapeditor.actions.MergeLayerDownAction;
-import org.github.logof.zxtiled.mapeditor.actions.MoveLayerDownAction;
-import org.github.logof.zxtiled.mapeditor.actions.MoveLayerUpAction;
+import org.github.logof.zxtiled.mapeditor.actions.CopyAction;
+import org.github.logof.zxtiled.mapeditor.actions.CopyAllAction;
+import org.github.logof.zxtiled.mapeditor.actions.CutAction;
+import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.actions.NewMapAction;
 import org.github.logof.zxtiled.mapeditor.actions.OpenMapAction;
 import org.github.logof.zxtiled.mapeditor.actions.OpenRecentAction;
-import org.github.logof.zxtiled.mapeditor.actions.SaveAction;
-import org.github.logof.zxtiled.mapeditor.actions.SaveAsAction;
-import org.github.logof.zxtiled.mapeditor.actions.SaveAsImageAction;
-import org.github.logof.zxtiled.mapeditor.actions.ShowLayerPropertiesAction;
+import org.github.logof.zxtiled.mapeditor.actions.PasteAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import org.github.logof.zxtiled.mapeditor.brush.BrushException;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
@@ -76,9 +68,10 @@ import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
 import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
 import org.github.logof.zxtiled.mapeditor.ui.TimedStatusLabel;
+import org.github.logof.zxtiled.mapeditor.ui.menu.FileMenu;
+import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.AddObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
-import org.github.logof.zxtiled.mapeditor.undo.MapLayerStateEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MoveLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MoveObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.RemoveObjectEdit;
@@ -144,36 +137,11 @@ public class MapEditor implements ActionListener,
     private final UndoHandler undoHandler;
     @Getter
     private final UndoableEditSupport undoSupport;
-    private final MapEventAdapter mapEventAdapter;
     @Getter
     private final PluginClassLoader pluginLoader;
     private final SelectionLayer cursorHighlight;
     @Getter
     private final ApplicationFrame appFrame;
-    // Actions
-    private final SaveAction saveAction;
-    private final SaveAsAction saveAsAction;
-    private final SaveAsImageAction saveAsImageAction;
-    private final ExportAction exportAction;
-
-    private final Action exitAction;
-    private final Action zoomInAction;
-    private final Action zoomOutAction;
-    private final Action zoomNormalAction;
-    private final Action flipHorAction;
-    private final Action flipVerAction;
-    private final Action selectAllAction;
-    private final Action inverseAction;
-    private final Action cancelSelectionAction;
-    private final Action addLayerAction;
-    private final Action cloneLayerAction;
-    private final Action deleteLayerAction;
-    private final Action moveLayerDownAction;
-    private final Action moveLayerUpAction;
-    private final Action mergeLayerDownAction;
-    private final Action mergeAllLayersAction;
-    private final Action addObjectGroupAction;
-    private final Action showLayerPropertiesAction;
     private final ObjectSelectionToolSemantic objectSelectionToolSemantic;
     @Getter
     private final SelectionSet selectionSet = new SelectionSet();
@@ -194,12 +162,16 @@ public class MapEditor implements ActionListener,
     private Point moveDist;
     private int mouseButton;
     private AbstractBrush currentBrush;
+    @Getter
+    @Setter
     private SelectionLayer marqueeSelection;
+    @Getter
+    @Setter
     private MapLayer clipboardLayer;
     private float relativeMidX, relativeMidY;
     private JPanel dataPanel;
     private JPanel statusBar;
-    private JMenuBar menuBar;
+    private MainMenuBar mainMenuBar;
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem cursorMenuItem;
     private JCheckBoxMenuItem coordinatesMenuItem;
@@ -232,6 +204,8 @@ public class MapEditor implements ActionListener,
     private ToolSemantic currentToolSemantic;
 
     public MapEditor() {
+        MapEditorAction.init(this);
+
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
         curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
@@ -245,44 +219,16 @@ public class MapEditor implements ActionListener,
         cursorHighlight.select(0, 0);
         cursorHighlight.setVisible(preferences.getBoolean("cursorhighlight", true));
 
-        mapEventAdapter = new MapEventAdapter();
-
-        // Create the actions
-        saveAction = new SaveAction(this);
-        saveAsAction = new SaveAsAction(this);
-        saveAsImageAction = new SaveAsImageAction(this);
-        exportAction = new ExportAction(this);
-
-        exitAction = new ExitAction(this, saveAction);
-        zoomInAction = new ZoomInAction();
-        zoomOutAction = new ZoomOutAction();
-        zoomNormalAction = new ZoomNormalAction();
-        flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
-        flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
-        selectAllAction = new SelectAllAction();
-        cancelSelectionAction = new CancelSelectionAction();
-        inverseAction = new InverseSelectionAction();
-        addLayerAction = new AddLayerAction(this);
-        cloneLayerAction = new CloneLayerAction(this);
-        deleteLayerAction = new DeleteLayerAction(this);
-        moveLayerUpAction = new MoveLayerUpAction(this);
-        moveLayerDownAction = new MoveLayerDownAction(this);
-        mergeLayerDownAction = new MergeLayerDownAction(this);
-        mergeAllLayersAction = new MergeAllLayersAction(this);
-        addObjectGroupAction = new AddObjectGroupAction(this);
-        showLayerPropertiesAction = new ShowLayerPropertiesAction(this);
-
-
         // Create our frame
         appFrame = new ApplicationFrame();
         appFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent event) {
-                exitAction.actionPerformed(null);
+                MapEditorAction.exitAction.actionPerformed(null);
             }
         });
         appFrame.setContentPane(createContentPane());
         createMenuBar();
-        appFrame.setJMenuBar(menuBar);
+        appFrame.setJMenuBar(mainMenuBar);
 
 
         setCurrentTileMap(null);
@@ -338,7 +284,7 @@ public class MapEditor implements ActionListener,
         });
     }
 
-    private static MapLayer createLayerCopy(MapLayer layer) {
+    public static MapLayer createLayerCopy(MapLayer layer) {
         try {
             return (MapLayer) layer.clone();
         } catch (CloneNotSupportedException e) {
@@ -423,23 +369,23 @@ public class MapEditor implements ActionListener,
      * assigning listeners and tooltips as well.
      */
     private void createMenuBar() {
-        JMenuItem save = new TMenuItem(saveAction);
-        JMenuItem saveAs = new TMenuItem(saveAsAction);
-        JMenuItem saveAsImage = new TMenuItem(saveAsImageAction);
-        JMenuItem exportMap = new TMenuItem(exportAction);
-        JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
+        JMenuItem save = new TMenuItem(MapEditorAction.saveAction);
+        JMenuItem saveAs = new TMenuItem(MapEditorAction.saveAsAction);
+        JMenuItem saveAsImage = new TMenuItem(MapEditorAction.saveAsImageAction);
+        JMenuItem exportMap = new TMenuItem(MapEditorAction.exportAction);
+        JMenuItem close = new TMenuItem(new CloseMapAction(this, MapEditorAction.saveAction));
 
         recentMenu = new JMenu(Resources.getString("menu.file.recent"));
 
-        mapEventAdapter.addListener(save);
-        mapEventAdapter.addListener(saveAs);
-        mapEventAdapter.addListener(saveAsImage);
-        mapEventAdapter.addListener(exportMap);
-        mapEventAdapter.addListener(close);
+        MapEventAdapter.addListener(save);
+        MapEventAdapter.addListener(saveAs);
+        MapEventAdapter.addListener(saveAsImage);
+        MapEventAdapter.addListener(exportMap);
+        MapEventAdapter.addListener(close);
 
-        JMenu fileMenu = new JMenu(Resources.getString("menu.file"));
-        fileMenu.add(new TMenuItem(new NewMapAction(this, saveAction)));
-        fileMenu.add(new TMenuItem(new OpenMapAction(this, saveAction)));
+        FileMenu fileMenu = new FileMenu();
+        fileMenu.add(new TMenuItem(new NewMapAction(this, MapEditorAction.saveAction)));
+        fileMenu.add(new TMenuItem(new OpenMapAction(this, MapEditorAction.saveAction)));
         fileMenu.add(recentMenu);
         fileMenu.add(save);
         fileMenu.add(saveAs);
@@ -447,21 +393,21 @@ public class MapEditor implements ActionListener,
         fileMenu.add(exportMap);
         fileMenu.addSeparator();
         fileMenu.add(close);
-        fileMenu.add(new TMenuItem(exitAction));
+        fileMenu.add(new TMenuItem(MapEditorAction.exitAction));
 
-        JMenuItem copyMenuItem = new TMenuItem(new CopyAction());
-        JMenuItem copyAllMenuItem = new TMenuItem(new CopyAllAction());
-        JMenuItem cutMenuItem = new TMenuItem(new CutAction());
-        JMenuItem pasteMenuItem = new TMenuItem(new PasteAction());
+        JMenuItem copyMenuItem = new TMenuItem(new CopyAction(this));
+        JMenuItem copyAllMenuItem = new TMenuItem(new CopyAllAction(this));
+        JMenuItem cutMenuItem = new TMenuItem(new CutAction(this));
+        JMenuItem pasteMenuItem = new TMenuItem(new PasteAction(this));
         copyMenuItem.setEnabled(false);
         copyAllMenuItem.setEnabled(false);
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
 
         JMenu transformSub = new JMenu(Resources.getString("menu.edit.transform"));
-        transformSub.add(new TMenuItem(flipHorAction, true));
-        transformSub.add(new TMenuItem(flipVerAction, true));
-        mapEventAdapter.addListener(transformSub);
+        transformSub.add(new TMenuItem(MapEditorAction.flipHorAction, true));
+        transformSub.add(new TMenuItem(MapEditorAction.flipVerAction, true));
+        MapEventAdapter.addListener(transformSub);
 
         JMenu editMenu = new JMenu(Resources.getString("menu.edit"));
         editMenu.add(new TMenuItem(undoHandler.getUndoAction()));
@@ -480,10 +426,10 @@ public class MapEditor implements ActionListener,
                 Resources.getString("menu.edit.brush.tooltip"),
                 "control B"));
 
-        mapEventAdapter.addListener(copyMenuItem);
-        mapEventAdapter.addListener(copyAllMenuItem);
-        mapEventAdapter.addListener(cutMenuItem);
-        mapEventAdapter.addListener(pasteMenuItem);
+        MapEventAdapter.addListener(copyMenuItem);
+        MapEventAdapter.addListener(copyAllMenuItem);
+        MapEventAdapter.addListener(cutMenuItem);
+        MapEventAdapter.addListener(pasteMenuItem);
 
 
         JMenu mapMenu = new JMenu(Resources.getString("menu.map"));
@@ -494,25 +440,25 @@ public class MapEditor implements ActionListener,
         mapMenu.addSeparator();
         mapMenu.add(createMenuItem(Resources.getString("menu.map.properties"), null,
                 Resources.getString("menu.map.properties.tooltip")));
-        mapEventAdapter.addListener(mapMenu);
+        MapEventAdapter.addListener(mapMenu);
 
 
         JMenu layerMenu = new JMenu(Resources.getString("menu.layer"));
-        JMenuItem layerAdd = new TMenuItem(addLayerAction);
-        mapEventAdapter.addListener(layerAdd);
+        JMenuItem layerAdd = new TMenuItem(MapEditorAction.addLayerAction);
+        MapEventAdapter.addListener(layerAdd);
         layerMenu.add(layerAdd);
-        layerMenu.add(new TMenuItem(cloneLayerAction));
-        layerMenu.add(new TMenuItem(deleteLayerAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.cloneLayerAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.deleteLayerAction));
         layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(addObjectGroupAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.addObjectGroupAction));
         layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(moveLayerUpAction));
-        layerMenu.add(new TMenuItem(moveLayerDownAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.moveLayerUpAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.moveLayerDownAction));
         layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(mergeLayerDownAction));
-        layerMenu.add(new TMenuItem(mergeAllLayersAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.mergeLayerDownAction));
+        layerMenu.add(new TMenuItem(MapEditorAction.mergeAllLayersAction));
         layerMenu.addSeparator();
-        layerMenu.add(showLayerPropertiesAction);
+        layerMenu.add(MapEditorAction.showLayerPropertiesAction);
 
         JMenu tilesetMenu = new JMenu(Resources.getString("menu.tilesets"));
         tilesetMenu.add(createMenuItem(
@@ -532,9 +478,9 @@ public class MapEditor implements ActionListener,
 
 
         JMenu selectMenu = new JMenu(Resources.getString("menu.select"));
-        selectMenu.add(new TMenuItem(selectAllAction, true));
-        selectMenu.add(new TMenuItem(cancelSelectionAction, true));
-        selectMenu.add(new TMenuItem(inverseAction, true));
+        selectMenu.add(new TMenuItem(MapEditorAction.selectAllAction, true));
+        selectMenu.add(new TMenuItem(MapEditorAction.cancelSelectionAction, true));
+        selectMenu.add(new TMenuItem(MapEditorAction.inverseAction, true));
 
         gridMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.grid"));
         gridMenuItem.addActionListener(this);
@@ -556,34 +502,34 @@ public class MapEditor implements ActionListener,
         coordinatesMenuItem.setToolTipText(Resources.getString("menu.view.coordinates.tooltip"));
 
         JMenu viewMenu = new JMenu(Resources.getString("menu.view"));
-        viewMenu.add(new TMenuItem(zoomInAction));
-        viewMenu.add(new TMenuItem(zoomOutAction));
-        viewMenu.add(new TMenuItem(zoomNormalAction));
+        viewMenu.add(new TMenuItem(MapEditorAction.zoomInAction));
+        viewMenu.add(new TMenuItem(MapEditorAction.zoomOutAction));
+        viewMenu.add(new TMenuItem(MapEditorAction.zoomNormalAction));
         viewMenu.addSeparator();
         viewMenu.add(gridMenuItem);
         viewMenu.add(cursorMenuItem);
         viewMenu.add(coordinatesMenuItem);
 
-        mapEventAdapter.addListener(layerMenu);
-        mapEventAdapter.addListener(tilesetMenu);
-        mapEventAdapter.addListener(selectMenu);
-        mapEventAdapter.addListener(viewMenu);
+        MapEventAdapter.addListener(layerMenu);
+        MapEventAdapter.addListener(tilesetMenu);
+        MapEventAdapter.addListener(selectMenu);
+        MapEventAdapter.addListener(viewMenu);
 
         JMenu helpMenu = new JMenu(Resources.getString("menu.help"));
         helpMenu.add(createMenuItem(Resources.getString("menu.help.plugins"), null,
                 Resources.getString("menu.help.plugins.tooltip")));
         helpMenu.add(createMenuItem(Resources.getString("menu.help.about"), null, Resources.getString("menu.help.about.tooltip")));
 
-        menuBar = new JMenuBar();
-        menuBar.add(fileMenu);
-        menuBar.add(editMenu);
-        menuBar.add(selectMenu);
-        menuBar.add(viewMenu);
-        menuBar.add(mapMenu);
-        menuBar.add(layerMenu);
-        menuBar.add(tilesetMenu);
+        mainMenuBar = new MainMenuBar();
+        mainMenuBar.add(fileMenu);
+        mainMenuBar.add(editMenu);
+        mainMenuBar.add(selectMenu);
+        mainMenuBar.add(viewMenu);
+        mainMenuBar.add(mapMenu);
+        mainMenuBar.add(layerMenu);
+        mainMenuBar.add(tilesetMenu);
         //menuBar.add(objectMenu);
-        menuBar.add(helpMenu);
+        mainMenuBar.add(helpMenu);
     }
 
     /**
@@ -612,13 +558,13 @@ public class MapEditor implements ActionListener,
         objectRemoveButton = createToggleButton(iconRemoveObject, "removeobject", Constants.TOOL_REMOVE_OBJECT);
         objectMoveButton = createToggleButton(iconMoveObject, "moveobject", Constants.TOOL_MOVE_OBJECT);
 
-        mapEventAdapter.addListener(moveButton);
-        mapEventAdapter.addListener(paintButton);
-        mapEventAdapter.addListener(eraseButton);
-        mapEventAdapter.addListener(pourButton);
-        mapEventAdapter.addListener(eyedButton);
-        mapEventAdapter.addListener(marqueeButton);
-        mapEventAdapter.addListener(objectMoveButton);
+        MapEventAdapter.addListener(moveButton);
+        MapEventAdapter.addListener(paintButton);
+        MapEventAdapter.addListener(eraseButton);
+        MapEventAdapter.addListener(pourButton);
+        MapEventAdapter.addListener(eyedButton);
+        MapEventAdapter.addListener(marqueeButton);
+        MapEventAdapter.addListener(objectMoveButton);
 
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
         toolBar.setFloatable(true);
@@ -633,13 +579,13 @@ public class MapEditor implements ActionListener,
         toolBar.add(objectRemoveButton);
         toolBar.add(objectMoveButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
-        toolBar.add(new TButton(zoomInAction));
-        toolBar.add(new TButton(zoomOutAction));
+        toolBar.add(new TButton(MapEditorAction.zoomInAction));
+        toolBar.add(new TButton(MapEditorAction.zoomOutAction));
         toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
         toolBar.add(Box.createGlue());
 
         brushPreview = new BrushPreview();
-        mapEventAdapter.addListener(brushPreview);
+        MapEventAdapter.addListener(brushPreview);
         toolBar.add(brushPreview);
 
         return toolBar;
@@ -649,19 +595,19 @@ public class MapEditor implements ActionListener,
         dataPanel = new JPanel(new BorderLayout());
 
         layerPopupMenu = new JPopupMenu();
-        layerPopupMenu.add(addLayerAction);
-        layerPopupMenu.add(addObjectGroupAction);
-        layerPopupMenu.add(cloneLayerAction);
+        layerPopupMenu.add(MapEditorAction.addLayerAction);
+        layerPopupMenu.add(MapEditorAction.addObjectGroupAction);
+        layerPopupMenu.add(MapEditorAction.cloneLayerAction);
         layerPopupMenu.addSeparator();
-        layerPopupMenu.add(deleteLayerAction);
-        layerPopupMenu.add(moveLayerUpAction);
-        layerPopupMenu.add(moveLayerDownAction);
+        layerPopupMenu.add(MapEditorAction.deleteLayerAction);
+        layerPopupMenu.add(MapEditorAction.moveLayerUpAction);
+        layerPopupMenu.add(MapEditorAction.moveLayerDownAction);
         layerPopupMenu.addSeparator();
-        layerPopupMenu.add(mergeLayerDownAction);
+        layerPopupMenu.add(MapEditorAction.mergeLayerDownAction);
         layerPopupMenu.addSeparator();
-        layerPopupMenu.add(mergeAllLayersAction);
+        layerPopupMenu.add(MapEditorAction.mergeAllLayersAction);
         layerPopupMenu.addSeparator();
-        layerPopupMenu.add(showLayerPropertiesAction);
+        layerPopupMenu.add(MapEditorAction.showLayerPropertiesAction);
 
         //navigation and tool options
         // TODO: the minimap is prohibitively slow, need to speed this up
@@ -705,8 +651,8 @@ public class MapEditor implements ActionListener,
                 sliderPanel.getPreferredSize().height));
 
         // Layer buttons
-        AbstractButton layerAddButton = new TButton(addLayerAction);
-        mapEventAdapter.addListener(layerAddButton);
+        AbstractButton layerAddButton = new TButton(MapEditorAction.addLayerAction);
+        MapEventAdapter.addListener(layerAddButton);
 
         JPanel layerButtons = new JPanel();
         layerButtons.setLayout(new GridBagLayout());
@@ -714,10 +660,10 @@ public class MapEditor implements ActionListener,
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1;
         layerButtons.add(layerAddButton, gridBagConstraints);
-        layerButtons.add(new TButton(moveLayerUpAction), gridBagConstraints);
-        layerButtons.add(new TButton(moveLayerDownAction), gridBagConstraints);
-        layerButtons.add(new TButton(cloneLayerAction), gridBagConstraints);
-        layerButtons.add(new TButton(deleteLayerAction), gridBagConstraints);
+        layerButtons.add(new TButton(MapEditorAction.moveLayerUpAction), gridBagConstraints);
+        layerButtons.add(new TButton(MapEditorAction.moveLayerDownAction), gridBagConstraints);
+        layerButtons.add(new TButton(MapEditorAction.cloneLayerAction), gridBagConstraints);
+        layerButtons.add(new TButton(MapEditorAction.deleteLayerAction), gridBagConstraints);
         layerButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                 layerButtons.getPreferredSize().height));
 
@@ -825,12 +771,12 @@ public class MapEditor implements ActionListener,
         objectRemoveButton.setEnabled(objectGroup);
         objectMoveButton.setEnabled(objectGroup);
 
-        cloneLayerAction.setEnabled(validSelection);
-        deleteLayerAction.setEnabled(validSelection);
-        moveLayerUpAction.setEnabled(notTop);
-        moveLayerDownAction.setEnabled(notBottom);
-        mergeLayerDownAction.setEnabled(notBottom);
-        mergeAllLayersAction.setEnabled(nrLayers > 1);
+        MapEditorAction.cloneLayerAction.setEnabled(validSelection);
+        MapEditorAction.deleteLayerAction.setEnabled(validSelection);
+        MapEditorAction.moveLayerUpAction.setEnabled(notTop);
+        MapEditorAction.moveLayerDownAction.setEnabled(notBottom);
+        MapEditorAction.mergeLayerDownAction.setEnabled(notBottom);
+        MapEditorAction.mergeAllLayersAction.setEnabled(nrLayers > 1);
 
         opacitySlider.setEnabled(validSelection);
     }
@@ -1593,8 +1539,8 @@ public class MapEditor implements ActionListener,
         } else if (e.getSource() == mapViewport && mapView != null) {
             // Store the point in the middle for zooming purposes
             Rectangle viewRect = mapViewport.getViewRect();
-            relativeMidX = Math.min(1, (viewRect.x + viewRect.width / 2) / (float) mapView.getWidth());
-            relativeMidY = Math.min(1, (viewRect.y + viewRect.height / 2) / (float) mapView.getHeight());
+            relativeMidX = Math.min(1, (viewRect.x + (float) viewRect.width / 2) / (float) mapView.getWidth());
+            relativeMidY = Math.min(1, (viewRect.y + (float) viewRect.height / 2) / (float) mapView.getHeight());
         }
     }
 
@@ -1828,7 +1774,7 @@ public class MapEditor implements ActionListener,
         recentMenu.removeAll();
 
         for (String file : files) {
-            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, file)));
+            recentMenu.add(new TMenuItem(new OpenRecentAction(this, MapEditorAction.saveAction, file)));
         }
     }
 
@@ -1850,7 +1796,7 @@ public class MapEditor implements ActionListener,
         tabbedTilesetsPane.setMap(currentTileMap);
 
         if (!mapLoaded) {
-            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
+            MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_INACTIVE);
             mapView = null;
             mapScrollPane.setViewportView(Box.createRigidArea(
                     new Dimension(0, 0)));
@@ -1861,7 +1807,7 @@ public class MapEditor implements ActionListener,
             setCurrentTile(null);
         } else {
             final Preferences display = preferences.node("display");
-            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
+            MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_ACTIVE);
             mapView = MapView.createViewforMap(currentTileMap);
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
@@ -1909,10 +1855,9 @@ public class MapEditor implements ActionListener,
             currentTileMap.addLayerSpecial(cursorHighlight);
         }
 
-        zoomInAction.setEnabled(mapLoaded);
-        zoomOutAction.setEnabled(mapLoaded);
-        zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=
-                ZOOM_NORMAL_SIZE);
+        MapEditorAction.zoomInAction.setEnabled(mapLoaded);
+        MapEditorAction.zoomOutAction.setEnabled(mapLoaded);
+        MapEditorAction.zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() != ZOOM_NORMAL_SIZE);
 
         undoHandler.discardAllEdits();
         updateLayerTable();
@@ -1982,338 +1927,6 @@ public class MapEditor implements ActionListener,
         }
         int amount = e.getWheelRotation();
         mapView.setZoomLevel(mapView.getZoomLevel() - amount);
-        zoomNormalAction.setEnabled(mapView.getZoomLevel() != ZOOM_NORMAL_SIZE);
+        MapEditorAction.zoomNormalAction.setEnabled(mapView.getZoomLevel() != ZOOM_NORMAL_SIZE);
     }
-
-    private class LayerTransformAction extends AbstractAction {
-        private final int transform;
-
-        public LayerTransformAction(int transform) {
-            this.transform = transform;
-            switch (transform) {
-                case MapLayer.ROTATE_90:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate90.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate90.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-90-16.png"));
-                    break;
-                case MapLayer.ROTATE_180:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate180.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate180.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-180-16.png"));
-                    break;
-                case MapLayer.ROTATE_270:
-                    putValue(NAME, Resources.getString("action.layer.transform.rotate270.name"));
-                    putValue(SHORT_DESCRIPTION,
-                            Resources.getString("action.layer.transform.rotate270.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-rotate-270-16.png"));
-                    break;
-                case MapLayer.MIRROR_VERTICAL:
-                    putValue(NAME, Resources.getString("action.layer.transform.vertical.name"));
-                    putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.vertical.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-flip-vertical-16.png"));
-                    break;
-                case MapLayer.MIRROR_HORIZONTAL:
-                    putValue(NAME, Resources.getString("action.layer.transform.horizontal.name"));
-                    putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.horizontal.tooltip"));
-                    putValue(SMALL_ICON,
-                            Resources.getIcon("icon/gimp-flip-horizontal-16.png"));
-                    break;
-            }
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            MapLayer currentLayer = getCurrentLayer();
-            MapLayer layer = currentLayer;
-            MapLayerEdit transEdit;
-            transEdit = new MapLayerEdit(
-                    currentLayer, createLayerCopy(currentLayer));
-
-            if (marqueeSelection != null) {
-                if (currentLayer instanceof TileLayer) {
-                    layer = new TileLayer(
-                            marqueeSelection.getSelectedAreaBounds(), currentLayer.getTileWidth(), currentLayer.getTileHeight());
-                } else if (currentLayer instanceof ObjectGroup) {
-                    layer = new ObjectGroup(
-                            marqueeSelection.getSelectedAreaBounds());
-                }
-                layer.setMap(currentTileMap);
-                layer.maskedCopyFrom(
-                        currentLayer,
-                        marqueeSelection.getSelectedArea());
-            }
-
-            switch (transform) {
-                case MapLayer.ROTATE_90:
-                case MapLayer.ROTATE_180:
-                case MapLayer.ROTATE_270:
-                    transEdit.setPresentationName("Rotate");
-                    layer.rotate(transform);
-                    //if(marqueeSelection != null) marqueeSelection.rotate(transform);
-                    break;
-                case MapLayer.MIRROR_VERTICAL:
-                    transEdit.setPresentationName("Vertical Flip");
-                    layer.mirror(MapLayer.MIRROR_VERTICAL);
-                    //if(marqueeSelection != null) marqueeSelection.mirror(transform);
-                    break;
-                case MapLayer.MIRROR_HORIZONTAL:
-                    transEdit.setPresentationName("Horizontal Flip");
-                    layer.mirror(MapLayer.MIRROR_HORIZONTAL);
-                    //if(marqueeSelection != null) marqueeSelection.mirror(transform);
-                    break;
-            }
-
-            if (marqueeSelection != null) {
-                layer.mergeOnto(currentLayer);
-            }
-
-            transEdit.end(createLayerCopy(currentLayer));
-            undoSupport.postEdit(transEdit);
-            mapView.repaint();
-        }
-    }
-
-    private class CancelSelectionAction extends AbstractAction {
-        public CancelSelectionAction() {
-            super(Resources.getString("action.select.none.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control shift A"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.select.none.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (currentTileMap != null) {
-                if (marqueeSelection != null) {
-                    currentTileMap.removeLayerSpecial(marqueeSelection);
-                }
-
-                marqueeSelection = null;
-            }
-        }
-    }
-
-    private class SelectAllAction extends AbstractAction {
-        public SelectAllAction() {
-            super(Resources.getString("action.select.all.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control A"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.select.all.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (currentTileMap != null) {
-                if (marqueeSelection != null) {
-                    currentTileMap.removeLayerSpecial(marqueeSelection);
-                }
-                marqueeSelection = new SelectionLayer(getCurrentLayer());
-                marqueeSelection.selectRegion(marqueeSelection.getBounds());
-                currentTileMap.addLayerSpecial(marqueeSelection);
-            }
-        }
-    }
-
-    private class InverseSelectionAction extends AbstractAction {
-        public InverseSelectionAction() {
-            super(Resources.getString("action.select.invert.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control I"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.select.invert.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (marqueeSelection != null) {
-                marqueeSelection.invert();
-                mapView.repaint();
-            }
-        }
-    }
-
-    private class ZoomInAction extends AbstractAction {
-        public ZoomInAction() {
-            super(Resources.getString("action.zoom.in.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control EQUALS"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.zoom.in.tooltip"));
-            putValue(SMALL_ICON, Resources.getIcon("icon/gnome-zoom-in.png"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null) {
-                zoomOutAction.setEnabled(true);
-                if (!mapView.zoomIn()) {
-                    setEnabled(false);
-                }
-                zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
-                        ZOOM_NORMAL_SIZE);
-            }
-        }
-    }
-
-    private class ZoomOutAction extends AbstractAction {
-        public ZoomOutAction() {
-            super(Resources.getString("action.zoom.out.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control MINUS"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.zoom.out.tooltip"));
-            putValue(SMALL_ICON, Resources.getIcon("icon/gnome-zoom-out.png"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null) {
-                zoomInAction.setEnabled(true);
-                if (!mapView.zoomOut()) {
-                    setEnabled(false);
-                }
-                zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
-                        ZOOM_NORMAL_SIZE);
-            }
-        }
-    }
-
-    private class ZoomNormalAction extends AbstractAction {
-        public ZoomNormalAction() {
-            super(Resources.getString("action.zoom.normal.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control 0"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.zoom.normal.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null) {
-                zoomInAction.setEnabled(true);
-                zoomOutAction.setEnabled(true);
-                setEnabled(false);
-                mapView.setZoomLevel(ZOOM_NORMAL_SIZE);
-            }
-        }
-    }
-
-    private class CopyAction extends AbstractAction {
-        public CopyAction() {
-            super(Resources.getString("action.copy.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control C"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.copy.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null && marqueeSelection != null) {
-                MapLayer cl = getCurrentLayer();
-                if (cl instanceof TileLayer) {
-                    clipboardLayer = new TileLayer(
-                            marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                } else if (getCurrentLayer() instanceof ObjectGroup) {
-                    clipboardLayer = new ObjectGroup(
-                            marqueeSelection.getSelectedAreaBounds());
-                }
-                clipboardLayer.maskedCopyFrom(
-                        getCurrentLayer(),
-                        marqueeSelection.getSelectedArea());
-            }
-        }
-    }
-
-    private class CopyAllAction extends AbstractAction {
-        public CopyAllAction() {
-            super(Resources.getString("action.copyall.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("shift control C"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.copyall.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            //FIXME: only works for TileLayers
-            if (currentTileMap != null && marqueeSelection != null) {
-                MapLayer cl = getCurrentLayer();
-                clipboardLayer = new TileLayer(
-                        marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                ListIterator<MapLayer> itr = currentTileMap.getLayers();
-                while (itr.hasNext()) {
-                    MapLayer layer = itr.next();
-                    if (layer instanceof TileLayer) {
-                        clipboardLayer.maskedMergeOnto(
-                                layer,
-                                marqueeSelection.getSelectedArea());
-                    }
-                }
-            }
-        }
-    }
-
-    private class CutAction extends AbstractAction {
-        public CutAction() {
-            super(Resources.getString("action.cut.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control X"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.cut.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null && marqueeSelection != null) {
-                MapLayer ml = getCurrentLayer();
-
-                if (getCurrentLayer() instanceof TileLayer) {
-                    clipboardLayer = new TileLayer(
-                            marqueeSelection.getSelectedAreaBounds(), ml.getTileWidth(), ml.getTileHeight());
-                } else if (getCurrentLayer() instanceof ObjectGroup) {
-                    clipboardLayer = new ObjectGroup(
-                            marqueeSelection.getSelectedAreaBounds());
-                }
-                clipboardLayer.maskedCopyFrom(
-                        ml, marqueeSelection.getSelectedArea());
-
-                Rectangle area = marqueeSelection.getSelectedAreaBounds();
-                Area mask = marqueeSelection.getSelectedArea();
-                if (ml instanceof TileLayer) {
-                    TileLayer tl = (TileLayer) ml;
-                    for (int i = area.y; i < area.height + area.y; i++) {
-                        for (int j = area.x; j < area.width + area.x; j++) {
-                            if (mask.contains(j, i)) {
-                                tl.setTileAt(j, i, null);
-                            }
-                        }
-                    }
-                }
-                mapView.repaintRegion(ml, area);
-            }
-        }
-    }
-
-    private class PasteAction extends AbstractAction {
-        public PasteAction() {
-            super(Resources.getString("action.paste.name"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control V"));
-            putValue(SHORT_DESCRIPTION,
-                    Resources.getString("action.paste.tooltip"));
-        }
-
-        public void actionPerformed(ActionEvent evt) {
-            if (currentTileMap != null && clipboardLayer != null) {
-                Vector<MapLayer> layersBefore = currentTileMap.getLayerVector();
-                MapLayer ml = createLayerCopy(clipboardLayer);
-                ml.setName(Resources.getString("general.layer.layer") + " " + currentTileMap.getTotalLayers());
-                currentTileMap.addLayer(ml);
-                undoSupport.postEdit(
-                        new MapLayerStateEdit(currentTileMap, layersBefore,
-                                new Vector<>(currentTileMap.getLayerVector()),
-                                "Paste Selection"));
-            }
-        }
-    }
-
 }
