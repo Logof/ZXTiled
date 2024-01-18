@@ -1,11 +1,11 @@
 package org.github.logof.zxtiled.mapeditor.ui.menu;
 
+import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.util.MapEventAdapter;
 import javax.swing.*;
-import java.awt.event.ActionListener;
 
 public class EditMenu extends JMenu {
 
@@ -46,13 +46,11 @@ public class EditMenu extends JMenu {
         this.add(createMenuItem(Resources.getString("menu.edit.preferences"),
                 null,
                 Resources.getString("menu.edit.preferences.tooltip"),
-                null,
                 null));
         this.add(createMenuItem(Resources.getString("menu.edit.brush"),
                 null,
                 Resources.getString("menu.edit.brush.tooltip"),
-                "control B",
-                null));
+                "control B"));
 
         MapEventAdapter.addListener(copyMenuItem);
         MapEventAdapter.addListener(copyAllMenuItem);
@@ -64,10 +62,9 @@ public class EditMenu extends JMenu {
     private JMenuItem createMenuItem(String name,
                                      Icon icon,
                                      String tipText,
-                                     String keyStroke,
-                                     ActionListener actionListener) {
+                                     String keyStroke) {
         JMenuItem menuItem = new JMenuItem(name);
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(MapEditor.getActionListener());
         if (icon != null) {
             menuItem.setIcon(icon);
         }

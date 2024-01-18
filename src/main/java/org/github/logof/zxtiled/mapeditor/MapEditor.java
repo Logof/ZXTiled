@@ -25,15 +25,7 @@ import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.io.MapReader;
-import org.github.logof.zxtiled.mapeditor.actions.CloseMapAction;
-import org.github.logof.zxtiled.mapeditor.actions.CopyAction;
-import org.github.logof.zxtiled.mapeditor.actions.CopyAllAction;
-import org.github.logof.zxtiled.mapeditor.actions.CutAction;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
-import org.github.logof.zxtiled.mapeditor.actions.NewMapAction;
-import org.github.logof.zxtiled.mapeditor.actions.OpenMapAction;
-import org.github.logof.zxtiled.mapeditor.actions.OpenRecentAction;
-import org.github.logof.zxtiled.mapeditor.actions.PasteAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
@@ -64,11 +56,9 @@ import org.github.logof.zxtiled.mapeditor.ui.MiniMapViewer;
 import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
 import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
 import org.github.logof.zxtiled.mapeditor.ui.TButton;
-import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
 import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
 import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
-import org.github.logof.zxtiled.mapeditor.ui.menu.FileMenu;
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.UndoHandler;
@@ -156,11 +146,10 @@ public class MapEditor {
 
     @Getter
     private StatusBar statusBar;
-    private MainMenuBar mainMenuBar;
-    private JCheckBoxMenuItem gridMenuItem;
+    private final MainMenuBar mainMenuBar;
+
     private JCheckBoxMenuItem cursorMenuItem;
-    private JCheckBoxMenuItem coordinatesMenuItem;
-    private JMenu recentMenu;
+
     @Getter
     private JScrollPane mapScrollPane;
 
@@ -229,7 +218,7 @@ public class MapEditor {
             }
         });
         appFrame.setContentPane(createContentPane());
-        createMenuBar();
+        mainMenuBar = new MainMenuBar();
         appFrame.setJMenuBar(mainMenuBar);
 
 
@@ -363,174 +352,6 @@ public class MapEditor {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         return mainPanel;
-    }
-
-    /**
-     * Creates all the menus and submenus of the top menu bar. Handles
-     * assigning listeners and tooltips as well.
-     */
-    private void createMenuBar() {
-        JMenuItem save = new TMenuItem(MapEditorAction.saveAction);
-        JMenuItem saveAs = new TMenuItem(MapEditorAction.saveAsAction);
-        JMenuItem saveAsImage = new TMenuItem(MapEditorAction.saveAsImageAction);
-        JMenuItem exportMap = new TMenuItem(MapEditorAction.exportAction);
-        JMenuItem close = new TMenuItem(new CloseMapAction(this, MapEditorAction.saveAction));
-
-        recentMenu = new JMenu(Resources.getString("menu.file.recent"));
-
-        MapEventAdapter.addListener(save);
-        MapEventAdapter.addListener(saveAs);
-        MapEventAdapter.addListener(saveAsImage);
-        MapEventAdapter.addListener(exportMap);
-        MapEventAdapter.addListener(close);
-
-        FileMenu fileMenu = new FileMenu();
-        fileMenu.add(new TMenuItem(new NewMapAction(this, MapEditorAction.saveAction)));
-        fileMenu.add(new TMenuItem(new OpenMapAction(this, MapEditorAction.saveAction)));
-        fileMenu.add(recentMenu);
-        fileMenu.add(save);
-        fileMenu.add(saveAs);
-        fileMenu.add(saveAsImage);
-        fileMenu.add(exportMap);
-        fileMenu.addSeparator();
-        fileMenu.add(close);
-        fileMenu.add(new TMenuItem(MapEditorAction.exitAction));
-
-        JMenuItem copyMenuItem = new TMenuItem(new CopyAction(this));
-        JMenuItem copyAllMenuItem = new TMenuItem(new CopyAllAction(this));
-        JMenuItem cutMenuItem = new TMenuItem(new CutAction(this));
-        JMenuItem pasteMenuItem = new TMenuItem(new PasteAction(this));
-        copyMenuItem.setEnabled(false);
-        copyAllMenuItem.setEnabled(false);
-        cutMenuItem.setEnabled(false);
-        pasteMenuItem.setEnabled(false);
-
-        JMenu transformSub = new JMenu(Resources.getString("menu.edit.transform"));
-        transformSub.add(new TMenuItem(MapEditorAction.flipHorAction, true));
-        transformSub.add(new TMenuItem(MapEditorAction.flipVerAction, true));
-        MapEventAdapter.addListener(transformSub);
-
-        JMenu editMenu = new JMenu(Resources.getString("menu.edit"));
-        editMenu.add(new TMenuItem(undoHandler.getUndoAction()));
-        editMenu.add(new TMenuItem(undoHandler.getRedoAction()));
-        editMenu.addSeparator();
-        editMenu.add(copyMenuItem);
-        editMenu.add(copyAllMenuItem);
-        editMenu.add(cutMenuItem);
-        editMenu.add(pasteMenuItem);
-        editMenu.addSeparator();
-        editMenu.add(transformSub);
-        editMenu.addSeparator();
-        editMenu.add(createMenuItem(Resources.getString("menu.edit.preferences"),
-                null, Resources.getString("menu.edit.preferences.tooltip"), null));
-        editMenu.add(createMenuItem(Resources.getString("menu.edit.brush"), null,
-                Resources.getString("menu.edit.brush.tooltip"),
-                "control B"));
-
-        MapEventAdapter.addListener(copyMenuItem);
-        MapEventAdapter.addListener(copyAllMenuItem);
-        MapEventAdapter.addListener(cutMenuItem);
-        MapEventAdapter.addListener(pasteMenuItem);
-
-
-        JMenu mapMenu = new JMenu(Resources.getString("menu.map"));
-        mapMenu.add(createMenuItem(Resources.getString("menu.map.resize"), null,
-                Resources.getString("menu.map.resize.tooltip")));
-        mapMenu.add(createMenuItem(Resources.getString("menu.map.search"), null,
-                Resources.getString("menu.map.search.tooltip")));
-        mapMenu.addSeparator();
-        mapMenu.add(createMenuItem(Resources.getString("menu.map.properties"), null,
-                Resources.getString("menu.map.properties.tooltip")));
-        MapEventAdapter.addListener(mapMenu);
-
-
-        JMenu layerMenu = new JMenu(Resources.getString("menu.layer"));
-        JMenuItem layerAdd = new TMenuItem(MapEditorAction.addLayerAction);
-        MapEventAdapter.addListener(layerAdd);
-        layerMenu.add(layerAdd);
-        layerMenu.add(new TMenuItem(MapEditorAction.cloneLayerAction));
-        layerMenu.add(new TMenuItem(MapEditorAction.deleteLayerAction));
-        layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(MapEditorAction.addObjectGroupAction));
-        layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(MapEditorAction.moveLayerUpAction));
-        layerMenu.add(new TMenuItem(MapEditorAction.moveLayerDownAction));
-        layerMenu.addSeparator();
-        layerMenu.add(new TMenuItem(MapEditorAction.mergeLayerDownAction));
-        layerMenu.add(new TMenuItem(MapEditorAction.mergeAllLayersAction));
-        layerMenu.addSeparator();
-        layerMenu.add(MapEditorAction.showLayerPropertiesAction);
-
-        JMenu tilesetMenu = new JMenu(Resources.getString("menu.tilesets"));
-        tilesetMenu.add(createMenuItem(
-                Resources.getString("menu.tilesets.new"), null,
-                Resources.getString("menu.tilesets.new.tooltip")));
-        tilesetMenu.add(createMenuItem(
-                Resources.getString("menu.tilesets.import"), null,
-                Resources.getString("menu.tilesets.import.tooltip")));
-        tilesetMenu.addSeparator();
-        tilesetMenu.add(createMenuItem(
-                Resources.getString("menu.tilesets.refresh"), null,
-                Resources.getString("menu.tilesets.refresh.tooltip"), "F5"));
-        tilesetMenu.addSeparator();
-        tilesetMenu.add(createMenuItem(
-                Resources.getString("menu.tilesets.manager"), null,
-                Resources.getString("menu.tilesets.manager.tooltip")));
-
-
-        JMenu selectMenu = new JMenu(Resources.getString("menu.select"));
-        selectMenu.add(new TMenuItem(MapEditorAction.selectAllAction, true));
-        selectMenu.add(new TMenuItem(MapEditorAction.cancelSelectionAction, true));
-        selectMenu.add(new TMenuItem(MapEditorAction.inverseAction, true));
-
-        gridMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.grid"));
-        gridMenuItem.addActionListener(actionListener);
-        gridMenuItem.setToolTipText(Resources.getString("menu.view.grid.tooltip"));
-        gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
-
-        cursorMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.cursor"));
-        cursorMenuItem.setSelected(preferences.getBoolean("cursorhighlight", true));
-        cursorMenuItem.addActionListener(actionListener);
-        cursorMenuItem.setToolTipText(Resources.getString("menu.view.cursor.tooltip"));
-
-        JCheckBoxMenuItem boundaryMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.boundaries"));
-        boundaryMenuItem.addActionListener(actionListener);
-        boundaryMenuItem.setToolTipText(Resources.getString("menu.view.boundaries.tooltip"));
-        boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
-
-        coordinatesMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.coordinates"));
-        coordinatesMenuItem.addActionListener(actionListener);
-        coordinatesMenuItem.setToolTipText(Resources.getString("menu.view.coordinates.tooltip"));
-
-        JMenu viewMenu = new JMenu(Resources.getString("menu.view"));
-        viewMenu.add(new TMenuItem(MapEditorAction.zoomInAction));
-        viewMenu.add(new TMenuItem(MapEditorAction.zoomOutAction));
-        viewMenu.add(new TMenuItem(MapEditorAction.zoomNormalAction));
-        viewMenu.addSeparator();
-        viewMenu.add(gridMenuItem);
-        viewMenu.add(cursorMenuItem);
-        viewMenu.add(coordinatesMenuItem);
-
-        MapEventAdapter.addListener(layerMenu);
-        MapEventAdapter.addListener(tilesetMenu);
-        MapEventAdapter.addListener(selectMenu);
-        MapEventAdapter.addListener(viewMenu);
-
-        JMenu helpMenu = new JMenu(Resources.getString("menu.help"));
-        helpMenu.add(createMenuItem(Resources.getString("menu.help.plugins"), null,
-                Resources.getString("menu.help.plugins.tooltip")));
-        helpMenu.add(createMenuItem(Resources.getString("menu.help.about"), null, Resources.getString("menu.help.about.tooltip")));
-
-        mainMenuBar = new MainMenuBar();
-        mainMenuBar.add(fileMenu);
-        mainMenuBar.add(editMenu);
-        mainMenuBar.add(selectMenu);
-        mainMenuBar.add(viewMenu);
-        mainMenuBar.add(mapMenu);
-        mainMenuBar.add(layerMenu);
-        mainMenuBar.add(tilesetMenu);
-        //mainMenuBar.add(objectMenu);
-        mainMenuBar.add(helpMenu);
     }
 
     /**
@@ -686,8 +507,8 @@ public class MapEditor {
                 validSelection && getCurrentLayer() instanceof ObjectGroup;
 
         if (validSelection) {
-            MapLayer l = getCurrentLayer();
-            cursorHighlight.setTileDimensions(l.getTileWidth(), l.getTileHeight());
+            MapLayer mapLayer = getCurrentLayer();
+            cursorHighlight.setTileDimensions(mapLayer.getTileWidth(), mapLayer.getTileHeight());
         }
         toolBar.updateTileLayerOperations(tileLayer);
         toolBar.updateValidSelectionOperations(validSelection);
@@ -703,37 +524,9 @@ public class MapEditor {
         opacitySlider.setEnabled(validSelection);
     }
 
-    private JMenuItem createMenuItem(String name, Icon icon, String tipText) {
-        JMenuItem menuItem = new JMenuItem(name);
-        menuItem.addActionListener(actionListener);
-        if (icon != null) {
-            menuItem.setIcon(icon);
-        }
-        if (tipText != null) {
-            menuItem.setToolTipText(tipText);
-        }
-        return menuItem;
-    }
 
-    private JMenuItem createMenuItem(String name, Icon icon, String tipText,
-                                     String keyStroke) {
-        JMenuItem menuItem = createMenuItem(name, icon, tipText);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(keyStroke));
-        return menuItem;
-    }
 
-    private AbstractButton createToggleButton(Icon icon, String command,
-                                              String tt) {
-        AbstractButton button;
-        button = new JToggleButton("", icon);
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.setActionCommand(command);
-        button.addActionListener(actionListener);
-        if (tt != null) {
-            button.setToolTipText(tt);
-        }
-        return button;
-    }
+
 
     /**
      * Returns the currently selected layer.
@@ -1112,6 +905,7 @@ public class MapEditor {
         return false;
     }
 
+    //TODO как-то нужно вызывать из FileMenu
     public void updateRecent(String filename) {
         // If a filename is given, add it to the recent files
         if (filename != null) {
@@ -1120,11 +914,13 @@ public class MapEditor {
 
         java.util.List<String> files = TiledConfiguration.getRecentFiles();
 
-        recentMenu.removeAll();
 
-        for (String file : files) {
+        // НЕ УДАЛЯТЬ
+        //recentMenu.removeAll();
+        // НЕ УДАЛЯТЬ
+        /*for (String file : files) {
             recentMenu.add(new TMenuItem(new OpenRecentAction(this, MapEditorAction.saveAction, file)));
-        }
+        }*/
     }
 
     public void setCurrentTileMap(TileMap newTileMap) {
@@ -1178,9 +974,8 @@ public class MapEditor {
 
             currentTileMap.addMapChangeListener(mapChangeListener);
 
-            gridMenuItem.setState(mapView.getShowGrid());
-            coordinatesMenuItem.setState(
-                    mapView.getMode(MapView.PF_COORDINATES));
+            mainMenuBar.getViewMenu().getGridMenuItem().setState(mapView.getShowGrid());
+            mainMenuBar.getViewMenu().getCoordinatesMenuItem().setState(mapView.getMode(MapView.PF_COORDINATES));
 
             statusBar.getTilePositionLabel().setText((currentTileMap.getWidth() - 1)
                     + ", " + (currentTileMap.getHeight() - 1));
