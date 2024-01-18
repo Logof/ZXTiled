@@ -3,7 +3,6 @@ package org.github.logof.zxtiled.mapeditor.ui;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.listener.ApplicationFrameWindowAdapter;
-import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -21,7 +20,7 @@ public class ApplicationFrame extends JFrame {
     public ApplicationFrame() {
         super(Resources.getString("dialog.main.title"));
         init();
-        this.setJMenuBar(new MainMenuBar());
+        //this.setJMenuBar(new MainMenuBar());
     }
 
     private void init() {

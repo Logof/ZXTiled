@@ -4,14 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
+import org.github.logof.zxtiled.mapeditor.actions.OpenRecentAction;
 import org.github.logof.zxtiled.mapeditor.ui.TMenuItem;
 import org.github.logof.zxtiled.mapeditor.util.MapEventAdapter;
 import javax.swing.*;
+import java.util.List;
 
 @Getter
 @Setter
 public class FileMenu extends JMenu {
-
     private RecentMenu recentMenu = new RecentMenu();
 
     public FileMenu() {
@@ -44,4 +45,13 @@ public class FileMenu extends JMenu {
         this.add(new TMenuItem(MapEditorAction.exitAction));
     }
 
+    public void clearRecentMenu() {
+        recentMenu.removeAll();
+    }
+
+    public void fillRecentMenu(List<String> files) {
+        for (String file : files) {
+            recentMenu.add(new TMenuItem(new OpenRecentAction(null, MapEditorAction.saveAction, file)));
+        }
+    }
 }
