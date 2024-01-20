@@ -160,9 +160,6 @@ public class MapEditor {
     private SmartSplitPane mainSplit;
     private SmartSplitPane paletteSplit;
 
-    @Getter
-    private JSlider opacitySlider;
-
     private TabbedTilesetsPane tabbedTilesetsPane;
     private AboutDialog aboutDialog;
     @Getter
@@ -403,17 +400,11 @@ public class MapEditor {
         });
 
         // Opacity slider
-        opacitySlider = new JSlider(0, 100, 100);
-        opacitySlider.addChangeListener(changeListener);
-        JLabel opacityLabel = new JLabel(
-                Resources.getString("dialog.main.opacity.label"));
-        opacityLabel.setLabelFor(opacitySlider);
+
 
         JPanel sliderPanel = new JPanel();
         sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
         sliderPanel.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
-        sliderPanel.add(opacityLabel);
-        sliderPanel.add(opacitySlider);
         sliderPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                 sliderPanel.getPreferredSize().height));
 
@@ -520,13 +511,7 @@ public class MapEditor {
         MapEditorAction.moveLayerDownAction.setEnabled(notBottom);
         MapEditorAction.mergeLayerDownAction.setEnabled(notBottom);
         MapEditorAction.mergeAllLayersAction.setEnabled(nrLayers > 1);
-
-        opacitySlider.setEnabled(validSelection);
     }
-
-
-
-
 
     /**
      * Returns the currently selected layer.
