@@ -128,17 +128,19 @@ public class FloatablePanel {
     }
 
     public void setVisible(boolean visible) {
-        if (this.visible == visible)
+        if (this.visible == visible) {
             return;
+        }
         this.visible = visible;
-        if (frame != null)
+        if (frame != null) {
             frame.setVisible(visible);
-        else {
+        } else {
             contentPane.setVisible(visible);
-            if (visible)
+            if (visible) {
                 contentPane.add(child);
-            else
+            } else {
                 contentPane.remove(child);
+            }
         }
         prefs.putBoolean("visible", visible);
     }

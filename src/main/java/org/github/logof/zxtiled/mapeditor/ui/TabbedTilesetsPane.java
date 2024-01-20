@@ -40,8 +40,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Map of tile sets to tile palette panels
      */
-    private final HashMap<TileSet, TilePalettePanel> tilePanels =
-            new HashMap<TileSet, TilePalettePanel>();
+    private final HashMap<TileSet, TilePalettePanel> tilePanels = new HashMap<>();
     private final MyChangeListener listener = new MyChangeListener();
     private final MapEditor mapEditor;
     private TileMap tileMap;
@@ -62,8 +61,9 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * @param tileMap the map of which to display the tilesets
      */
     public void setMap(TileMap tileMap) {
-        if (this.tileMap == tileMap)
+        if (this.tileMap == tileMap) {
             return;
+        }
 
         if (this.tileMap != null) {
             this.tileMap.removeMapChangeListener(listener);
