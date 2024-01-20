@@ -82,8 +82,6 @@ public class OrthoMapView extends MapView {
 
         Polygon gridPoly = createGridPolygon(tileSize, 0, -tileSize.height, 0);
 
-        Point pointOffset = calculateParallaxOffsetZoomed(layer);
-
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         Point start = this.screenToTileCoords(layer, clipRect.x, clipRect.y);
@@ -94,9 +92,9 @@ public class OrthoMapView extends MapView {
         boolean isSelectionLayer = layer instanceof SelectionLayer;
 
         // Draw this map layer
-        for (int y = start.y, gy = (start.y + 1) * tileSize.height + pointOffset.y;
+        for (int y = start.y, gy = (start.y + 1) * tileSize.height; //+ pointOffset.y;
              y < end.y; y++, gy += tileSize.height) {
-            for (int x = start.x, gx = start.x * tileSize.width + pointOffset.x;
+            for (int x = start.x, gx = start.x * tileSize.width;// + pointOffset.x;
                  x < end.x; x++, gx += tileSize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
@@ -182,7 +180,6 @@ public class OrthoMapView extends MapView {
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
-        Point offset = calculateParallaxOffsetZoomed(currentLayer);
 
         // Determine lines to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
@@ -192,7 +189,7 @@ public class OrthoMapView extends MapView {
         // that match the grid lines
         Point startTile = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
 
-        Point start = tileToScreenCoords(offset, tileSize, startTile.x, startTile.y);
+        Point start = tileToScreenCoords(tileSize, startTile.x, startTile.y);
         Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
 
         for (int x = start.x; x < end.x; x += tileSize.width) {
@@ -220,8 +217,6 @@ public class OrthoMapView extends MapView {
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
-        Point offset = calculateParallaxOffsetZoomed(currentLayer);
-
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -240,7 +235,7 @@ public class OrthoMapView extends MapView {
 
         // Draw the coordinates
         for (int y = start.y; y < end.y; y++) {
-            Point g = tileToScreenCoords(offset, tsize, start.x, y);
+            Point g = tileToScreenCoords(tsize, start.x, y);
             for (int x = start.x; x < end.x; x++) {
                 String coords = "(" + x + "," + y + ")";
                 Rectangle2D textSize =
@@ -264,8 +259,8 @@ public class OrthoMapView extends MapView {
                 (int) (tileMap.getTileHeightMax() * zoom - tsize.height);
 
         // Calculate the visible corners of the region
-        Point start = tileToScreenCoords(layer, region.x, region.y);
-        Point end = tileToScreenCoords(layer, (region.x + region.width), (region.y + region.height));
+        Point start = tileToScreenCoords(region.x, region.y);
+        Point end = tileToScreenCoords((region.x + region.width), (region.y + region.height));
 
         start.x -= maxExtraHeight;
 
@@ -276,13 +271,12 @@ public class OrthoMapView extends MapView {
     }
 
     public Point screenToTileCoords(MapLayer layer, int x, int y) {
-        Dimension tsize = getLayerTileSize(layer);
-        Point poffset = calculateParallaxOffsetZoomed(layer);
-        return new Point((x - poffset.x) / tsize.width, (y - poffset.y) / tsize.height);
+        Dimension tileSize = getLayerTileSize(layer);
+        return new Point(x / tileSize.width, y / tileSize.height);
     }
 
-    public Point tileToScreenCoords(Point offset, Dimension tileDimension, int x, int y) {
-        return new Point(offset.x + x * tileDimension.width, offset.y + y * tileDimension.height);
+    public Point tileToScreenCoords(Dimension tileDimension, int x, int y) {
+        return new Point(x * tileDimension.width, y * tileDimension.height);
     }
 
     protected Dimension getLayerTileSize(MapLayer layer) {

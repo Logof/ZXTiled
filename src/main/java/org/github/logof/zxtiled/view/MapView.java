@@ -157,9 +157,9 @@ public abstract class MapView extends JPanel implements Scrollable {
         g2d.setStroke(previousStroke);
     }
 
-    private Rectangle pixelToScreenCoords(MapLayer layer, Rectangle rect) {
-        Point p0 = pixelToScreenCoords(layer, rect.x, rect.y);
-        Point p1 = pixelToScreenCoords(layer, rect.x + rect.width, rect.y + rect.height);
+    private Rectangle pixelToScreenCoordinates(Rectangle rect) {
+        Point p0 = pixelToScreenCoordinates(rect.x, rect.y);
+        Point p1 = pixelToScreenCoordinates(rect.x + rect.width, rect.y + rect.height);
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 
@@ -183,117 +183,13 @@ public abstract class MapView extends JPanel implements Scrollable {
 
         // issue repaints
         if (previousSelectionRubberbandR != null) {
-            Rectangle r = addMarginToRectangle(previousSelectionRubberbandR);
-            repaint(pixelToScreenCoords(previousSelectedRubberbandL, r));
+            Rectangle rectangle = addMarginToRectangle(previousSelectionRubberbandR);
+            repaint(pixelToScreenCoordinates(rectangle));
         }
         if (selectionRubberBandRectangle != null) {
-            Rectangle r = addMarginToRectangle(selectionRubberBandRectangle);
-            repaint(pixelToScreenCoords(selectionRubberBandLayer, r));
+            Rectangle rectangle = addMarginToRectangle(selectionRubberBandRectangle);
+            repaint(pixelToScreenCoordinates(rectangle));
         }
-    }
-
-    /// Sets the current view center for the parallax view to render correctly
-    /// The view center is given in relative map coordinates, which range from
-    /// 0.0f to 1.0f in each dimension (indicating that you're on the left
-    /// of the map (0.0f) or on the right of the map (1.0f), up/down
-    /// accordingly).
-    /// Setting the ViewCenter to a new value causes the view to be repainted.
-    public void setViewCenter(float relativeX, float relativeY) {
-        if (viewportCenterX == relativeX && viewportCenterY == relativeY)
-            return;
-
-        viewportCenterX = relativeX;
-        viewportCenterY = relativeY;
-
-        // only issue full repaint if we have layers with parallax enabled -
-        // otherwise setting the view center will have no effect.
-        boolean hasLayerWithParallaxOffset = false;
-        for (MapLayer l : tileMap.getLayerVector())
-            hasLayerWithParallaxOffset = hasLayerWithParallaxOffset || l.getViewPlaneDistance() != 0.0f || l.isViewPlaneInfinitelyFarAway();
-
-        if (hasLayerWithParallaxOffset)
-            repaint();
-    }
-
-    /// Calculates the parallax offset by which the layer is to be shifted for
-    /// drawing it. If parallax mode is enabled, this function returns
-    /// a Point initialized with the offset to translate the layer by to
-    /// represent the parallax, respective the current view center.
-    /// Otherwise, the point will always be (0,0).
-    /// The Method does not take zoom into account; the result will need to be
-    /// zoomed accordingly by the caller. Alternatively, call
-    /// calculateParallaxOffsetZoomed()
-    /// @param    layer    The layer to calculate the parallax offset for
-    /// @returns    The parallax offset to shift this layer by
-    /// @see MapLayer#isParallaxEnabled()
-    /// @see calculateParallaxOffsetZoomed()
-    /// @see isParallaxModeEnabled()
-    /// @see setViewCenter()
-    protected Point calculateParallaxOffset(MapLayer layer) {
-        // the parallax effect imitates a sense of depth by moving layers
-        // that are 'behind' a base plane (we call it the view plane) slower
-        // than than the base plane. Layers 'above' the base plane are moved
-        // faster.
-        //
-        // To create a more or less correct illusion, the model chosen
-        // here orients itself on the way projection is calculated in 3D
-        // graphics. It requires actual values for the distance between
-        // the eye point and the view plane, and for the distances of each
-        // layer to the view plane. Note that planes further away from the eye
-        // than the view plane have a positive distance value, planes closer
-        // than the view plane have a negative distance.
-        //
-        // To calculate projection and the resulting relative shift between
-        // the view plane and each layer, an origin needs to be chosen for the
-        // view. Here, this is assumed to be the center of the map
-        // (width/2, height/2). Each layer also has a center (also at the
-        // layer's (width/2, heigh/2) ). Note that if the eye point is at
-        // the view plane's center (viewOffset=(0,0), all layer's centers will
-        // also be at this position. If the eye point moves away, the parallax offset (shift)
-        // becomes noticable.
-
-        // the center of the map is our view origin. When the view center is at this point,
-        // every layer's center will be on this point. When the view moves
-        // away, the layers start to shift from this position depending on their
-        // view plane distance setting.
-        // The map's coordinate system is assumed to be the same as the view
-        // plane's.
-
-        int mapWidthPx = tileMap.getWidth() * tileMap.getTileWidth();
-        int mapHeightPx = tileMap.getHeight() * tileMap.getTileHeight();
-        float originPosX = (float) mapWidthPx / 2;
-        float originPosY = (float) mapHeightPx / 2;
-        float viewOffsetX = (viewportCenterX * mapWidthPx - originPosX);
-        float viewOffsetY = (viewportCenterY * mapHeightPx - originPosY);
-
-
-        // layer dimensions in pixels
-        int layerWidthPx = layer.getWidth() * layer.getTileWidth();
-        int layerHeightPx = layer.getHeight() * layer.getTileHeight();
-
-        // parallax offset
-        float parallaxScale = 1.0f;
-        if (!layer.isViewPlaneInfinitelyFarAway()) {
-            parallaxScale = layer.getViewPlaneDistance() / (tileMap.getEyeDistance() + layer.getViewPlaneDistance());
-        }
-        float layerOffsetX = viewOffsetX * parallaxScale;
-        float layerOffsetY = viewOffsetY * parallaxScale;
-        float x = layerOffsetX + originPosX - (float) layerWidthPx / 2;
-        float y = layerOffsetY + originPosY - (float) layerHeightPx / 2;
-
-        return new Point((int) x, (int) y);
-    }
-
-    /// This function is effectively the same as calculateParallaxOffset(),
-    /// with the resulting parallax offset scaled by the current zoom level
-    /// @see calculateParallaxOffset()
-    /// @param    layer    The layer to calculate the parallax offset for
-    /// @returns    The parallax offset to shift this layer by
-    protected Point calculateParallaxOffsetZoomed(MapLayer layer) {
-        Point p = calculateParallaxOffset(layer);
-        p.x *= zoom;
-        p.y *= zoom;
-        return p;
     }
 
     public void toggleMode(int modeModifier) {
@@ -490,13 +386,12 @@ public abstract class MapView extends JPanel implements Scrollable {
         //}
 
         // render selected objects
-        for (Selection s : selectionSet) {
-            if (ObjectSelection.class.isAssignableFrom(s.getClass())) {
-                ObjectSelection os = (ObjectSelection) s;
-                MapObject o = os.getObject();
-                MapLayer l = os.getLayer();
-                Rectangle r = pixelToScreenCoords(l, o.getBounds());
-                paintSelectionRectangle(g2d, r);
+        for (Selection selection : selectionSet) {
+            if (ObjectSelection.class.isAssignableFrom(selection.getClass())) {
+                ObjectSelection objectSelection = (ObjectSelection) selection;
+                MapObject mapObject = objectSelection.getObject();
+                Rectangle rectangle = pixelToScreenCoordinates(mapObject.getBounds());
+                paintSelectionRectangle(g2d, rectangle);
             }
         }
 
@@ -504,8 +399,8 @@ public abstract class MapView extends JPanel implements Scrollable {
         if (selectionRubberBandRectangle != null) {
             // calculate rectangle to draw
             Rectangle r = selectionRubberBandRectangle;
-            Point p0 = pixelToScreenCoords(selectionRubberBandLayer, r.x, r.y);
-            Point p1 = pixelToScreenCoords(selectionRubberBandLayer, r.x + r.width, r.y + r.height);
+            Point p0 = pixelToScreenCoordinates(r.x, r.y);
+            Point p1 = pixelToScreenCoordinates(r.x + r.width, r.y + r.height);
             r = new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
             paintSelectionRectangle(g2d, r);
         }
@@ -608,13 +503,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @return the position in map pixel coordinates
      */
     public Point screenToPixelCoords(MapLayer layer, int x, int y) {
-        Point p = new Point(
-                (int) (x / zoom), (int) (y / zoom));
-        if (layer != null) {
-            Point o = calculateParallaxOffset(layer);
-            p.setLocation(p.x - o.x, p.y - o.y);
-        }
-        return p;
+        return new Point((int) (x / zoom), (int) (y / zoom));
     }
 
     public Rectangle screenToPixelCoords(MapLayer layer, Rectangle r) {
@@ -633,7 +522,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param y Y coordinate of the tile in tile coordinates
      * @return the point in screen space
      */
-    public abstract Point tileToScreenCoords(Point zoomedOffset, Dimension zoomedTileSize, int x, int y);
+    public abstract Point tileToScreenCoords(Dimension zoomedTileSize, int x, int y);
 
     /// This method calls tileToScreenCoords(Point, Dimension, int, int) with
     /// the point returned from calculateParallaxOffsetZoomed(layer) and
@@ -641,9 +530,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     /// multiplied by the current zoom level.
     /// This method is final because it is simply considered a convenience
     /// method. Subclasses are advised to override the other overload instead.
-    public final Point tileToScreenCoords(MapLayer layer, int x, int y) {
-        Dimension zoomedTileSize = new Dimension((int) (layer.getTileWidth() * zoom), (int) (layer.getTileHeight() * zoom));
-        return tileToScreenCoords(calculateParallaxOffsetZoomed(layer), zoomedTileSize, x, y);
+    public final Point tileToScreenCoords(int x, int y) {
+        Dimension zoomedTileSize = new Dimension((int) (16 * zoom), (int) (16 * zoom));
+        return tileToScreenCoords(zoomedTileSize, x, y);
     }
 
     /**
@@ -651,19 +540,12 @@ public abstract class MapView extends JPanel implements Scrollable {
      * coordinates. The map pixel coordinates may be different in more ways
      * than the zoom level, depending on the projection the view implements.
      *
-     * @param layer the layer for which the pixel coordinates are given,
-     *              or null if the pixel coordinates are given for the map
      * @param x     x in pixel coordinates
      * @param y     y in pixel coordinates
      * @return the position in map pixel coordinates
      */
-    public Point pixelToScreenCoords(MapLayer layer, int x, int y) {
-        Point p = new Point(x, y);
-        if (layer != null) {
-            Point o = calculateParallaxOffset(layer);
-            p.setLocation(p.x + o.x, p.y + o.y);
-        }
-        return new Point((int) (p.x * zoom), (int) (p.y * zoom));
+    public Point pixelToScreenCoordinates(int x, int y) {
+        return new Point((int) (x * zoom), (int) (y * zoom));
     }
 
     public void setCurrentLayer(MapLayer layer) {
@@ -672,7 +554,8 @@ public abstract class MapView extends JPanel implements Scrollable {
         this.currentLayer = layer;
         // because of different tile sizes and/or parallax positions between
         // the old and the new current layer, a redraw might be required.
-        if (getMode(PF_COORDINATES) || getShowGrid())
+        if (getMode(PF_COORDINATES) || getShowGrid()) {
             repaint();
+        }
     }
 }

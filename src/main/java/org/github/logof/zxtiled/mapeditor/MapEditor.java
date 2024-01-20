@@ -73,7 +73,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -285,32 +284,6 @@ public class MapEditor {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         mapScrollPane.setBorder(null);
-
-        // install adjustment listener to set the view center correctly
-        // every time the view is moved around
-        AdjustmentListener mapScrollPaneAdjustmentListener = e -> {
-            if (mapView != null) {
-                JScrollBar hsb = mapScrollPane.getHorizontalScrollBar();
-                JScrollBar vsb = mapScrollPane.getVerticalScrollBar();
-                float wholeX = (float) (hsb.getMaximum() - hsb.getMinimum() - hsb.getVisibleAmount());
-                float viewX;
-                if (wholeX != 0.0f)
-                    viewX = (float) (hsb.getValue()) / wholeX;
-                else
-                    viewX = 0.5f;
-
-                float wholeY = (float) (vsb.getMaximum() - vsb.getMinimum() - vsb.getVisibleAmount());
-                float viewY;
-                if (wholeY != 0.0f)
-                    viewY = (float) (vsb.getValue()) / wholeY;
-                else
-                    viewY = 0.5f;
-
-                mapView.setViewCenter(viewX, viewY);
-            }
-        };
-        mapScrollPane.getHorizontalScrollBar().addAdjustmentListener(mapScrollPaneAdjustmentListener);
-        mapScrollPane.getVerticalScrollBar().addAdjustmentListener(mapScrollPaneAdjustmentListener);
 
         createData();
         statusBar = new StatusBar();
