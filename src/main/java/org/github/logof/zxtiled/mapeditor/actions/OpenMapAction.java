@@ -12,7 +12,6 @@
 
 package org.github.logof.zxtiled.mapeditor.actions;
 
-import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
@@ -40,20 +39,6 @@ public class OpenMapAction extends AbstractFileAction {
         String startLocation = TiledConfiguration.fileDialogStartLocation();
 
         JFileChooser chooser = new JFileChooser(startLocation);
-
-        try {
-            MapReader[] readers = editor.getPluginLoader().getReaders();
-            for (MapReader reader : readers) {
-                chooser.addChoosableFileFilter(new TiledFileFilter(
-                        reader.getFilter(), reader.getName()));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(editor.getAppFrame(),
-                    "Error while loading plugins: " + e.getLocalizedMessage(),
-                    OPEN_ERROR_TITLE,
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
 
         chooser.addChoosableFileFilter(
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX));

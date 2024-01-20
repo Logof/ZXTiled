@@ -14,7 +14,6 @@ package org.github.logof.zxtiled.mapeditor.actions;
 
 import lombok.Getter;
 import org.github.logof.zxtiled.io.MapHelper;
-import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;
@@ -66,16 +65,6 @@ public class SaveAsAction extends AbstractAction {
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.addChoosableFileFilter(byExtensionFilter);
         chooser.addChoosableFileFilter(tmxFilter);
-
-        MapWriter[] writers = editor.getPluginLoader().getWriters();
-        for (MapWriter writer : writers) {
-            try {
-                chooser.addChoosableFileFilter(new TiledFileFilter(writer));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         chooser.setFileFilter(byExtensionFilter);
 
         int result = chooser.showSaveDialog(editor.getAppFrame());

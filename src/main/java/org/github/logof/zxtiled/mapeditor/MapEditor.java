@@ -24,7 +24,6 @@ import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.TileSet;
 import org.github.logof.zxtiled.io.MapHelper;
-import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
@@ -34,7 +33,6 @@ import org.github.logof.zxtiled.mapeditor.dialogs.BrushDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.ConfigurationDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.MapPropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.NewTilesetDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.PluginDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.ResizeDialog;
 import org.github.logof.zxtiled.mapeditor.dialogs.SearchDialog;
@@ -46,13 +44,11 @@ import org.github.logof.zxtiled.mapeditor.listener.MapEditorComponentListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorListSelectionListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorMapChangeListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorMouseListener;
-import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
 import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
 import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
-import org.github.logof.zxtiled.mapeditor.ui.MiniMapViewer;
 import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
 import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
 import org.github.logof.zxtiled.mapeditor.ui.TButton;
@@ -92,8 +88,6 @@ import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
  * The main class for the Tiled Map Editor.
  */
 public class MapEditor {
-    // Constants and the like
-
     /**
      * Current release version.
      */
@@ -105,8 +99,6 @@ public class MapEditor {
     private final UndoHandler undoHandler;
     @Getter
     private final UndoableEditSupport undoSupport;
-    @Getter
-    private final PluginClassLoader pluginLoader;
     @Getter
     private final SelectionLayer cursorHighlight;
     @Getter
@@ -237,19 +229,6 @@ public class MapEditor {
         mainSplit.restore();
         paletteSplit.restore();
 
-        // Load plugins
-        pluginLoader = PluginClassLoader.getInstance();
-        try {
-            pluginLoader.readPlugins(null, appFrame);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(appFrame,
-                    e.toString(), "Plugin loader",
-                    JOptionPane.WARNING_MESSAGE);
-        }
-        MapHelper.init(pluginLoader);
-
-
         // Make sure the map view is redrawn when grid preferences change.
         // todo: move this functionality out of here somehow, but not back into MapView
         final Preferences display = preferences.node("display");
@@ -290,8 +269,7 @@ public class MapEditor {
 
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
-        layersPanel = new FloatablePanel(
-                getAppFrame(), dataPanel, Constants.PANEL_LAYERS, "layers");
+        layersPanel = new FloatablePanel(getAppFrame(), dataPanel, Constants.PANEL_LAYERS, "layers");
 
         rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel.getContentPane(), null, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
@@ -347,14 +325,6 @@ public class MapEditor {
         layerPopupMenu.add(MapEditorAction.showLayerPropertiesAction);
 
         //navigation and tool options
-        // TODO: the minimap is prohibitively slow, need to speed this up
-        // before it can be used
-        MiniMapViewer miniMap = new MiniMapViewer();
-        //miniMap.setMainPanel(mapScrollPane);
-        JScrollPane miniMapSp = new JScrollPane();
-        miniMapSp.getViewport().setView(miniMap);
-        miniMapSp.setMinimumSize(new Dimension(0, 120));
-
         // Layer table
         layerTable = new JTable(new LayerTableModel());
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -371,9 +341,6 @@ public class MapEditor {
                 layerPopupMenu.show(layerTable, e.getPoint().x, e.getPoint().y);
             }
         });
-
-        // Opacity slider
-
 
         JPanel sliderPanel = new JPanel();
         sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
@@ -582,19 +549,7 @@ public class MapEditor {
         } else if (command.equals(Resources.getString("menu.tilesets.import"))) {
             if (currentTileMap != null) {
                 JFileChooser chooser = new JFileChooser(currentTileMap.getFilename());
-                MapReader[] readers = pluginLoader.getReaders();
-                for (MapReader reader : readers) {
-                    try {
-                        chooser.addChoosableFileFilter(new TiledFileFilter(
-                                reader.getFilter(),
-                                reader.getName()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                chooser.addChoosableFileFilter(
-                        new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+                chooser.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
 
                 int ret = chooser.showOpenDialog(appFrame);
                 if (ret == JFileChooser.APPROVE_OPTION) {
@@ -654,10 +609,6 @@ public class MapEditor {
             sd.setVisible(true);
         } else if (command.equals(Resources.getString("menu.help.about"))) {
             showAboutDialog();
-        } else if (command.equals(Resources.getString("menu.help.plugins"))) {
-            PluginDialog pluginDialog =
-                    new PluginDialog(appFrame, pluginLoader);
-            pluginDialog.setVisible(true);
         } else if (command.equals(Resources.getString("menu.edit.preferences"))) {
             ConfigurationDialog dialog = new ConfigurationDialog(appFrame);
             dialog.configure();

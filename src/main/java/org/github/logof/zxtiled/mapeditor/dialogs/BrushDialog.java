@@ -25,7 +25,6 @@ import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.ui.BrushBrowser;
 import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
-import org.github.logof.zxtiled.mapeditor.ui.MiniMapViewer;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.LayerTableModel;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
@@ -159,13 +158,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
 
-        MiniMapViewer mmv = new MiniMapViewer();
-        if (myBrush instanceof CustomBrush) {
-            //mmv.setView(((CustomBrush)myBrush));
-        }
-
         JScrollPane miniSp = new JScrollPane();
-        miniSp.getViewport().setView(mmv);
         miniSp.setPreferredSize(new Dimension(100, 100));
         JButton bCreate = new JButton(CREATE_BUTTON);
         bCreate.addActionListener(this);

@@ -57,13 +57,6 @@ public abstract class MapView extends JPanel implements Scrollable {
     protected double zoom = zoomLevels[ZOOM_NORMAL_SIZE];
     @Getter
     protected int zoomLevel = ZOOM_NORMAL_SIZE;
-    // these two indicate where the center of the view is. This is used for
-    // rendering layers with the parallax flag enabled and needs to be set
-    // by the entity controlling the view (like the editor, or the scroll
-    // pane that it holds). The values range from 0.0f to 1.0 for going from
-    // the left to the right of the map (up/down respectively)
-    protected float viewportCenterX;
-    protected float viewportCenterY;
 
     // Grid properties
     protected boolean showGrid;
