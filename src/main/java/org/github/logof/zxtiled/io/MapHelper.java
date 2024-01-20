@@ -18,12 +18,9 @@ import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.xml.XMLMapTransformer;
 import org.github.logof.zxtiled.io.xml.XMLMapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.dialogs.PluginLogDialog;
 import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
-import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;
 import java.io.IOException;
-import java.util.prefs.Preferences;
 
 /**
  * A handler for saving and loading maps.
@@ -31,16 +28,14 @@ import java.util.prefs.Preferences;
 public class MapHelper {
     public static final String ERROR_LOAD_MAP = Resources.getString("general.file.noload.map");
     public static final String ERROR_LOAD_TILESET = Resources.getString("general.file.noload.tileset");
-    private static PluginClassLoader pluginLoader;
+
 
     /**
      * Called to tell the MapHelper which {@link PluginClassLoader} to use when
      * finding a suitable plugin for a filename.
-     *
-     * @param p the PluginClassLoader instance to use
      */
-    public static void init(PluginClassLoader p) {
-        pluginLoader = p;
+    public static void init() {
+
     }
 
     /**
@@ -62,14 +57,14 @@ public class MapHelper {
         } else if (filename.endsWith(".h")) {
             mapWriter = new HMapWriter();
         } else {
-            mapWriter = (MapWriter) pluginLoader.getWriterFor(filename);
+            throw new RuntimeException("Not save map");
         }
 
         PluginLogger logger = new PluginLogger();
         mapWriter.setLogger(logger);
         mapWriter.writeMap(currentTileMap, filename);
         currentTileMap.setFilename(filename);
-        reportPluginMessages(logger);
+
     }
 
     /**
@@ -84,23 +79,18 @@ public class MapHelper {
      */
     public static void saveTileset(TileSet set, String filename)
             throws Exception {
-        MapWriter mw;
+        MapWriter mapWriter;
         if (filename.endsWith(".tsx")) {
             // Override, so people can't overtake our format
-            mw = new XMLMapWriter();
+            mapWriter = new XMLMapWriter();
         } else {
-            mw = (MapWriter) pluginLoader.getWriterFor(filename);
+            throw new RuntimeException("Not save tileset");
         }
 
-        if (mw != null) {
-            PluginLogger logger = new PluginLogger();
-            mw.setLogger(logger);
-            mw.writeTileset(set, filename);
-            set.setSource(filename);
-            reportPluginMessages(logger);
-        } else {
-            throw new Exception("Unsupported tileset format");
-        }
+        PluginLogger logger = new PluginLogger();
+        mapWriter.setLogger(logger);
+        mapWriter.writeTileset(set, filename);
+        set.setSource(filename);
     }
 
     /**
@@ -121,7 +111,6 @@ public class MapHelper {
         mw.setLogger(logger);
         mw.writeMap(currentTileMap, filename);
         currentTileMap.setFilename(filename);
-        reportPluginMessages(logger);
     }
 
     /**
@@ -137,23 +126,18 @@ public class MapHelper {
     public static TileMap loadMap(String file) throws Exception {
         TileMap ret = null;
         try {
-            MapReader mr;
+            MapReader mapReader;
             if (file.endsWith(".tmx") || file.endsWith(".tmx.gz")) {
                 // Override, so people can't overtake our format
-                mr = new XMLMapTransformer();
+                mapReader = new XMLMapTransformer();
             } else {
-                mr = (MapReader) pluginLoader.getReaderFor(file);
+                throw new RuntimeException("NOT LOAD MAP");
             }
 
-            if (mr != null) {
-                PluginLogger logger = new PluginLogger();
-                mr.setLogger(logger);
-                ret = mr.readMap(file);
-                ret.setFilename(file);
-                reportPluginMessages(logger);
-            } else {
-                throw new Exception("Unsupported map format");
-            }
+            PluginLogger logger = new PluginLogger();
+            mapReader.setLogger(logger);
+            ret = mapReader.readMap(file);
+            ret.setFilename(file);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
@@ -187,23 +171,18 @@ public class MapHelper {
     public static TileSet loadTileset(String file) throws Exception {
         TileSet ret = null;
         try {
-            MapReader mr;
+            MapReader mapReader;
             if (file.endsWith(".tsx")) {
                 // Override, so people can't overtake our format
-                mr = new XMLMapTransformer();
+                mapReader = new XMLMapTransformer();
             } else {
-                mr = (MapReader) pluginLoader.getReaderFor(file);
+                throw new RuntimeException("Not load tileset");
             }
 
-            if (mr != null) {
-                PluginLogger logger = new PluginLogger();
-                mr.setLogger(logger);
-                ret = mr.readTileset(file);
-                ret.setSource(file);
-                reportPluginMessages(logger);
-            } else {
-                throw new Exception("Unsupported tileset format");
-            }
+            PluginLogger logger = new PluginLogger();
+            mapReader.setLogger(logger);
+            ret = mapReader.readTileset(file);
+            ret.setSource(file);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
@@ -222,21 +201,5 @@ public class MapHelper {
         }
 
         return ret;
-    }
-
-    /**
-     * Reports messages from the plugin to the user in a dialog.
-     *
-     * @param logger A Stack which was used by the plugin to record any messages it
-     *               had for the user
-     */
-    private static void reportPluginMessages(PluginLogger logger) {
-        // TODO: maybe have a nice dialog with a scrollbar, in case there are
-        // a lot of messages...
-        Preferences prefs = TiledConfiguration.node("io");
-
-        if (prefs.getBoolean("reportWarnings", false)) {
-            PluginLogDialog pld = new PluginLogDialog();
-        }
     }
 }

@@ -19,9 +19,6 @@ public class MapEditorListSelectionListener implements ListSelectionListener {
         // At the moment, this can only be a new layer selection
         if (mapEditor.getCurrentTileMap() != null && selectedRow >= 0) {
             mapEditor.setCurrentLayerIndex(mapEditor.getCurrentTileMap().getTotalLayers() - selectedRow - 1);
-
-            float opacity = mapEditor.getCurrentLayer().getOpacity();
-            mapEditor.getOpacitySlider().setValue((int) (opacity * 100));
         } else {
             mapEditor.setCurrentLayerIndex(-1);
         }
