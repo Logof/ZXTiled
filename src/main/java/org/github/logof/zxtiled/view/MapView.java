@@ -317,7 +317,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         g2d.setColor(DEFAULT_BACKGROUND_COLOR);
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-        paintSubMap(tileMap, g2d, 1.0f);
+        paintSubMap(tileMap, g2d);
 
         if (!getMode(PF_NO_SPECIAL)) {
             Iterator<MapLayer> li = tileMap.getLayersSpecial();
@@ -399,22 +399,15 @@ public abstract class MapView extends JPanel implements Scrollable {
         }
     }
 
-    public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
-                            float mapOpacity) {
+    public void paintSubMap(MultilayerPlane m, Graphics2D g2d) {
         Iterator<MapLayer> li = m.getLayers();
         MapLayer layer;
 
         while (li.hasNext()) {
             layer = li.next();
             if (layer != null) {
-                float opacity = layer.getOpacity() * mapOpacity;
-                if (layer.isVisible() && opacity > 0.0f) {
-                    if (opacity < 1.0f) {
-                        g2d.setComposite(AlphaComposite.getInstance(
-                                AlphaComposite.SRC_ATOP, opacity));
-                    } else {
-                        g2d.setComposite(AlphaComposite.SrcOver);
-                    }
+                if (layer.isVisible()) {
+                    g2d.setComposite(AlphaComposite.SrcOver);
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);

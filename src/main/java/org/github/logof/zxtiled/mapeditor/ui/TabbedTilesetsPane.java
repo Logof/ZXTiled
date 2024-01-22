@@ -40,8 +40,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Map of tile sets to tile palette panels
      */
-    private final HashMap<TileSet, TilePalettePanel> tilePanels =
-            new HashMap<TileSet, TilePalettePanel>();
+    private final HashMap<TileSet, TilePalettePanel> tilePanels = new HashMap<>();
     private final MyChangeListener listener = new MyChangeListener();
     private final MapEditor mapEditor;
     private TileMap tileMap;
@@ -62,8 +61,9 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * @param tileMap the map of which to display the tilesets
      */
     public void setMap(TileMap tileMap) {
-        if (this.tileMap == tileMap)
+        if (this.tileMap == tileMap) {
             return;
+        }
 
         if (this.tileMap != null) {
             this.tileMap.removeMapChangeListener(listener);
@@ -125,27 +125,25 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Informs the editor of the new tile.
      */
-    public void tileSelected(TileSelectionEvent e) {
-        mapEditor.setCurrentTile(e.getTile());
+    public void tileSelected(TileSelectionEvent event) {
+        mapEditor.setCurrentTile(event.getTile());
     }
 
     /**
-     * Creates a stamp brush from the region contents and sets this as the
-     * current brush.
+     * Creates a stamp brush from the region contents and sets this as the current brush.
      */
     public void tileRegionSelected(TileRegionSelectionEvent e) {
         mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
     private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener {
-        @Override
-        public void mapChanged(MapChangedEvent e) {
-        }
 
+        @Override
         public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
             addTabForTileset(tileset);
         }
 
+        @Override
         public void tilesetRemoved(MapChangedEvent e, int index) {
             JScrollPane scroll = (JScrollPane) getComponentAt(index);
             TilePalettePanel panel = (TilePalettePanel) scroll.getViewport().getView();
@@ -156,7 +154,8 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
             removeTabAt(index);
         }
 
-        public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {
+        @Override
+        public void tilesetsSwapped(MapChangedEvent mapChangedEvent, int index0, int index1) {
             int sIndex = getSelectedIndex();
 
             String title0 = getTitleAt(index0);

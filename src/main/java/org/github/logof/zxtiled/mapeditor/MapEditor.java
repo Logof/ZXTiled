@@ -54,6 +54,7 @@ import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
 import org.github.logof.zxtiled.mapeditor.ui.TButton;
 import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
 import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
+import org.github.logof.zxtiled.mapeditor.ui.TilesetPanel;
 import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
 import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
@@ -157,7 +158,7 @@ public class MapEditor {
     @Setter
     private MapLayerEdit paintEdit;
     private FloatablePanel layersPanel;
-    private FloatablePanel tilesetPanel;
+    private TilesetPanel tilesetPanel;
 
 
     private final MapEditorMouseListener mouseListener;
@@ -284,13 +285,11 @@ public class MapEditor {
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
-        tilesetPanel = new FloatablePanel(
-                getAppFrame(), tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE,
-                "tilesets");
+        tilesetPanel = new TilesetPanel(tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE, "tilesets");
         paletteSplit = new SmartSplitPane(
                 JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetPanel.getContentPane(), "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
-        paletteSplit.setResizeWeight(1.0);
+        paletteSplit.setResizeWeight(0.8);
 
 
         // GUI components
@@ -633,7 +632,6 @@ public class MapEditor {
 
         // Allow the floatable panels to save their position and size
         layersPanel.save();
-        tilesetPanel.save();
 
         mainSplit.save();
         paletteSplit.save();
@@ -848,6 +846,7 @@ public class MapEditor {
         setBrush(sb);
 
         tabbedTilesetsPane.setMap(currentTileMap);
+
 
         if (!mapLoaded) {
             MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_INACTIVE);

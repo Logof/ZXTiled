@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.ui;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileSet;
@@ -35,16 +36,19 @@ import java.util.Vector;
 public class TilePalettePanel extends JPanel implements Scrollable,
                                                         TilesetChangeListener {
     private static final int TILES_PER_ROW = 4;
+    @Getter
     private TileSet tileset;
     private final List<TileSelectionListener> tileSelectionListeners;
     private Vector<Tile> tilesetMap;
     private Rectangle selection;
+    private static final float zoom = 1.5f;
 
     /**
      * Constructs an empty tile palette panel.
      */
     public TilePalettePanel() {
-        tileSelectionListeners = new LinkedList<TileSelectionListener>();
+        super();
+        tileSelectionListeners = new LinkedList<>();
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             private Point origin;
@@ -59,8 +63,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                 }
             }
 
-            public void mouseDragged(MouseEvent e) {
-                Point point = getTileCoordinates(e.getX(), e.getY());
+            public void mouseDragged(MouseEvent mouseEvent) {
+                Point point = getTileCoordinates(mouseEvent.getX(), mouseEvent.getY());
                 Rectangle select = new Rectangle(origin.x, origin.y, 0, 0);
                 select.add(point);
                 if (!select.equals(selection)) {
@@ -78,10 +82,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Draws checkerboard background.
      *
-     * @param g the {@link Graphics} instance to draw on
+     * @param graphics the {@link Graphics} instance to draw on
      */
-    private static void paintBackground(Graphics g) {
-        Rectangle clip = g.getClipBounds();
+    private static void paintBackground(Graphics graphics) {
+        Rectangle clip = graphics.getClipBounds();
         int side = 10;
 
         int startX = clip.x / side;
@@ -90,15 +94,15 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         int endY = (clip.y + clip.height) / side + 1;
 
         // Fill with white background
-        g.setColor(Color.WHITE);
-        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         // Draw darker squares
-        g.setColor(Color.LIGHT_GRAY);
+        graphics.setColor(Color.LIGHT_GRAY);
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
                 if ((y + x) % 2 == 1) {
-                    g.fillRect(x * side, y * side, side, side);
+                    graphics.fillRect(x * side, y * side, side, side);
                 }
             }
         }
@@ -153,12 +157,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                 layer.setTileAt(x - rect.x, y - rect.y, getTileAt(x, y));
             }
         }
-
         return layer;
-    }
-
-    public TileSet getTileset() {
-        return tileset;
     }
 
     /**
@@ -179,20 +178,25 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             this.tileset.addTilesetChangeListener(this);
         }
 
-        if (tileset != null) tilesetMap = tileset.generateGaplessVector();
+        if (tileset != null) {
+            tilesetMap = tileset.generateGaplessVector();
+        }
         revalidate();
         repaint();
     }
 
+    @Override
     public void tilesetChanged(TilesetChangedEvent event) {
         tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
     }
 
+    @Override
     public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
     }
 
+    @Override
     public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
     }
 
@@ -206,15 +210,14 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * @return tile coordinates
      */
     private Point getTileCoordinates(int x, int y) {
-        int twidth = tileset.getTileWidth() + 1;
-        int theight = tileset.getTileHeight() + 1;
+        int tileWidth = (int) (tileset.getTileWidth() * zoom) + 1;
+        int tileHeight = (int) (tileset.getTileHeight() * zoom) + 1;
         int tileCount = tilesetMap.size();
         int tilesPerRow = getTilesPerRow();
-        int rows = tileCount / tilesPerRow +
-                (tileCount % tilesPerRow > 0 ? 1 : 0);
+        int rows = tileCount / tilesPerRow + (tileCount % tilesPerRow > 0 ? 1 : 0);
 
-        int tileX = Math.max(0, Math.min(x / twidth, tilesPerRow - 1));
-        int tileY = Math.max(0, Math.min(y / theight, rows - 1));
+        int tileX = Math.max(0, Math.min(x / tileWidth, tilesPerRow - 1));
+        int tileY = Math.max(0, Math.min(y / tileHeight, rows - 1));
 
         return new Point(tileX, tileY);
     }
@@ -246,11 +249,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * @return the number of tiles to display per row, is at least 1
      */
     private int getTilesPerRow() {
-        // todo: It should be an option to follow the tiles per row given
-        // todo: by the tileset.
+        // todo: It should be an option to follow the tiles per row given by the tileset.
         if (tileset.getTilesPerRow() == 0) {
-            int twidth = tileset.getTileWidth() + 1;
-            return Math.max(1, (getWidth() - 1) / twidth);
+            int tileWidth = tileset.getTileWidth() + 1;
+            return Math.max(1, (getWidth() - 1) / tileWidth);
         } else {
             return tileset.getTilesPerRow();
         }
@@ -262,74 +264,81 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         repaintSelection();
     }
 
+
+    // Все косяки с изображением тайлов в tileset растут отсюда
     private void repaintSelection() {
         if (selection != null) {
-            int twidth = tileset.getTileWidth() + 1;
-            int theight = tileset.getTileHeight() + 1;
+            int tileWidth = (int) (tileset.getTileWidth() * zoom) + 1;
+            int tileHeight = (int) (tileset.getTileHeight() * zoom) + 1;
 
-            repaint(selection.x * twidth, selection.y * theight,
-                    (selection.width + 1) * twidth + 1,
-                    (selection.height + 1) * theight + 1);
+            repaint(selection.x * tileWidth, selection.y * tileHeight,
+                    (selection.width + 1) * tileWidth + 1,
+                    (selection.height + 1) * tileHeight + 1);
         }
     }
 
     private void scrollTileToVisible(Point tile) {
-        int twidth = tileset.getTileWidth() + 1;
-        int theight = tileset.getTileHeight() + 1;
+        int tileWidth = tileset.getTileWidth() + 1;
+        int tileHeight = tileset.getTileHeight() + 1;
 
         scrollRectToVisible(new Rectangle(
-                tile.x * twidth,
-                tile.y * theight,
-                twidth + 1, theight + 1));
+                tile.x * tileWidth,
+                tile.y * tileHeight,
+                tileWidth + 1,
+                tileHeight + 1));
     }
 
-    public void paint(Graphics g) {
-        Rectangle clip = g.getClipBounds();
+    public void paint(Graphics graphics) {
+        Rectangle clip = graphics.getClipBounds();
 
-        paintBackground(g);
+        paintBackground(graphics);
 
         if (tileset != null) {
             // Draw the tiles
-            int twidth = tileset.getTileWidth() + 1;
-            int theight = tileset.getTileHeight() + 1;
-            int tilesPerRow = getTilesPerRow();
+            int tileHeight = tileset.getTileHeight() + 1;           //17
 
-            int startY = clip.y / theight;
-            int endY = (clip.y + clip.height) / theight + 1;
-            int tileAt = tilesPerRow * startY;
-            int gx;
-            int gy = startY * theight;
+            int tileWidthZoomed = (int) (tileset.getTileWidth() * zoom) + 1;
+            int tileHeightZoomed = (int) (tileset.getTileHeight() * zoom) + 1;
 
-            for (int y = startY; y < endY; y++) {
-                gx = 1;
+            int tilesPerRow = getTilesPerRow();                     //16
 
-                for (int x = 0;
-                     x < tilesPerRow && tileAt < tilesetMap.size();
-                     x++, tileAt++) {
+            int startY = clip.y / tileHeight;                       // 0 / 33 = 0
+            int endY = (clip.y + clip.height) / tileHeight + 1;     // (0 + 33) / 18 = 1
+            int tileAt = tilesPerRow * startY;                      // 16 * 0 = 0
+            int offsetX;
+            int offsetY = startY * tileHeightZoomed;                           // 0 * 16 = 0
+
+            // tile: [w: 16; h: 16]; tile per row: 16; clip: [y: 0; h: 33]
+
+            for (int rowNumber = startY; rowNumber < endY * zoom; rowNumber++) {
+                offsetX = 1;
+                for (int columnNumber = 0; columnNumber < tilesPerRow && tileAt < tilesetMap.size(); columnNumber++, tileAt++) {
                     Tile tile = tilesetMap.get(tileAt);
 
                     if (tile != null) {
-                        tile.drawRaw(g, gx, gy + theight, 1.0);
+                        tile.drawRaw(graphics, offsetX, offsetY + tileHeightZoomed, zoom);
                     }
-                    gx += twidth;
+                    offsetX += tileWidthZoomed;
                 }
-                gy += theight;
+                offsetY += tileHeightZoomed;
             }
 
             // Draw the selection
             if (selection != null) {
-                g.setColor(new Color(100, 100, 255));
-                g.draw3DRect(
-                        selection.x * twidth, selection.y * theight,
-                        (selection.width + 1) * twidth,
-                        (selection.height + 1) * theight,
+                graphics.setColor(new Color(100, 100, 255));
+                graphics.draw3DRect(
+                        (selection.x * tileWidthZoomed),
+                        (selection.y * tileHeightZoomed),
+                        (selection.width + 1) * tileWidthZoomed,
+                        (selection.height + 1) * tileHeightZoomed,
                         false);
-                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(
-                        AlphaComposite.SRC_ATOP, 0.2f));
-                g.fillRect(
-                        selection.x * twidth + 1, selection.y * theight + 1,
-                        (selection.width + 1) * twidth - 1,
-                        (selection.height + 1) * theight - 1);
+
+                ((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.2f));
+                graphics.fillRect(
+                        (selection.x * tileWidthZoomed) + 1,
+                        (selection.y * tileHeightZoomed) + 1,
+                        (selection.width + 1) * tileWidthZoomed - 1,
+                        (selection.height + 1) * tileHeightZoomed - 1);
             }
         }
     }
@@ -338,29 +347,29 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         if (tileset == null) {
             return new Dimension(0, 0);
         } else {
-            int twidth = tileset.getTileWidth() + 1;
-            int theight = tileset.getTileHeight() + 1;
+            int tileWidth = (int) (tileset.getTileWidth() * zoom) + 1;
+            int tileHeight = (int) (tileset.getTileHeight() * zoom) + 1;
             int tileCount = tilesetMap.size();
             int tilesPerRow = getTilesPerRow();
-            int rows = tileCount / tilesPerRow +
-                    (tileCount % tilesPerRow > 0 ? 1 : 0);
+            int rows = tileCount / tilesPerRow + (tileCount % tilesPerRow > 0 ? 1 : 0);
 
-            return new Dimension(tilesPerRow * twidth + 1, rows * theight + 1);
+            return new Dimension(tilesPerRow * tileWidth + 1, rows * tileHeight + 1);
         }
     }
 
 
     // Scrollable interface
-
+    @Override
     public Dimension getPreferredScrollableViewportSize() {
         if (tileset != null) {
-            int twidth = tileset.getTileWidth() + 1;
-            return new Dimension(TILES_PER_ROW * twidth + 1, 200);
+            int tileWidth = (int) (tileset.getTileWidth() * zoom) + 1;
+            return new Dimension(TILES_PER_ROW * tileWidth + 1, 200);
         } else {
             return new Dimension(0, 0);
         }
     }
 
+    @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect,
                                           int orientation, int direction) {
         if (tileset != null) {
@@ -370,6 +379,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         }
     }
 
+    @Override
     public int getScrollableBlockIncrement(Rectangle visibleRect,
                                            int orientation, int direction) {
         if (tileset != null) {
@@ -379,11 +389,13 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         }
     }
 
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         // todo: Update when this has become an option
         return tileset == null || tileset.getTilesPerRow() == 0;
     }
 
+    @Override
     public boolean getScrollableTracksViewportHeight() {
         return false;
     }

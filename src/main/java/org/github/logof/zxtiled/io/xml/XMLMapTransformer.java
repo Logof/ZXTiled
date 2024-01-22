@@ -181,7 +181,7 @@ public class XMLMapTransformer implements MapReader {
             if ("int".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = Integer.valueOf(args[i]);
             } else if ("float".equalsIgnoreCase(parameterTypes[i].getName())) {
-                conformingArguments[i] = new Float(args[i]);
+                conformingArguments[i] = Float.parseFloat(args[i]);
             } else if (parameterTypes[i].getName().endsWith("String")) {
                 conformingArguments[i] = args[i];
             } else if ("boolean".equalsIgnoreCase(parameterTypes[i].getName())) {
@@ -444,9 +444,7 @@ public class XMLMapTransformer implements MapReader {
                             Color color = new Color(colorInt);
                             set.setTransparentColor(color);
                         }
-
-                        set.importTileBitmap(sourcePath, new BasicTileCutter(
-                                tileWidth, tileHeight, tileSpacing, tileMargin));
+                        set.importTileBitmap(sourcePath, new BasicTileCutter());
                     } else {
                         Image image = unmarshalImage(child, tilesetBaseDir);
                         String idValue = getAttributeValue(child, "id");
@@ -592,10 +590,6 @@ public class XMLMapTransformer implements MapReader {
         final String opacity = getAttributeValue(t, "opacity");
 
         ml.setName(getAttributeValue(t, "name"));
-
-        if (opacity != null) {
-            ml.setOpacity(Float.parseFloat(opacity));
-        }
 
         readProperties(t.getChildNodes(), ml.getProperties());
 
