@@ -45,12 +45,12 @@ public class ObjectsLayer extends MapLayer {
      * origin.
      *
      * @param tileMap   the map this object group is part of
-     * @param origx the x origin of this layer
-     * @param origy the y origin of this layer
+     * @param origX the x origin of this layer
+     * @param origY the y origin of this layer
      */
-    public ObjectsLayer(TileMap tileMap, int origx, int origy) {
+    public ObjectsLayer(TileMap tileMap, int origX, int origY) {
         super(tileMap);
-        setBounds(new Rectangle(origx, origy, 0, 0));
+        setBounds(new Rectangle(origX, origY, 0, 0));
     }
 
     /**

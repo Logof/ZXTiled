@@ -57,11 +57,11 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * @param w width in tiles
-     * @param h height in tiles
+     * @param width width in tiles
+     * @param height height in tiles
      */
-    public MapLayer(int w, int h) {
-        this(new Rectangle(0, 0, w, h));
+    public MapLayer(int width, int height) {
+        this(new Rectangle(0, 0, width, height));
     }
 
     public MapLayer(Rectangle r) {
