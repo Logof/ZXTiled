@@ -48,11 +48,13 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int ROTATE_270 = 270;
 
+    @Getter
     protected String name;
     protected boolean isVisible = true;
     protected boolean bLocked = false;
-    protected float opacity = 1.0f;
+
     protected Rectangle bounds;
+    @Getter
     private float viewPlaneDistance = 0.0f;
     @Getter
     private boolean viewPlaneInfinitelyFarAway = false;
@@ -142,15 +144,6 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * Returns the name of this layer.
-     *
-     * @return the name of the layer
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
      * Sets the name of this layer.
      *
      * @param name the new name
@@ -220,31 +213,6 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * Returns layer opacity.
-     *
-     * @return layer opacity, ranging from 0.0 to 1.0
-     */
-    public float getOpacity() {
-        return opacity;
-    }
-
-    /**
-     * Sets layer opacity. If it is different from the previous value and the
-     * layer is visible, a MapChangedEvent is fired.
-     *
-     * @param opacity the new opacity for this layer
-     */
-    public void setOpacity(float opacity) {
-        if (this.opacity != opacity) {
-            this.opacity = opacity;
-
-            if (isVisible() && getMap() != null) {
-                getMap().fireMapChanged();
-            }
-        }
-    }
-
-    /**
      * Returns whether this layer is visible.
      *
      * @return <code>true</code> if the layer is visible, <code>false</code>
@@ -304,7 +272,6 @@ public abstract class MapLayer implements Cloneable {
         other.setViewPlaneDistance(getViewPlaneDistance());
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.myTileMap = myTileMap;
-        other.setOpacity(opacity);
         other.bounds.setBounds(bounds);
         if (other.properties != properties) {
             other.properties.clear();
@@ -387,10 +354,6 @@ public abstract class MapLayer implements Cloneable {
     /// from the one that the map is using.
     public int getTileWidth() {
         return getMap().getTileWidth();
-    }
-
-    public float getViewPlaneDistance() {
-        return viewPlaneDistance;
     }
 
     public void setViewPlaneDistance(float viewPlaneDistance) {

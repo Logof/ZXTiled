@@ -25,7 +25,8 @@ import java.util.Properties;
  */
 public class Tile {
     protected int tileImageId = -1;
-    private Image internalImage, scaledImage;
+    private Image internalImage;
+    private Image scaledImage;
     @Getter
     private int id = -1;
     private int groundHeight;          // Height above/below "ground"
@@ -79,21 +80,21 @@ public class Tile {
 
     /**
      * Sets the parent tileset for a tile. If the tile is already
-     * a member of a set, and this method is called with a different
-     * set as argument, the tile image is transferred to the new set.
+     * a member of a tileset, and this method is called with a different
+     * tileset as argument, the tile image is transferred to the new tileset.
      *
-     * @param set
+     * @param tileset
      */
-    public void setTileSet(TileSet set) {
-        if (tileset != null && tileset != set) {
-            setImage(set.addImage(getImage()));
+    public void setTileSet(TileSet tileset) {
+        if (this.tileset != null && this.tileset != tileset) {
+            setImage(tileset.addImage(getImage()));
         } else {
             if (internalImage != null) {
-                setImage(set.addImage(internalImage));
+                setImage(tileset.addImage(internalImage));
                 internalImage = null;
             }
         }
-        tileset = set;
+        this.tileset = tileset;
     }
 
     /**
@@ -103,17 +104,14 @@ public class Tile {
      * current cache zoom.
      *
      * @param graphics    Graphics instance to draw to
-     * @param x    x-coord to draw tile at
-     * @param y    y-coord to draw tile at
+     * @param x    x-coordinate to draw tile at
+     * @param y    y-coordinate to draw tile at
      * @param zoom Zoom level to draw the tile
      */
     public void drawRaw(Graphics graphics, int x, int y, double zoom) {
         Image img = getScaledImage(zoom);
         if (img != null) {
             graphics.drawImage(img, x, y - img.getHeight(null), null);
-        } else {
-            // TODO: Allow drawing IDs when no image data exists as a
-            // config option
         }
     }
 

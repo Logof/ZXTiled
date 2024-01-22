@@ -20,6 +20,7 @@ import org.github.logof.zxtiled.mapeditor.Resources;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -39,12 +40,12 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     private final Vector<MapLayer> specialLayers;
     @Getter
     private final Vector<TileSet> tilesets;
-    private final LinkedList<MapObject> objects;
+
     private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
     @Getter
-    private int tileWidth;
+    private int tileWidth = 16;
     @Getter
-    private int tileHeight;
+    private int tileHeight = 16;
 
     @Setter
     @Getter
@@ -73,7 +74,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         properties = new Properties();
         tilesets = new Vector<>();
         specialLayers = new Vector<>();
-        objects = new LinkedList<>();
     }
 
     /**
@@ -167,7 +167,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
-            if (event == null) event = new MapChangedEvent(this);
+            if (Objects.isNull(event)) {
+                event = new MapChangedEvent(this);
+            }
             iterator.next().tilesetAdded(event, tileset);
         }
     }
@@ -258,19 +260,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
             return;
         }
 
-        Tile t = tileset.getTile(0);
-
-        if (t != null) {
-            int tw = t.getWidth();
-            int th = t.getHeight();
-            if (tw != tileWidth) {
-                if (tileWidth == 0) {
-                    tileWidth = tw;
-                    tileHeight = th;
-                }
-            }
-        }
-
         tilesets.add(tileset);
         fireTilesetAdded(tileset);
     }
@@ -287,8 +276,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
         final int tilesetIndex = tilesets.indexOf(tileset);
-        if (tilesetIndex == -1)
+        if (tilesetIndex == -1) {
             return;
+        }
 
         // Go through the map and remove any instances of the tiles in the set
         Iterator<Object> tileIterator = tileset.iterator();
@@ -296,20 +286,15 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
             Tile tile = (Tile) tileIterator.next();
             Iterator<MapLayer> layerIterator = getLayers();
             while (layerIterator.hasNext()) {
-                MapLayer ml = layerIterator.next();
-                if (ml instanceof TileLayer) {
-                    ((TileLayer) ml).removeTile(tile);
+                MapLayer mapLayer = layerIterator.next();
+                if (mapLayer instanceof TileLayer) {
+                    ((TileLayer) mapLayer).removeTile(tile);
                 }
             }
         }
 
         tilesets.remove(tileset);
         fireTilesetRemoved(tilesetIndex);
-    }
-
-
-    public Iterator<MapObject> getObjects() {
-        return objects.iterator();
     }
 
     /**

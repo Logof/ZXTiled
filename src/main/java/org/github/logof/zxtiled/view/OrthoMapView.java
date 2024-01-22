@@ -47,22 +47,22 @@ public class OrthoMapView extends MapView {
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
                                            int orientation, int direction) {
-        Dimension tsize = getMapTileSize();
+        Dimension tileSize = getMapTileSize();
 
         if (orientation == SwingConstants.VERTICAL) {
-            return (visibleRect.height / tsize.height) * tsize.height;
+            return (visibleRect.height / tileSize.height) * tileSize.height;
         } else {
-            return (visibleRect.width / tsize.width) * tsize.width;
+            return (visibleRect.width / tileSize.width) * tileSize.width;
         }
     }
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
                                           int orientation, int direction) {
-        Dimension tsize = getMapTileSize();
+        Dimension tileSize = getMapTileSize();
         if (orientation == SwingConstants.VERTICAL) {
-            return tsize.height;
+            return tileSize.height;
         } else {
-            return tsize.width;
+            return tileSize.width;
         }
     }
 
@@ -92,14 +92,13 @@ public class OrthoMapView extends MapView {
         boolean isSelectionLayer = layer instanceof SelectionLayer;
 
         // Draw this map layer
-        for (int y = start.y, gy = (start.y + 1) * tileSize.height; //+ pointOffset.y;
-             y < end.y; y++, gy += tileSize.height) {
-            for (int x = start.x, gx = start.x * tileSize.width;// + pointOffset.x;
-                 x < end.x; x++, gx += tileSize.width) {
+        for (int y = start.y, gy = (start.y + 1) * tileSize.height; y < end.y; y++, gy += tileSize.height) {
+            for (int x = start.x, gx = start.x * tileSize.width; x < end.x; x++, gx += tileSize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
-                if (tile == null)
+                if (tile == null) {
                     continue;
+                }
 
                 if (isSelectionLayer) {
                     gridPoly.translate(gx, gy);
@@ -114,13 +113,13 @@ public class OrthoMapView extends MapView {
     }
 
     protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
-        final Dimension tsize = getLayerTileSize(og);
-        assert tsize.width != 0 && tsize.height != 0;
+        final Dimension tileSize = getLayerTileSize(og);
+        assert tileSize.width != 0 && tileSize.height != 0;
         final Rectangle bounds = og.getBounds();
         Iterator<MapObject> itr = og.getObjects();
         g2d.translate(
-                bounds.x * tsize.width,
-                bounds.y * tsize.height);
+                bounds.x * tileSize.width,
+                bounds.y * tileSize.height);
 
         while (itr.hasNext()) {
             MapObject mo = itr.next();
@@ -165,8 +164,8 @@ public class OrthoMapView extends MapView {
         }
 
         g2d.translate(
-                -bounds.x * tsize.width,
-                -bounds.y * tsize.height);
+                -bounds.x * tileSize.width,
+                -bounds.y * tileSize.height);
     }
 
     protected void paintGrid(Graphics2D g2d) {
@@ -210,18 +209,19 @@ public class OrthoMapView extends MapView {
         // like the grid, the coordinates are dependent on the current layer
         // (since the tile size can be different from layer to layer
         MapLayer currentLayer = getCurrentLayer();
-        if (currentLayer == null)
+        if (currentLayer == null) {
             return;
+        }
 
-        Dimension tsize = getLayerTileSize(currentLayer);
-        if (tsize.width <= 0 || tsize.height <= 0) {
+        Dimension tileSize = getLayerTileSize(currentLayer);
+        if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // Determine tile size and offset
-        int minTileExtents = java.lang.Math.min(tsize.width, tsize.height);
+        int minTileExtents = java.lang.Math.min(tileSize.width, tileSize.height);
         Font font = new Font("SansSerif", Font.PLAIN, minTileExtents / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
@@ -235,28 +235,27 @@ public class OrthoMapView extends MapView {
 
         // Draw the coordinates
         for (int y = start.y; y < end.y; y++) {
-            Point g = tileToScreenCoords(tsize, start.x, y);
+            Point g = tileToScreenCoords(tileSize, start.x, y);
             for (int x = start.x; x < end.x; x++) {
                 String coords = "(" + x + "," + y + ")";
                 Rectangle2D textSize =
                         font.getStringBounds(coords, fontRenderContext);
 
-                int fx = g.x + (int) ((tsize.width - textSize.getWidth()) / 2);
-                int fy = g.y + (int) ((tsize.height + textSize.getHeight()) / 2);
+                int fx = g.x + (int) ((tileSize.width - textSize.getWidth()) / 2);
+                int fy = g.y + (int) ((tileSize.height + textSize.getHeight()) / 2);
 
                 g2d.drawString(coords, fx, fy);
-                g.x += tsize.width;
+                g.x += tileSize.width;
             }
         }
     }
 
     public void repaintRegion(MapLayer layer, Rectangle region) {
-        Dimension tsize = getLayerTileSize(layer);
-        if (tsize.width <= 0 || tsize.height <= 0) {
+        Dimension tileSize = getLayerTileSize(layer);
+        if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
-        int maxExtraHeight =
-                (int) (tileMap.getTileHeightMax() * zoom - tsize.height);
+        int maxExtraHeight = (int) (tileMap.getTileHeightMax() * zoom - tileSize.height);
 
         // Calculate the visible corners of the region
         Point start = tileToScreenCoords(region.x, region.y);
@@ -264,9 +263,7 @@ public class OrthoMapView extends MapView {
 
         start.x -= maxExtraHeight;
 
-        Rectangle dirty =
-                new Rectangle(start.x, start.y, end.x - start.x, end.y - start.y);
-
+        Rectangle dirty = new Rectangle(start.x, start.y, end.x - start.x, end.y - start.y);
         repaint(dirty);
     }
 

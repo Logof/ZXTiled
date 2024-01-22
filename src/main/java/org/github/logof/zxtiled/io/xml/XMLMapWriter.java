@@ -383,15 +383,6 @@ public class XMLMapWriter implements MapWriter {
         if (tileBmpFile != null) {
             w.writeAttribute("tilewidth", tileset.getTileWidth());
             w.writeAttribute("tileheight", tileset.getTileHeight());
-
-            final int tileSpacing = tileset.getTileSpacing();
-            final int tileMargin = tileset.getTileMargin();
-            if (tileSpacing != 0) {
-                w.writeAttribute("spacing", tileSpacing);
-            }
-            if (tileMargin != 0) {
-                w.writeAttribute("margin", tileMargin);
-            }
         }
 
         if (tileset.getBaseDir() != null) {
@@ -527,9 +518,6 @@ public class XMLMapWriter implements MapWriter {
 
         if (!mapLayer.isVisible()) {
             xmlWriter.writeAttribute("visible", "0");
-        }
-        if (mapLayer.getOpacity() < 1.0f) {
-            xmlWriter.writeAttribute("opacity", mapLayer.getOpacity());
         }
 
         writeProperties(mapLayer.getProperties(), xmlWriter);

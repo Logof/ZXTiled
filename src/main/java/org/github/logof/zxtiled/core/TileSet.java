@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.core;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.util.TransparentImageFilter;
@@ -29,6 +30,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -49,13 +51,9 @@ public class TileSet {
     @Setter
     @Getter
     private int firstGid;
-    private long tilebmpFileLastModified;
+    private long tileBmpFileLastModified;
     private TileCutter tileCutter;
     private Rectangle tileDimensions;
-    @Getter
-    private int tileSpacing;
-    @Getter
-    private int tileMargin;
     @Getter
     private int tilesPerRow;
     private String externalSource;
@@ -89,8 +87,7 @@ public class TileSet {
      * @throws IOException
      * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
      */
-    public void importTileBitmap(String imgFilename, TileCutter cutter)
-            throws IOException {
+    public void importTileBitmap(String imgFilename, TileCutter cutter) throws IOException {
         setTilesetImageFilename(imgFilename);
 
         Image image = ImageIO.read(new File(imgFilename));
@@ -98,11 +95,11 @@ public class TileSet {
             throw new IOException("Failed to load " + tilebmpFile);
         }
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
 
         if (transparentColor != null) {
             int rgb = transparentColor.getRGB();
-            image = tk.createImage(
+            image = toolkit.createImage(
                     new FilteredImageSource(image.getSource(),
                             new TransparentImageFilter(rgb)));
         }
@@ -120,23 +117,18 @@ public class TileSet {
      * Creates a tileset from a buffered image. Tiles are cut by the passed
      * cutter.
      *
-     * @param tilebmp the image to be used, must not be null
+     * @param tileBmp the image to be used, must not be null
      * @param cutter  the tile cutter, must not be null
      */
-    private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter) {
-        assert tilebmp != null;
-        assert cutter != null;
-
+    private void importTileBitmap(@NonNull BufferedImage tileBmp, @NonNull TileCutter cutter) {
         tileCutter = cutter;
-        tileSetImage = tilebmp;
+        tileSetImage = tileBmp;
 
-        cutter.setImage(tilebmp);
+        cutter.setImage(tileBmp);
 
         tileDimensions = new Rectangle(cutter.getTileDimensions());
         if (cutter instanceof BasicTileCutter) {
             BasicTileCutter basicTileCutter = (BasicTileCutter) cutter;
-            tileSpacing = basicTileCutter.getTileSpacing();
-            tileMargin = basicTileCutter.getTileMargin();
             tilesPerRow = basicTileCutter.getTilesPerRow();
         }
 
@@ -155,8 +147,7 @@ public class TileSet {
      * @throws IOException
      * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
      */
-    private void refreshImportedTileBitmap()
-            throws IOException {
+    private void refreshImportedTileBitmap() throws IOException {
         String imgFilename = tilebmpFile.getPath();
 
         Image image = ImageIO.read(new File(imgFilename));
@@ -164,11 +155,11 @@ public class TileSet {
             throw new IOException("Failed to load " + tilebmpFile);
         }
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
 
         if (transparentColor != null) {
             int rgb = transparentColor.getRGB();
-            image = tk.createImage(
+            image = toolkit.createImage(
                     new FilteredImageSource(image.getSource(),
                             new TransparentImageFilter(rgb)));
         }
@@ -186,15 +177,13 @@ public class TileSet {
      * Refreshes a tileset from a buffered image. Tiles are cut by the passed
      * cutter.
      *
-     * @param tilebmp the image to be used, must not be null
+     * @param tileBmp the image to be used, must not be null
      */
-    private void refreshImportedTileBitmap(BufferedImage tilebmp) {
-        assert tilebmp != null;
-
+    private void refreshImportedTileBitmap(@NonNull BufferedImage tileBmp) {
         tileCutter.reset();
-        tileCutter.setImage(tilebmp);
+        tileCutter.setImage(tileBmp);
 
-        tileSetImage = tilebmp;
+        tileSetImage = tileBmp;
         tileDimensions = new Rectangle(tileCutter.getTileDimensions());
 
         int id = 0;
@@ -211,9 +200,9 @@ public class TileSet {
 
     public void checkUpdate() throws IOException {
         if (tilebmpFile != null &&
-                tilebmpFile.lastModified() > tilebmpFileLastModified) {
+                tilebmpFile.lastModified() > tileBmpFileLastModified) {
             refreshImportedTileBitmap();
-            tilebmpFileLastModified = tilebmpFile.lastModified();
+            tileBmpFileLastModified = tilebmpFile.lastModified();
         }
     }
 
@@ -224,9 +213,9 @@ public class TileSet {
      * @param name
      */
     public void setTilesetImageFilename(String name) {
-        if (name != null) {
+        if (Objects.nonNull(name)) {
             tilebmpFile = new File(name);
-            tilebmpFileLastModified = tilebmpFile.lastModified();
+            tileBmpFileLastModified = tilebmpFile.lastModified();
         } else {
             tilebmpFile = null;
         }
@@ -236,32 +225,32 @@ public class TileSet {
      * Adds the tile to the set, setting the id of the tile only if the current
      * value of id is -1.
      *
-     * @param t the tile to add
+     * @param tile the tile to add
      * @return int The <b>local</b> id of the tile
      */
-    public int addTile(Tile t) {
-        if (t.getId() < 0) {
-            t.setId(tiles.getMaxId() + 1);
+    public int addTile(Tile tile) {
+        if (tile.getId() < 0) {
+            tile.setId(tiles.getMaxId() + 1);
         }
 
-        if (tileDimensions.width < t.getWidth()) {
-            tileDimensions.width = t.getWidth();
+        if (tileDimensions.width < tile.getWidth()) {
+            tileDimensions.width = tile.getWidth();
         }
 
-        if (tileDimensions.height < t.getHeight()) {
-            tileDimensions.height = t.getHeight();
+        if (tileDimensions.height < tile.getHeight()) {
+            tileDimensions.height = tile.getHeight();
         }
 
         // Add any default properties
         // TODO: use parent properties instead?
-        t.getProperties().putAll(defaultTileProperties);
+        tile.getProperties().putAll(defaultTileProperties);
 
-        tiles.put(t.getId(), t);
-        t.setTileSet(this);
+        tiles.put(tile.getId(), tile);
+        tile.setTileSet(this);
 
         fireTilesetChanged();
 
-        return t.getId();
+        return tile.getId();
     }
 
     /**
@@ -269,12 +258,12 @@ public class TileSet {
      * the functionality of <code>addTile()</code>, sets the id of the tile
      * to -1.
      *
-     * @param t the new tile to add.
+     * @param tile the new tile to add.
      * @see TileSet#addTile(Tile)
      */
-    public void addNewTile(Tile t) {
-        t.setId(-1);
-        addTile(t);
+    public void addNewTile(Tile tile) {
+        tile.setId(-1);
+        addTile(tile);
     }
 
     /**
@@ -328,13 +317,14 @@ public class TileSet {
      * non-null tile
      */
     public Vector<Tile> generateGaplessVector() {
-        Vector<Tile> gapless = new Vector<>();
+        Vector<Tile> tales = new Vector<>();
 
         for (int i = 0; i <= getMaxTileId(); i++) {
-            if (getTile(i) != null) gapless.add(getTile(i));
+            if (getTile(i) != null) {
+                tales.add(getTile(i));
+            }
         }
-
-        return gapless;
+        return tales;
     }
 
     /**
