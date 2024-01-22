@@ -242,7 +242,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * to "ObjectGroup [layer index]"
      */
     public void addObjectGroup() {
-        MapLayer layer = new ObjectGroup(this);
+        MapLayer layer = new ObjectsLayer(this);
         layer.setName(Resources.getString("general.objectgroup.objectgroup") +
                 " " + super.getTotalLayers());
         super.addLayer(layer);

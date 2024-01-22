@@ -42,11 +42,11 @@ public class TileLayer extends MapLayer {
     /**
      * Construct a TileLayer from the given width and height.
      *
-     * @param w width in tiles
-     * @param h height in tiles
+     * @param width width in tiles
+     * @param height height in tiles
      */
-    public TileLayer(int w, int h, int tileWidth, int tileHeight) {
-        super(w, h);
+    public TileLayer(int width, int height, int tileWidth, int tileHeight) {
+        super(width, height);
         setTileDimensions(tileWidth, tileHeight);
     }
 
@@ -61,14 +61,14 @@ public class TileLayer extends MapLayer {
     }
 
     /**
-     * @param m the map this layer is part of
-     * @param w width in tiles
-     * @param h height in tiles
+     * @param tileMap the map this layer is part of
+     * @param width width in tiles
+     * @param height height in tiles
      */
-    public TileLayer(TileMap m, int w, int h) {
-        super(w, h);
-        setTileDimensions(m.getTileWidth(), m.getTileHeight());
-        setMap(m);
+    public TileLayer(TileMap tileMap, int width, int height) {
+        super(width, height);
+        setTileDimensions(tileMap.getTileWidth(), tileMap.getTileHeight());
+        setMap(tileMap);
     }
 
     public Properties getTileInstancePropertiesAt(int x, int y) {
@@ -86,54 +86,6 @@ public class TileLayer extends MapLayer {
         }
     }
 
-    /**
-     * Rotates the layer by the given Euler angle.
-     *
-     * @param angle The Euler angle (0-360) to rotate the layer array data by.
-     * @see MapLayer#rotate(int)
-     */
-    public void rotate(int angle) {
-        Tile[][] trans;
-        int xtrans = 0, ytrans = 0;
-
-        if (!canEdit())
-            return;
-
-        switch (angle) {
-            case ROTATE_90:
-                trans = new Tile[bounds.width][bounds.height];
-                xtrans = bounds.height - 1;
-                break;
-            case ROTATE_180:
-                trans = new Tile[bounds.height][bounds.width];
-                xtrans = bounds.width - 1;
-                ytrans = bounds.height - 1;
-                break;
-            case ROTATE_270:
-                trans = new Tile[bounds.width][bounds.height];
-                ytrans = bounds.width - 1;
-                break;
-            default:
-                System.out.println("Unsupported rotation (" + angle + ")");
-                return;
-        }
-
-        double ra = Math.toRadians(angle);
-        int cos_angle = (int) Math.round(Math.cos(ra));
-        int sin_angle = (int) Math.round(Math.sin(ra));
-
-        for (int y = 0; y < bounds.height; y++) {
-            for (int x = 0; x < bounds.width; x++) {
-                int xrot = x * cos_angle - y * sin_angle;
-                int yrot = x * sin_angle + y * cos_angle;
-                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x + bounds.x, y + bounds.y);
-            }
-        }
-
-        bounds.width = trans[0].length;
-        bounds.height = trans.length;
-        map = trans;
-    }
 
     /**
      * Performs a mirroring function on the layer data. Two orientations are
@@ -145,8 +97,9 @@ public class TileLayer extends MapLayer {
      * @param dir the axial orientation to mirror around
      */
     public void mirror(int dir) {
-        if (!canEdit())
+        if (cannotEdit()) {
             return;
+        }
 
         Tile[][] mirror = new Tile[bounds.height][bounds.width];
         for (int y = 0; y < bounds.height; y++) {
@@ -328,7 +281,7 @@ public class TileLayer extends MapLayer {
      * @param replace the replacement tile
      */
     public void replaceTile(Tile find, Tile replace) {
-        if (!canEdit())
+        if (cannotEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -344,7 +297,7 @@ public class TileLayer extends MapLayer {
      * @inheritDoc MapLayer#mergeOnto(MapLayer)
      */
     public void mergeOnto(MapLayer other) {
-        if (!other.canEdit())
+        if (other.cannotEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -365,7 +318,7 @@ public class TileLayer extends MapLayer {
      * @see TileLayer#mergeOnto(MapLayer)
      */
     public void maskedMergeOnto(MapLayer other, Area mask) {
-        if (!canEdit())
+        if (cannotEdit())
             return;
 
         Rectangle boundBox = mask.getBounds();
@@ -388,7 +341,7 @@ public class TileLayer extends MapLayer {
      * @see MapLayer#mergeOnto
      */
     public void copyFrom(MapLayer other) {
-        if (!canEdit())
+        if (cannotEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -406,7 +359,7 @@ public class TileLayer extends MapLayer {
      * @see TileLayer#copyFrom(MapLayer)
      */
     public void maskedCopyFrom(MapLayer other, Area mask) {
-        if (!canEdit())
+        if (cannotEdit())
             return;
 
         Rectangle boundBox = mask.getBounds();
@@ -428,7 +381,7 @@ public class TileLayer extends MapLayer {
      * @see MapLayer#mergeOnto
      */
     public void copyTo(MapLayer other) {
-        if (!other.canEdit())
+        if (other.cannotEdit())
             return;
 
         TileLayer tl;

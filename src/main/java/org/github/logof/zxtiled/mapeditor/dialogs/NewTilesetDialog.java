@@ -65,7 +65,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         super(parent, DIALOG_TITLE, true);
         this.undoSupport = undoSupport;
         this.layer = layer;
-        path = layer.getMap().getFilename();
+        path = layer.getTileMap().getFilename();
         defaultSetProperties = new Properties();
         init();
         pack();
@@ -216,7 +216,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     }
 
     private void createSetAndDispose() {
-        Vector<TileSet> tilesets = layer.getMap().getTilesets();
+        Vector<TileSet> tilesets = layer.getTileMap().getTilesets();
         for (TileSet tileset : tilesets) {
             if (tileset.getName().compareTo(tilesetName.getText()) == 0) {
                 newTileset = null;

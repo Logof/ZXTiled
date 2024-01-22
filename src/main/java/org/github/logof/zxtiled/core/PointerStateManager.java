@@ -47,8 +47,8 @@ public class PointerStateManager {
         //  by something that is more powerful - when the tools are refactored
         //  and moved out of MapEditor altogether..
         ToolSemantic toolSemantic;
-        if (currentPointerState == PointerStateEnum.PS_MARQUEE && ObjectGroup.class.isAssignableFrom(mapEditor.getCurrentLayer()
-                                                                                                              .getClass())) {
+        if (currentPointerState == PointerStateEnum.PS_MARQUEE && ObjectsLayer.class.isAssignableFrom(mapEditor.getCurrentLayer()
+                                                                                                               .getClass())) {
             toolSemantic = mapEditor.getObjectSelectionToolSemantic();
         } else {
             toolSemantic = null;

@@ -6,16 +6,16 @@
 package org.github.logof.zxtiled.mapeditor.selection;
 
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 
 /**
  * @author upachler
  */
 public class ObjectSelection implements Selection {
-    private final ObjectGroup layer;
+    private final ObjectsLayer layer;
     private final MapObject object;
 
-    public ObjectSelection(ObjectGroup layer, MapObject o) {
+    public ObjectSelection(ObjectsLayer layer, MapObject o) {
         this.layer = layer;
         this.object = o;
     }
@@ -36,7 +36,7 @@ public class ObjectSelection implements Selection {
         return hash;
     }
 
-    public ObjectGroup getLayer() {
+    public ObjectsLayer getLayer() {
         return layer;
     }
 

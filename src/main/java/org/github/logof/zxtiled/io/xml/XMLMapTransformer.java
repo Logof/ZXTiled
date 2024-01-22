@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.io.xml;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
@@ -538,9 +538,9 @@ public class XMLMapTransformer implements MapReader {
     }
 
     private MapLayer unmarshalObjectGroup(Node t) throws Exception {
-        ObjectGroup og = null;
+        ObjectsLayer og = null;
         try {
-            og = (ObjectGroup) unmarshalClass(ObjectGroup.class, t);
+            og = (ObjectsLayer) unmarshalClass(ObjectsLayer.class, t);
         } catch (Exception e) {
             e.printStackTrace();
             return og;

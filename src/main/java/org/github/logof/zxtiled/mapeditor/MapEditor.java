@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -434,7 +434,7 @@ public class MapEditor {
         final boolean tileLayer =
                 validSelection && getCurrentLayer() instanceof TileLayer;
         final boolean objectGroup =
-                validSelection && getCurrentLayer() instanceof ObjectGroup;
+                validSelection && getCurrentLayer() instanceof ObjectsLayer;
 
         if (validSelection) {
             MapLayer mapLayer = getCurrentLayer();
@@ -480,11 +480,11 @@ public class MapEditor {
         currentLayerIndex = index;
         layerTable.changeSelection(totalLayers - currentLayerIndex - 1, 0,
                 false, false);
-        MapLayer l = currentTileMap.getLayer(currentLayerIndex);
-        mapView.setCurrentLayer(l);
-        Rectangle r = l.getBounds();
+        MapLayer mapLayer = currentTileMap.getLayer(currentLayerIndex);
+        mapView.setCurrentLayer(mapLayer);
+        Rectangle layerBounds = mapLayer.getBounds();
         statusBar.getStatusLabel()
-                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
+                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, mapLayer.getName(), layerBounds.width, layerBounds.height, layerBounds.x, layerBounds.y, mapLayer.getTileWidth(), mapLayer.getTileHeight()));
         cursorHighlight.setParent(getCurrentLayer());
 
         pointerStateManager.updateToolSemantics();
@@ -648,7 +648,7 @@ public class MapEditor {
 
     public void pour(TileLayer layer, int x, int y,
                       Tile newTile, Tile oldTile) {
-        if (newTile == oldTile || !layer.canEdit()) return;
+        if (newTile == oldTile || layer.cannotEdit()) return;
 
         Rectangle area;
         TileLayer before = (TileLayer) createLayerCopy(layer);

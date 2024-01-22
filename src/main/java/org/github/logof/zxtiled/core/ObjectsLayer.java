@@ -24,19 +24,19 @@ import java.util.Vector;
 /**
  * A layer containing {@link MapObject map objects}.
  */
-public class ObjectGroup extends MapLayer {
+public class ObjectsLayer extends MapLayer {
     private LinkedList<MapObject> objects = new LinkedList<>();
 
     /**
      * Default constructor.
      */
-    public ObjectGroup() {
+    public ObjectsLayer() {
     }
 
     /**
      * @param tileMap the map this object group is part of
      */
-    public ObjectGroup(TileMap tileMap) {
+    public ObjectsLayer(TileMap tileMap) {
         super(tileMap);
     }
 
@@ -48,7 +48,7 @@ public class ObjectGroup extends MapLayer {
      * @param origx the x origin of this layer
      * @param origy the y origin of this layer
      */
-    public ObjectGroup(TileMap tileMap, int origx, int origy) {
+    public ObjectsLayer(TileMap tileMap, int origx, int origy) {
         super(tileMap);
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
@@ -59,15 +59,8 @@ public class ObjectGroup extends MapLayer {
      *
      * @param area the area of the object group
      */
-    public ObjectGroup(Rectangle area) {
+    public ObjectsLayer(Rectangle area) {
         super(area);
-    }
-
-    /**
-     * @see MapLayer#rotate(int)
-     */
-    public void rotate(int angle) {
-        // TODO: Implement rotating an object group
     }
 
     /**
@@ -111,12 +104,12 @@ public class ObjectGroup extends MapLayer {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ObjectGroup clone = (ObjectGroup) super.clone();
+        ObjectsLayer clone = (ObjectsLayer) super.clone();
         clone.objects = new LinkedList<>();
         for (MapObject object : objects) {
             final MapObject objectClone = (MapObject) object.clone();
             clone.objects.add(objectClone);
-            objectClone.setObjectGroup(clone);
+            objectClone.setObjectsLayer(clone);
         }
         return clone;
     }
@@ -128,14 +121,14 @@ public class ObjectGroup extends MapLayer {
         return null;
     }
 
-    public void addObject(MapObject o) {
-        objects.add(o);
-        o.setObjectGroup(this);
+    public void addObject(MapObject mapObject) {
+        objects.add(mapObject);
+        mapObject.setObjectsLayer(this);
     }
 
-    public void removeObject(MapObject o) {
-        objects.remove(o);
-        o.setObjectGroup(null);
+    public void removeObject(MapObject mapObject) {
+        objects.remove(mapObject);
+        mapObject.setObjectsLayer(null);
     }
 
     public Iterator<MapObject> getObjects() {
@@ -154,8 +147,8 @@ public class ObjectGroup extends MapLayer {
                 return obj;
             }
 
-            Rectangle rect = new Rectangle(obj.getX() + bounds.x * getMap().getTileWidth(),
-                    obj.getY() + bounds.y * getMap().getTileHeight(),
+            Rectangle rect = new Rectangle(obj.getX() + bounds.x * getTileMap().getTileWidth(),
+                    obj.getY() + bounds.y * getTileMap().getTileHeight(),
                     obj.getWidth(), obj.getHeight());
             if (rect.contains(x, y)) {
                 return obj;
@@ -222,8 +215,8 @@ public class ObjectGroup extends MapLayer {
             if (obj.getWidth() == 0 && obj.getHeight() == 0) {
                 shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
             } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getMap().getTileWidth(),
-                        obj.getY() + bounds.y * getMap().getTileHeight(),
+                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getTileMap().getTileWidth(),
+                        obj.getY() + bounds.y * getTileMap().getTileHeight(),
                         obj.getWidth() > 0 ? obj.getWidth() : zoom,
                         obj.getHeight() > 0 ? obj.getHeight() : zoom);
             }

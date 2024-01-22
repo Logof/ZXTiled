@@ -20,6 +20,8 @@ public class ToolBar extends JToolBar {
     private static final Icon iconAddObject = Resources.getIcon("icon/gnome-list-add-22.png");
     private static final Icon iconRemoveObject = Resources.getIcon("icon/gnome-list-remove-22.png");
     private static final Icon iconMoveObject = Resources.getIcon("icon/gimp-tool-object-move-22.png");
+    private static final Icon ICON_PLAYER_START = Resources.getIcon("icon/start.png");
+    private static final Icon ICON_PLAYER_FINISH = Resources.getIcon("icon/finish.png");
 
     private AbstractButton paintButton;
     private AbstractButton eraseButton;
@@ -30,6 +32,8 @@ public class ToolBar extends JToolBar {
     private AbstractButton objectMoveButton;
     private AbstractButton objectAddButton;
     private AbstractButton objectRemoveButton;
+    private AbstractButton startPointButton;
+    private AbstractButton finishPointButton;
 
     @Getter
     private static final BrushPreview brushPreview = new BrushPreview();
@@ -46,6 +50,8 @@ public class ToolBar extends JToolBar {
         objectAddButton = createToggleButton(iconAddObject, "addobject", Constants.TOOL_ADD_OBJECT);
         objectRemoveButton = createToggleButton(iconRemoveObject, "removeobject", Constants.TOOL_REMOVE_OBJECT);
         objectMoveButton = createToggleButton(iconMoveObject, "moveobject", Constants.TOOL_MOVE_OBJECT);
+        startPointButton = createToggleButton(ICON_PLAYER_START, "startPointObject", "startPointObject");
+        finishPointButton = createToggleButton(ICON_PLAYER_FINISH, "finishPointButton", "finishPointButton");
 
         MapEventAdapter.addListener(moveButton);
         MapEventAdapter.addListener(paintButton);
@@ -54,6 +60,8 @@ public class ToolBar extends JToolBar {
         MapEventAdapter.addListener(eyedButton);
         MapEventAdapter.addListener(marqueeButton);
         MapEventAdapter.addListener(objectMoveButton);
+        MapEventAdapter.addListener(startPointButton);
+        MapEventAdapter.addListener(finishPointButton);
 
         this.setFloatable(true);
         this.add(moveButton);
@@ -62,6 +70,9 @@ public class ToolBar extends JToolBar {
         this.add(pourButton);
         this.add(eyedButton);
         this.add(marqueeButton);
+        this.add(Box.createRigidArea(new Dimension(5, 5)));
+        this.add(startPointButton);
+        this.add(finishPointButton);
         this.add(Box.createRigidArea(new Dimension(5, 5)));
         this.add(objectAddButton);
         this.add(objectRemoveButton);

@@ -14,7 +14,7 @@ package org.github.logof.zxtiled.io.xml;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
@@ -74,7 +74,7 @@ public class XMLMapWriter implements MapWriter {
         }
     }
 
-    private static void writeObjectGroup(ObjectGroup o, XMLWriter w, String wp)
+    private static void writeObjectGroup(ObjectsLayer o, XMLWriter w, String wp)
             throws IOException {
         Iterator<MapObject> itr = o.getObjects();
         while (itr.hasNext()) {
@@ -497,7 +497,7 @@ public class XMLMapWriter implements MapWriter {
 
         if (mapLayer.getClass() == SelectionLayer.class) {
             xmlWriter.startElement("selection");
-        } else if (mapLayer instanceof ObjectGroup) {
+        } else if (mapLayer instanceof ObjectsLayer) {
             xmlWriter.startElement("objectgroup");
         } else {
             xmlWriter.startElement("layer");
@@ -522,8 +522,8 @@ public class XMLMapWriter implements MapWriter {
 
         writeProperties(mapLayer.getProperties(), xmlWriter);
 
-        if (mapLayer instanceof ObjectGroup) {
-            writeObjectGroup((ObjectGroup) mapLayer, xmlWriter, wp);
+        if (mapLayer instanceof ObjectsLayer) {
+            writeObjectGroup((ObjectsLayer) mapLayer, xmlWriter, wp);
         } else if (mapLayer instanceof TileLayer) {
             final TileLayer tileLayer = (TileLayer) mapLayer;
             xmlWriter.writeAttribute("tileWidth", tileLayer.getTileWidth());

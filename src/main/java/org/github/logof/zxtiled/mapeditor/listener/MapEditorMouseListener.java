@@ -2,7 +2,7 @@ package org.github.logof.zxtiled.mapeditor.listener;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -161,9 +161,9 @@ public class MapEditorMouseListener implements MouseListener,
                         mapEditor.getMapView().repaintRegion(layer, oldArea);
                     }
                 }
-            } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
+            } else if (layer instanceof ObjectsLayer && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
-                ObjectGroup group = (ObjectGroup) layer;
+                ObjectsLayer group = (ObjectsLayer) layer;
                 Point pos = mapEditor.getMapView().screenToPixelCoords(
                         layer, event.getX(), event.getY());
                 MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
@@ -286,7 +286,7 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_ADD_OBJ:
-                    if (layer instanceof ObjectGroup) {
+                    if (layer instanceof ObjectsLayer) {
                         if (mapEditor.getMarqueeSelection() == null) {
                             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
                             mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
@@ -311,8 +311,8 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_REMOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        ObjectGroup group = (ObjectGroup) layer;
+                    if (layer instanceof ObjectsLayer) {
+                        ObjectsLayer group = (ObjectsLayer) layer;
                         Point pos = mapEditor.getMapView().screenToPixelCoords(
                                 layer, event.getX(), event.getY());
                         MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
@@ -325,29 +325,41 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_MOVE_OBJ:
-                    if (layer instanceof ObjectGroup) {
-                        Point pos = mapEditor.getMapView().screenToPixelCoords(
+                    if (layer instanceof ObjectsLayer) {
+                        Point point = mapEditor.getMapView().screenToPixelCoords(
                                 layer, event.getX(), event.getY());
                         if (mapEditor.getCurrentObject() == null) {
-                            ObjectGroup group = (ObjectGroup) layer;
-                            mapEditor.setCurrentObject(group.getObjectNear(pos.x, pos.y, mapEditor.getMapView()
+                            ObjectsLayer group = (ObjectsLayer) layer;
+                            mapEditor.setCurrentObject(group.getObjectNear(point.x, point.y, mapEditor.getMapView()
                                                                                                   .getZoom()));
                             if (mapEditor.getCurrentObject() == null) { // No object to move
                                 break;
                             }
-                            mouseLastPixelLocation = pos;
+                            mouseLastPixelLocation = point;
                             moveDist = new Point(0, 0);
                             break;
                         }
                         Point translation = new Point(
-                                pos.x - mouseLastPixelLocation.x,
-                                pos.y - mouseLastPixelLocation.y);
+                                point.x - mouseLastPixelLocation.x,
+                                point.y - mouseLastPixelLocation.y);
                         mapEditor.getCurrentObject().translate(translation.x, translation.y);
                         moveDist.translate(translation.x, translation.y);
-                        mouseLastPixelLocation = pos;
+                        mouseLastPixelLocation = point;
                         mapEditor.getMapView().repaint();
                     }
                     break;
+                case PS_START_OBJECT: {
+                    if (layer instanceof ObjectsLayer) {
+
+                    }
+                }
+                break;
+                case PS_FINISH_OBJECT: {
+                    if (layer instanceof ObjectsLayer) {
+
+                    }
+                }
+                break;
             }
         }
     }
@@ -366,7 +378,7 @@ public class MapEditorMouseListener implements MouseListener,
                 mapEditor.getCurrentBrush().endPaint();
             }
         } else if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MOVE_OBJ) {
-            if (layer instanceof ObjectGroup && mapEditor.getCurrentObject() != null &&
+            if (layer instanceof ObjectsLayer && mapEditor.getCurrentObject() != null &&
                     (moveDist.x != 0 || moveDist.y != 0)) {
                 mapEditor.getUndoSupport().postEdit(
                         new MoveObjectEdit(mapEditor.getCurrentObject(), moveDist));
@@ -409,7 +421,7 @@ public class MapEditorMouseListener implements MouseListener,
                             tile.y - (int) bounds.getHeight() / 2);
                 }
             } else if (mouseButton == MouseEvent.BUTTON1 &&
-                    layer instanceof ObjectGroup) {
+                    layer instanceof ObjectsLayer) {
                 // TODO: Fix this to use pixels in the first place
                 // (with optional snap to grid)
                 int w = mapEditor.getCurrentTileMap().getTileWidth();
@@ -419,7 +431,7 @@ public class MapEditorMouseListener implements MouseListener,
                         bounds.y * h,
                         bounds.width * w,
                         bounds.height * h);
-                ObjectGroup group = (ObjectGroup) layer;
+                ObjectsLayer group = (ObjectsLayer) layer;
                 mapEditor.getUndoSupport().postEdit(new AddObjectEdit(group, object));
                 group.addObject(object);
                 mapEditor.getMapView().repaint();

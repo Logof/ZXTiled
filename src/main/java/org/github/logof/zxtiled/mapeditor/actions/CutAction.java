@@ -1,7 +1,7 @@
 package org.github.logof.zxtiled.mapeditor.actions;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -29,8 +29,8 @@ public class CutAction extends AbstractAction {
             if (mapEditor.getCurrentLayer() instanceof TileLayer) {
                 mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds(),
                         mapLayer.getTileWidth(), mapLayer.getTileHeight()));
-            } else if (mapEditor.getCurrentLayer() instanceof ObjectGroup) {
-                mapEditor.setClipboardLayer(new ObjectGroup(mapEditor.getMarqueeSelection().getSelectedAreaBounds()));
+            } else if (mapEditor.getCurrentLayer() instanceof ObjectsLayer) {
+                mapEditor.setClipboardLayer(new ObjectsLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()));
             }
             mapEditor.getClipboardLayer().maskedCopyFrom(mapLayer, mapEditor.getMarqueeSelection().getSelectedArea());
 
