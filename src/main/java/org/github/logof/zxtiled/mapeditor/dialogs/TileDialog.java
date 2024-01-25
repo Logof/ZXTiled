@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.ImageCellRenderer;
@@ -59,7 +59,7 @@ public class TileDialog extends JDialog
     private static final String TILES_CREATED_MESSAGE = Resources.getString("action.tile.create.done.message");
     private static final String TILES_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
     private Tile currentTile;
-    private TileSet tileset;
+    private Tileset tileset;
     private final TileMap tileMap;
     private JList tileList;
     private JList imageList;
@@ -77,7 +77,7 @@ public class TileDialog extends JDialog
     private int currentImageIndex = -1;
 
 
-    public TileDialog(Dialog parent, TileSet tileset, TileMap tileMap) {
+    public TileDialog(Dialog parent, Tileset tileset, TileMap tileMap) {
         super(parent, DIALOG_TITLE + " '" + tileset.getName() + "'", true);
         location = "";
         this.tileset = tileset;    //unofficial
@@ -278,7 +278,7 @@ public class TileDialog extends JDialog
         queryImages();
     }
 
-    public void setTileset(TileSet set) {
+    public void setTileset(Tileset set) {
         tileset = set;
 
         if (tileset != null) {
@@ -371,7 +371,7 @@ public class TileDialog extends JDialog
     }
 
     private void updateEnabledState() {
-        boolean tilebmp = tileset.getTilebmpFile() != null;
+        boolean tilebmp = tileset.getTileBmpFile() != null;
         boolean tileSelected = currentTile != null;
         boolean atLeastOneSharedImage = tileset.getTotalImages() >= 1;
         boolean imageSelected = imageList.getSelectedValue() != null;

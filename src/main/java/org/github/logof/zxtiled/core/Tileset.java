@@ -16,20 +16,19 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
-import org.github.logof.zxtiled.mapeditor.util.TransparentImageFilter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
 import org.github.logof.zxtiled.mapeditor.util.cutter.TileCutter;
 import org.github.logof.zxtiled.util.NumberedSet;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
@@ -44,7 +43,7 @@ import java.util.Vector;
  *
  * <p>The other is the tile image.</p>
  */
-public class TileSet {
+public class Tileset {
     private String base;
     private final NumberedSet tiles;
     private final NumberedSet images;
@@ -57,21 +56,18 @@ public class TileSet {
     @Getter
     private int tilesPerRow;
     private String externalSource;
-    private File tilebmpFile;
+    private File tileBmpFile;
     @Getter
     private String name;
-    @Setter
-    @Getter
-    private Color transparentColor;
     private Properties defaultTileProperties;
     private Image tileSetImage;
     private final LinkedList<TilesetChangeListener> tilesetChangeListeners;
-    private final java.util.Map<Integer, String> imageSources = new HashMap<>();
+    private final Map<Integer, String> imageSources = new HashMap<>();
 
     /**
      * Default constructor
      */
-    public TileSet() {
+    public Tileset() {
         tiles = new NumberedSet();
         images = new NumberedSet();
         tileDimensions = new Rectangle();
@@ -85,23 +81,14 @@ public class TileSet {
      * @param imgFilename
      * @param cutter
      * @throws IOException
-     * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
+     * @see Tileset#importTileBitmap(BufferedImage, TileCutter)
      */
     public void importTileBitmap(String imgFilename, TileCutter cutter) throws IOException {
         setTilesetImageFilename(imgFilename);
 
         Image image = ImageIO.read(new File(imgFilename));
         if (image == null) {
-            throw new IOException("Failed to load " + tilebmpFile);
-        }
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-
-        if (transparentColor != null) {
-            int rgb = transparentColor.getRGB();
-            image = toolkit.createImage(
-                    new FilteredImageSource(image.getSource(),
-                            new TransparentImageFilter(rgb)));
+            throw new IOException("Failed to load " + tileBmpFile);
         }
 
         BufferedImage buffered = new BufferedImage(
@@ -145,24 +132,17 @@ public class TileSet {
      * Refreshes a tileset from a tileset image file.
      *
      * @throws IOException
-     * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
+     * @see Tileset#importTileBitmap(BufferedImage, TileCutter)
      */
     private void refreshImportedTileBitmap() throws IOException {
-        String imgFilename = tilebmpFile.getPath();
+        String imgFilename = tileBmpFile.getPath();
 
         Image image = ImageIO.read(new File(imgFilename));
         if (image == null) {
-            throw new IOException("Failed to load " + tilebmpFile);
+            throw new IOException("Failed to load " + tileBmpFile);
         }
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-
-        if (transparentColor != null) {
-            int rgb = transparentColor.getRGB();
-            image = toolkit.createImage(
-                    new FilteredImageSource(image.getSource(),
-                            new TransparentImageFilter(rgb)));
-        }
 
         BufferedImage buffered = new BufferedImage(
                 image.getWidth(null),
@@ -199,10 +179,10 @@ public class TileSet {
     }
 
     public void checkUpdate() throws IOException {
-        if (tilebmpFile != null &&
-                tilebmpFile.lastModified() > tileBmpFileLastModified) {
+        if (tileBmpFile != null &&
+                tileBmpFile.lastModified() > tileBmpFileLastModified) {
             refreshImportedTileBitmap();
-            tileBmpFileLastModified = tilebmpFile.lastModified();
+            tileBmpFileLastModified = tileBmpFile.lastModified();
         }
     }
 
@@ -214,10 +194,10 @@ public class TileSet {
      */
     public void setTilesetImageFilename(String name) {
         if (Objects.nonNull(name)) {
-            tilebmpFile = new File(name);
-            tileBmpFileLastModified = tilebmpFile.lastModified();
+            tileBmpFile = new File(name);
+            tileBmpFileLastModified = tileBmpFile.lastModified();
         } else {
-            tilebmpFile = null;
+            tileBmpFile = null;
         }
     }
 
@@ -259,7 +239,7 @@ public class TileSet {
      * to -1.
      *
      * @param tile the new tile to add.
-     * @see TileSet#addTile(Tile)
+     * @see Tileset#addTile(Tile)
      */
     public void addNewTile(Tile tile) {
         tile.setId(-1);
@@ -430,10 +410,10 @@ public class TileSet {
      * @return the filename of the tileset image, or <code>null</code> if this
      * tileset doesn't reference a tileset image
      */
-    public String getTilebmpFile() {
-        if (tilebmpFile != null) {
+    public String getTileBmpFile() {
+        if (tileBmpFile != null) {
             try {
-                return tilebmpFile.getCanonicalPath();
+                return tileBmpFile.getCanonicalPath();
             } catch (IOException e) {
             }
         }

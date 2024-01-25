@@ -3,7 +3,7 @@ package org.github.logof.zxtiled.io.c;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
 import java.awt.*;
@@ -102,7 +102,7 @@ public class HMapWriter implements MapWriter {
     }
 
     @Override
-    public void writeTileset(TileSet set, String filename) throws Exception {
+    public void writeTileset(Tileset set, String filename) throws Exception {
 
     }
 
@@ -112,7 +112,7 @@ public class HMapWriter implements MapWriter {
     }
 
     @Override
-    public void writeTileset(TileSet set, OutputStream out) throws Exception {
+    public void writeTileset(Tileset set, OutputStream out) throws Exception {
 
     }
 

@@ -47,10 +47,6 @@ public class EditMenu extends JMenu {
                 null,
                 Resources.getString("menu.edit.preferences.tooltip"),
                 null));
-        this.add(createMenuItem(Resources.getString("menu.edit.brush"),
-                null,
-                Resources.getString("menu.edit.brush.tooltip"),
-                "control B"));
 
         MapEventAdapter.addListener(copyMenuItem);
         MapEventAdapter.addListener(copyAllMenuItem);

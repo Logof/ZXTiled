@@ -14,8 +14,6 @@ public class MapMenu extends JMenu {
     private void initiation() {
         this.add(createMenuItem(Resources.getString("menu.map.resize"), null,
                 Resources.getString("menu.map.resize.tooltip")));
-        this.add(createMenuItem(Resources.getString("menu.map.search"), null,
-                Resources.getString("menu.map.search.tooltip")));
         this.addSeparator();
         this.add(createMenuItem(Resources.getString("menu.map.properties"), null,
                 Resources.getString("menu.map.properties.tooltip")));

@@ -12,6 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
+import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
@@ -24,6 +25,8 @@ import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
 
 public class NewMapDialog extends JDialog implements ActionListener {
+    private static final String TILESET_IMAGE_LABEL = Resources.getString("dialog.newtileset.image.label");
+    private static final String TILESET_NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
     private static final String DIALOG_TITLE = Resources.getString("dialog.newmap.title");
     private static final String MAP_SIZE_TITLE = Resources.getString("dialog.newmap.mapsize.title");
     private static final String TILE_SIZE_TITLE = Resources.getString("dialog.newmap.tilesize.title");
@@ -34,7 +37,7 @@ public class NewMapDialog extends JDialog implements ActionListener {
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String ORTHOGONAL_MAP_TYPE = Resources.getString("general.maptype.orthogonal");
     private final Preferences preferences = TiledConfiguration.node("dialog/newmap");
-    private TileMap newTileMap;
+    private TileMap tileMap;
     private IntegerSpinner mapWidth;
     private IntegerSpinner mapHeight;
     private IntegerSpinner tileWidth;
@@ -49,6 +52,29 @@ public class NewMapDialog extends JDialog implements ActionListener {
     }
 
     private void init() {
+        JLabel tilesetNameLabel = new JLabel(TILESET_NAME_LABEL);
+        JTextField tilesetName = new JTextField("UNTITLED_FILE");
+        tilesetNameLabel.setLabelFor(tilesetName);
+
+        JLabel tileBmpFileLabel = new JLabel(TILESET_IMAGE_LABEL);
+        JTextField tileBmpFileField = new JTextField(10);
+        tileBmpFileLabel.setLabelFor(tileBmpFileField);
+
+        JButton browseButton = new JButton("BROWSE_BUTTON");
+
+        JPanel tileBmpPathPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints bagConstraints = new GridBagConstraints();
+        bagConstraints.gridx = 0;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 1;
+        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        tileBmpPathPanel.add(tileBmpFileField, bagConstraints);
+        bagConstraints.gridx = 1;
+        bagConstraints.weightx = 0;
+        bagConstraints.fill = GridBagConstraints.NONE;
+        bagConstraints.insets = new Insets(0, 5, 0, 0);
+        tileBmpPathPanel.add(browseButton, bagConstraints);
+
         // Load dialog defaults
         int defaultMapWidth = preferences.getInt("mapWidth", 64);
         int defaultMapHeight = preferences.getInt("mapHeight", 64);
@@ -140,12 +166,12 @@ public class NewMapDialog extends JDialog implements ActionListener {
         gridBagConstraints.weightx = 1;
         miscPropPanel.add(mapTypeChooser, gridBagConstraints);
 
-        // Putting two size panels next to eachother
+        // Putting two side panels next to each other
         JPanel sizePanels = new JPanel();
         sizePanels.setLayout(new BoxLayout(sizePanels, BoxLayout.X_AXIS));
         sizePanels.add(mapScreenSize);
         sizePanels.add(Box.createRigidArea(new Dimension(5, 0)));
-        sizePanels.add(tileSize);
+        sizePanels.add(tileBmpPathPanel);
 
         // Application panel
         JPanel mainPanel = new JPanel();
@@ -163,20 +189,22 @@ public class NewMapDialog extends JDialog implements ActionListener {
 
     public TileMap create() {
         setVisible(true);
-        return newTileMap;
+        return tileMap;
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals(OK_BUTTON)) {
+    public void actionPerformed(ActionEvent actionEvent) {
+        if (actionEvent.getActionCommand().equals(OK_BUTTON)) {
             int width = mapWidth.intValue();
             int height = mapHeight.intValue();
-            int orientation = TileMap.MDO_ORTHOGONAL;
 
-            newTileMap = new TileMap(width * 15, height * 10);
-            newTileMap.setTileWidth(16);
-            newTileMap.setTileHeight(16);
-            newTileMap.addLayer();
-            newTileMap.setOrientation(orientation);
+            //int orientation = TileMap.MDO_ORTHOGONAL;
+
+            tileMap = new TileMap(width * 15, height * 10);
+            tileMap.setTileWidth(16);
+            tileMap.setTileHeight(16);
+            tileMap.addAllLayers();
+            tileMap.setMapType(MapTypeEnum.MAP_SIDE_SCROLLED);
+            //tileMap.setOrientation(orientation);
 
             // Save dialog options
 

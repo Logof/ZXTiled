@@ -16,7 +16,7 @@ import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Vector;
@@ -26,13 +26,13 @@ import java.util.Vector;
  */
 public class TileMergeHelper {
     private final TileMap myTileMap;
-    private final TileSet myTs;
+    private final Tileset myTs;
     private final Vector<Cell> cells;
 
     public TileMergeHelper(TileMap tileMap) {
         myTileMap = tileMap;
         cells = new Vector<>();
-        myTs = new TileSet();
+        myTs = new Tileset();
         myTs.setName("Merged Set");
     }
 
@@ -61,7 +61,7 @@ public class TileMergeHelper {
         return mergedLayer;
     }
 
-    public TileSet getSet() {
+    public Tileset getSet() {
         return myTs;
     }
 

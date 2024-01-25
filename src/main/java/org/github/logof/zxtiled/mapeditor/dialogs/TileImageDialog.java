@@ -13,7 +13,7 @@
 
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.ImageCellRenderer;
@@ -35,18 +35,19 @@ public class TileImageDialog extends JDialog implements ListSelectionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.tileimage.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
-    private final TileSet tileset;
+    private final Tileset tileset;
     private JList imageList;
-    private JButton okButton, cancelButton;
+    private JButton okButton;
+    private JButton cancelButton;
     private int imageId;
     private JLabel imageLabel;
     private int[] imageIds;
 
-    public TileImageDialog(Dialog parent, TileSet set) {
+    public TileImageDialog(Dialog parent, Tileset set) {
         this(parent, set, 0);
     }
 
-    public TileImageDialog(Dialog parent, TileSet set, int id) {
+    public TileImageDialog(Dialog parent, Tileset set, int id) {
         super(parent, DIALOG_TITLE, true);
         tileset = set;
         imageId = id;

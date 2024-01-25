@@ -15,11 +15,12 @@ package org.github.logof.zxtiled.io.xml;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
+import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.io.PluginLogger;
@@ -197,11 +198,11 @@ public class XMLMapTransformer implements MapReader {
         method.invoke(invokeVictim, conformingArguments);
     }
 
-    private void setOrientation(String o) {
-        if ("orthogonal".equalsIgnoreCase(o)) {
-            tileMap.setOrientation(TileMap.MDO_ORTHOGONAL);
+    private void setMapType(String string) {
+        if ("side_scrolled".equalsIgnoreCase(string)) {
+            tileMap.setMapType(MapTypeEnum.MAP_SIDE_SCROLLED);
         } else {
-            logger.warn("Unknown orientation '" + o + "'");
+            logger.warn("Unknown orientation '" + string + "'");
         }
     }
 
@@ -318,9 +319,9 @@ public class XMLMapTransformer implements MapReader {
         return img;
     }
 
-    private TileSet unmarshalTilesetFile(InputStream in, String filename)
+    private Tileset unmarshalTilesetFile(InputStream in, String filename)
             throws Exception {
-        TileSet set = null;
+        Tileset set = null;
         Node tsNode;
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -357,7 +358,7 @@ public class XMLMapTransformer implements MapReader {
         return set;
     }
 
-    private TileSet unmarshalTileset(Node t) throws Exception {
+    private Tileset unmarshalTileset(Node t) throws Exception {
         String source = getAttributeValue(t, "source");
         String basedir = getAttributeValue(t, "basedir");
         int firstGid = getAttribute(t, "firstgid", 1);
@@ -374,7 +375,7 @@ public class XMLMapTransformer implements MapReader {
             //    filename = makeUrl(source);
             //}
 
-            TileSet ext = null;
+            Tileset ext = null;
 
             try {
                 //just a little check for tricky people...
@@ -392,18 +393,13 @@ public class XMLMapTransformer implements MapReader {
 
             if (ext == null) {
                 logger.error("tileset " + source + " was not loaded correctly!");
-                ext = new TileSet();
+                ext = new Tileset();
             }
 
             ext.setFirstGid(firstGid);
             return ext;
         } else {
-            final int tileWidth = getAttribute(t, "tilewidth", tileMap != null ? tileMap.getTileWidth() : 0);
-            final int tileHeight = getAttribute(t, "tileheight", tileMap != null ? tileMap.getTileHeight() : 0);
-            final int tileSpacing = getAttribute(t, "spacing", 0);
-            final int tileMargin = getAttribute(t, "margin", 0);
-
-            TileSet set = new TileSet();
+            Tileset set = new Tileset();
 
             set.setName(getAttributeValue(t, "name"));
             set.setBaseDir(basedir);
@@ -423,7 +419,6 @@ public class XMLMapTransformer implements MapReader {
 
                     String imgSource = getAttributeValue(child, "source");
                     String id = getAttributeValue(child, "id");
-                    String transStr = getAttributeValue(child, "trans");
 
                     if (imgSource != null && id == null) {
                         // Not a shared image, but an entire set in one image
@@ -438,12 +433,6 @@ public class XMLMapTransformer implements MapReader {
                         }
 
                         logger.info("Importing " + sourcePath + "...");
-
-                        if (transStr != null) {
-                            int colorInt = Integer.parseInt(transStr, 16);
-                            Color color = new Color(colorInt);
-                            set.setTransparentColor(color);
-                        }
                         set.importTileBitmap(sourcePath, new BasicTileCutter());
                     } else {
                         Image image = unmarshalImage(child, tilesetBaseDir);
@@ -504,7 +493,7 @@ public class XMLMapTransformer implements MapReader {
         return obj;
     }
 
-    private Tile unmarshalTile(TileSet set, Node t, String baseDir)
+    private Tile unmarshalTile(Tileset set, Node t, String baseDir)
             throws Exception {
         Tile tile = null;
         NodeList children = t.getChildNodes();
@@ -624,7 +613,7 @@ public class XMLMapTransformer implements MapReader {
                                 tileId |= is.read() << 16;
                                 tileId |= is.read() << 24;
 
-                                TileSet ts = tileMap.findTileSetForTileGID(tileId);
+                                Tileset ts = tileMap.findTileSetForTileGID(tileId);
                                 if (ts != null) {
                                     ml.setTileAt(x, y,
                                             ts.getTile(tileId - ts.getFirstGid()));
@@ -641,7 +630,7 @@ public class XMLMapTransformer implements MapReader {
                          dataChild = dataChild.getNextSibling()) {
                         if ("tile".equalsIgnoreCase(dataChild.getNodeName())) {
                             int tileId = getAttribute(dataChild, "gid", -1);
-                            TileSet ts = tileMap.findTileSetForTileGID(tileId);
+                            Tileset ts = tileMap.findTileSetForTileGID(tileId);
                             if (ts != null) {
                                 ml.setTileAt(x, y,
                                         ts.getTile(tileId - ts.getFirstGid()));
@@ -729,9 +718,9 @@ public class XMLMapTransformer implements MapReader {
         }
 
         // Load other map attributes
-        String orientation = getAttributeValue(mapNode, "orientation");
-        int tileWidth = getAttribute(mapNode, "tilewidth", 0);
-        int tileHeight = getAttribute(mapNode, "tileheight", 0);
+        String mapType = getAttributeValue(mapNode, "type");
+        int tileWidth = getAttribute(mapNode, "tilewidth", 16);
+        int tileHeight = getAttribute(mapNode, "tileheight", 16);
 
         if (tileWidth > 0) {
             tileMap.setTileWidth(tileWidth);
@@ -740,15 +729,10 @@ public class XMLMapTransformer implements MapReader {
             tileMap.setTileHeight(tileHeight);
         }
 
-        int viewportWidth = getAttribute(mapNode, "viewportWidth", 640);
-        tileMap.setViewportWidth(viewportWidth);
-        int viewportHeight = getAttribute(mapNode, "viewportHeight", 480);
-        tileMap.setViewportHeight(viewportHeight);
-
-        if (orientation != null) {
-            setOrientation(orientation);
+        if (mapType != null) {
+            setMapType(mapType);
         } else {
-            setOrientation("orthogonal");
+            setMapType("side_scrolled");
         }
 
         // Load properties
@@ -836,7 +820,7 @@ public class XMLMapTransformer implements MapReader {
         return unmarshalledTileMap;
     }
 
-    public TileSet readTileset(String filename) throws Exception {
+    public Tileset readTileset(String filename) throws Exception {
         String xmlFile = filename;
 
         xmlPath = filename.substring(0,
@@ -849,7 +833,7 @@ public class XMLMapTransformer implements MapReader {
         return unmarshalTilesetFile(url.openStream(), filename);
     }
 
-    public TileSet readTileset(InputStream in) throws Exception {
+    public Tileset readTileset(InputStream in) throws Exception {
         // TODO: The MapReader interface should be changed...
         return unmarshalTilesetFile(in, ".");
     }

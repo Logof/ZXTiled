@@ -14,11 +14,12 @@ package org.github.logof.zxtiled.io.xml;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
+import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
@@ -226,7 +227,7 @@ public class XMLMapWriter implements MapWriter {
      *
      * @param filename the filename of the tileset file
      */
-    public void writeTileset(TileSet set, String filename) throws Exception {
+    public void writeTileset(Tileset set, String filename) throws Exception {
         OutputStream os = new FileOutputStream(filename);
         Writer writer = new OutputStreamWriter(os, StandardCharsets.UTF_8);
         XMLWriter xmlWriter = new XMLWriter(writer);
@@ -249,7 +250,7 @@ public class XMLMapWriter implements MapWriter {
         writer.flush();
     }
 
-    public void writeTileset(TileSet set, OutputStream out) throws Exception {
+    public void writeTileset(Tileset set, OutputStream out) throws Exception {
         Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
@@ -260,43 +261,40 @@ public class XMLMapWriter implements MapWriter {
         writer.flush();
     }
 
-    private void writeMap(TileMap tileMap, XMLWriter w, String wp) throws IOException {
-        w.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
-        w.startElement("map");
+    private void writeMap(TileMap tileMap, XMLWriter writer, String wp) throws IOException {
+        writer.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
+        writer.startElement("map");
 
-        w.writeAttribute("version", "1.0");
+        writer.writeAttribute("version", "1.0");
 
-        if (tileMap.getOrientation() == TileMap.MDO_ORTHOGONAL) {
-            w.writeAttribute("orientation", "orthogonal");
+        if (tileMap.getMapType() == MapTypeEnum.MAP_SIDE_SCROLLED) {
+            writer.writeAttribute("type", "side_scrolled");
         }
 
-        w.writeAttribute("width", tileMap.getWidth());
-        w.writeAttribute("height", tileMap.getHeight());
-        w.writeAttribute("tilewidth", tileMap.getTileWidth());
-        w.writeAttribute("tileheight", tileMap.getTileHeight());
+        writer.writeAttribute("width", tileMap.getWidth());
+        writer.writeAttribute("height", tileMap.getHeight());
+        writer.writeAttribute("tilewidth", tileMap.getTileWidth());
+        writer.writeAttribute("tileheight", tileMap.getTileHeight());
 
-        w.writeAttribute("eyeDistance", tileMap.getEyeDistance());
-        w.writeAttribute("viewportWidth", tileMap.getViewportWidth());
-        w.writeAttribute("viewportHeight", tileMap.getViewportHeight());
-
-        writeProperties(tileMap.getProperties(), w);
+        writeProperties(tileMap.getProperties(), writer);
 
         int firstgid = 1;
-        for (TileSet tileset : tileMap.getTilesets()) {
+        for (Tileset tileset : tileMap.getTilesets()) {
             tileset.setFirstGid(firstgid);
-            writeTilesetReference(tileset, w, wp);
+            writeTilesetReference(tileset, writer, wp);
             firstgid += tileset.getMaxTileId() + 1;
         }
 
-        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
-            w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
+        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false)) {
+            writer.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
+        }
         Iterator<MapLayer> ml = tileMap.getLayers();
         while (ml.hasNext()) {
             MapLayer layer = ml.next();
-            writeMapLayer(layer, w, wp);
+            writeMapLayer(layer, writer, wp);
         }
 
-        w.endElement();
+        writer.endElement();
     }
 
     /**
@@ -309,7 +307,7 @@ public class XMLMapWriter implements MapWriter {
      * @param wp  the working directory of the map
      * @throws java.io.IOException
      */
-    private void writeTilesetReference(TileSet set, XMLWriter w, String wp)
+    private void writeTilesetReference(Tileset set, XMLWriter w, String wp)
             throws IOException {
 
         String source = set.getSource();
@@ -367,38 +365,32 @@ public class XMLMapWriter implements MapWriter {
         w.endElement();
     }
 
-    private void writeTileset(TileSet tileset, XMLWriter w, String wp)
+    private void writeTileset(Tileset tileset, XMLWriter writer, String wp)
             throws IOException {
 
-        String tileBmpFile = tileset.getTilebmpFile();
+        String tileBmpFile = tileset.getTileBmpFile();
         String name = tileset.getName();
 
-        w.startElement("tileset");
-        w.writeAttribute("firstgid", tileset.getFirstGid());
+        writer.startElement("tileset");
+        writer.writeAttribute("firstgid", tileset.getFirstGid());
 
         if (name != null) {
-            w.writeAttribute("name", name);
+            writer.writeAttribute("name", name);
         }
 
         if (tileBmpFile != null) {
-            w.writeAttribute("tilewidth", tileset.getTileWidth());
-            w.writeAttribute("tileheight", tileset.getTileHeight());
+            writer.writeAttribute("tilewidth", tileset.getTileWidth());
+            writer.writeAttribute("tileheight", tileset.getTileHeight());
         }
 
         if (tileset.getBaseDir() != null) {
-            w.writeAttribute("basedir", tileset.getBaseDir());
+            writer.writeAttribute("basedir", tileset.getBaseDir());
         }
 
         if (tileBmpFile != null) {
-            w.startElement("image");
-            w.writeAttribute("source", getRelativePath(wp, tileBmpFile));
-
-            Color trans = tileset.getTransparentColor();
-            if (trans != null) {
-                w.writeAttribute("trans", Integer.toHexString(
-                        trans.getRGB()).substring(2));
-            }
-            w.endElement();
+            writer.startElement("image");
+            writer.writeAttribute("source", getRelativePath(wp, tileBmpFile));
+            writer.endElement();
 
             // Write tile properties when necessary.
             Iterator<Object> tileIterator = tileset.iterator();
@@ -407,10 +399,10 @@ public class XMLMapWriter implements MapWriter {
                 Tile tile = (Tile) tileIterator.next();
                 // todo: move the null check back into the iterator?
                 if (tile != null && !tile.getProperties().isEmpty()) {
-                    w.startElement("tile");
-                    w.writeAttribute("id", tile.getId());
-                    writeProperties(tile.getProperties(), w);
-                    w.endElement();
+                    writer.startElement("tile");
+                    writer.writeAttribute("id", tile.getId());
+                    writeProperties(tile.getProperties(), writer);
+                    writer.endElement();
                 }
             }
         } else {
@@ -441,11 +433,12 @@ public class XMLMapWriter implements MapWriter {
                     // path for that image. If we can't get hold of that, we'll
                     // need to embed it regardless...
                     if (!embedImageData && imagePath != null) {
-                        w.startElement("image");
-                        w.writeAttribute("source", getRelativePath(wp, imagePath));
-                        w.endElement();
-                    } else
-                        writeEmbeddedImage(id, image, w, tileset.getImageSource(id));
+                        writer.startElement("image");
+                        writer.writeAttribute("source", getRelativePath(wp, imagePath));
+                        writer.endElement();
+                    } else {
+                        writeEmbeddedImage(id, image, writer, tileset.getImageSource(id));
+                    }
                 }
             }
 
@@ -473,12 +466,12 @@ public class XMLMapWriter implements MapWriter {
                     Tile tile = tileIterator.next();
                     // todo: move this check back into the iterator?
                     if (tile != null) {
-                        writeTile(tile, tileset, wp, w);
+                        writeTile(tile, tileset, wp, writer);
                     }
                 }
             }
         }
-        w.endElement();
+        writer.endElement();
     }
 
     /**
@@ -618,7 +611,7 @@ public class XMLMapWriter implements MapWriter {
      * @param w    the writer to write to
      * @throws IOException when an io error occurs
      */
-    private void writeTile(Tile tile, TileSet set, String wp, XMLWriter w) throws IOException {
+    private void writeTile(Tile tile, Tileset set, String wp, XMLWriter w) throws IOException {
         w.startElement("tile");
         w.writeAttribute("id", tile.getId());
 

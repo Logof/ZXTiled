@@ -12,7 +12,7 @@ public class PointerStateManager {
 
     private static ToolSemantic currentToolSemantic;
 
-    private MapEditor mapEditor;
+    private final MapEditor mapEditor;
 
     public PointerStateManager(MapEditor mapEditor) {
         this.mapEditor = mapEditor;
@@ -31,6 +31,8 @@ public class PointerStateManager {
                 case PS_POINT:
                 case PS_POUR:
                 case PS_MARQUEE:
+                case PS_START_OBJECT:
+                case PS_FINISH_OBJECT:
                     mapEditor.getMapView().setCursor(Constants.CURSOR_DEFAULT);
                     break;
                 case PS_EYED:
@@ -38,7 +40,6 @@ public class PointerStateManager {
                     break;
             }
         }
-
         updateToolSemantics();
     }
 

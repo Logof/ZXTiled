@@ -13,7 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
@@ -47,10 +47,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     private static final String PROPERTIES_TITLE = Resources.getString("dialog.properties.default.title");
     private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
     private final MapLayer layer;
-    private TileSet newTileset;
+    private Tileset newTileset;
     private JTextField tilesetName;
     private JTextField tilebmpFile;
-    private JLabel tilebmpFileLabel, countUsedTilesLabel;
+    private JLabel tilebmpFileLabel;
     //TODO 16 или 48 тайлоа
     private JComboBox<String> countUsedTilesBox;
     private JButton browseButton;
@@ -77,7 +77,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         JLabel nameLabel = new JLabel(NAME_LABEL);
 
         tilebmpFileLabel = new JLabel(IMAGE_LABEL);
-        countUsedTilesLabel = new JLabel("Tiled used count: ");
 
         tilesetName = new JTextField(UNTITLED_FILE);
         tilebmpFile = new JTextField(10);
@@ -108,13 +107,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         bagConstraints.insets = new Insets(0, 5, 0, 0);
         tileBmpPathPanel.add(browseButton, bagConstraints);
 
-        // Combine transparent color label and button
-
         // Create the tile bitmap import setting panel
-
-        JPanel tilebmpPanel = new VerticalStaticJPanel();
-        tilebmpPanel.setLayout(new GridBagLayout());
-        tilebmpPanel.setBorder(BorderFactory.createCompoundBorder(
+        JPanel tileBmpPanel = new VerticalStaticJPanel();
+        tileBmpPanel.setLayout(new GridBagLayout());
+        tileBmpPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(FROM_TILESET_IMG_TITLE),
                 BorderFactory.createEmptyBorder(0, 5, 5, 5)));
 
@@ -127,14 +123,14 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         bagConstraints.gridwidth = 1;
         bagConstraints.insets = new Insets(5, 0, 0, 5);
         bagConstraints.fill = GridBagConstraints.NONE;
-        tilebmpPanel.add(tilebmpFileLabel, bagConstraints);
+        tileBmpPanel.add(tilebmpFileLabel, bagConstraints);
         bagConstraints.gridx = 1;
         bagConstraints.gridy = 3;
         bagConstraints.weightx = 1;
         bagConstraints.insets = new Insets(5, 0, 0, 0);
         bagConstraints.fill = GridBagConstraints.HORIZONTAL;
         bagConstraints.gridwidth = 3;
-        tilebmpPanel.add(tileBmpPathPanel, bagConstraints);
+        tileBmpPanel.add(tileBmpPathPanel, bagConstraints);
 
         bagConstraints.gridx = 2;
         bagConstraints.gridy = 4;
@@ -176,7 +172,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         mainPanel.add(miscPropPanel);
-        mainPanel.add(tilebmpPanel);
+        mainPanel.add(tileBmpPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(Box.createGlue());
         mainPanel.add(buttons);
@@ -206,7 +202,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
         });
     }
 
-    public TileSet create() {
+    public Tileset create() {
         setVisible(true);
         return newTileset;
     }
@@ -216,8 +212,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
     }
 
     private void createSetAndDispose() {
-        Vector<TileSet> tilesets = layer.getTileMap().getTilesets();
-        for (TileSet tileset : tilesets) {
+        Vector<Tileset> tilesets = layer.getTileMap().getTilesets();
+        for (Tileset tileset : tilesets) {
             if (tileset.getName().compareTo(tilesetName.getText()) == 0) {
                 newTileset = null;
                 JOptionPane.showMessageDialog(this, TILESET_NAME_ERR,
@@ -226,7 +222,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener {
             }
         }
 
-        newTileset = new TileSet();
+        newTileset = new Tileset();
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
 

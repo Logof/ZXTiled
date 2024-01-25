@@ -28,8 +28,8 @@ import java.util.Iterator;
 /**
  * An orthographic map view.
  */
-public class OrthoMapView extends MapView {
-    private final Polygon propPoly;
+public class SideScrelledMapView extends MapView {
+
 
     /**
      *
@@ -37,12 +37,8 @@ public class OrthoMapView extends MapView {
      *
      * @param tileMap the map to be displayed by this map view
      */
-    public OrthoMapView(TileMap tileMap) {
+    public SideScrelledMapView(TileMap tileMap) {
         super(tileMap);
-        propPoly = new Polygon();
-        propPoly.addPoint(0, 0);
-        propPoly.addPoint(12, 0);
-        propPoly.addPoint(12, 12);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -84,8 +80,8 @@ public class OrthoMapView extends MapView {
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        Point start = this.screenToTileCoords(layer, clipRect.x, clipRect.y);
-        Point end = this.screenToTileCoords(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
+        Point start = this.screenToTileCoordinates(layer, clipRect.x, clipRect.y);
+        Point end = this.screenToTileCoordinates(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
         end.x += 1;
         end.y += 3;
 
@@ -104,7 +100,6 @@ public class OrthoMapView extends MapView {
                     gridPoly.translate(gx, gy);
                     g2d.fillPolygon(gridPoly);
                     gridPoly.translate(-gx, -gy);
-                    //paintEdge(g, layer, gx, gy);
                 } else {
                     tile.draw(g2d, gx, gy, zoom);
                 }
@@ -186,7 +181,7 @@ public class OrthoMapView extends MapView {
         // transforming coordinates back and forth between screen and tile 
         // coordinates to quantise the given screen rectangle to coordinates bla 
         // that match the grid lines
-        Point startTile = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
+        Point startTile = screenToTileCoordinates(currentLayer, clipRect.x, clipRect.y);
 
         Point start = tileToScreenCoords(tileSize, startTile.x, startTile.y);
         Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
@@ -228,8 +223,8 @@ public class OrthoMapView extends MapView {
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        Point start = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
-        Point end = screenToTileCoords(currentLayer, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
+        Point start = screenToTileCoordinates(currentLayer, clipRect.x, clipRect.y);
+        Point end = screenToTileCoordinates(currentLayer, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
         end.x += 1;
         end.y += 1;
 
@@ -237,14 +232,14 @@ public class OrthoMapView extends MapView {
         for (int y = start.y; y < end.y; y++) {
             Point g = tileToScreenCoords(tileSize, start.x, y);
             for (int x = start.x; x < end.x; x++) {
-                String coords = "(" + x + "," + y + ")";
+                String coordinates = String.format("(%d, %d)", x, y);
                 Rectangle2D textSize =
-                        font.getStringBounds(coords, fontRenderContext);
+                        font.getStringBounds(coordinates, fontRenderContext);
 
                 int fx = g.x + (int) ((tileSize.width - textSize.getWidth()) / 2);
                 int fy = g.y + (int) ((tileSize.height + textSize.getHeight()) / 2);
 
-                g2d.drawString(coords, fx, fy);
+                g2d.drawString(coordinates, fx, fy);
                 g.x += tileSize.width;
             }
         }
@@ -267,7 +262,7 @@ public class OrthoMapView extends MapView {
         repaint(dirty);
     }
 
-    public Point screenToTileCoords(MapLayer layer, int x, int y) {
+    public Point screenToTileCoordinates(MapLayer layer, int x, int y) {
         Dimension tileSize = getLayerTileSize(layer);
         return new Point(x / tileSize.width, y / tileSize.height);
     }

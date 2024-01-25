@@ -35,9 +35,10 @@ public class LayerTableModel extends AbstractTableModel {
     private MultilayerPlane map;
     private final MapChangeListener listener = new MapChangeAdapter() {
         @Override
-        public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
-            if (e.getMap() != map)
+        public void layerChanged(MapChangedEvent e, MapLayerChangeEvent changeEvent) {
+            if (e.getMap() != map) {
                 return;
+            }
             int row = getRowCount() - e.getLayerIndex() - 1;
             fireTableRowsUpdated(row, row);
         }
@@ -48,7 +49,7 @@ public class LayerTableModel extends AbstractTableModel {
     }
 
     public LayerTableModel(MultilayerPlane map) {
-        map = null;
+        this.map = null;
         setMap(map);
     }
 
@@ -76,22 +77,10 @@ public class LayerTableModel extends AbstractTableModel {
     }
 
     public int getRowCount() {
-        if (map == null)
+        if (map == null) {
             return 0;
-
-        int totalLayers = map.getTotalLayers();
-        /*
-        for (int j = 0; j < map.getTotalLayers(); j++) {
-            if (map.getLayer(j).getClass() == SelectionLayer.class) {
-                if (TiledConfiguration.root().getBoolean("layer.showselection", true)) {
-                    totalLayers++;
-                }
-            } else {
-                totalLayers++;
-            }
         }
-        */
-        return totalLayers;
+        return map.getTotalLayers();
     }
 
     public int getColumnCount() {
@@ -101,13 +90,13 @@ public class LayerTableModel extends AbstractTableModel {
     public Class getColumnClass(int col) {
         switch (col) {
             case 0:
-                return Boolean.class;
             case 1:
                 return Boolean.class;
             case 2:
                 return String.class;
+            default:
+                return null;
         }
-        return null;
     }
 
     public Object getValueAt(int row, int col) {

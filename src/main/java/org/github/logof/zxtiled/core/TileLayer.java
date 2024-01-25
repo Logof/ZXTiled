@@ -12,7 +12,6 @@
 
 package org.github.logof.zxtiled.core;
 
-import lombok.Setter;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.HashMap;
@@ -28,10 +27,9 @@ public class TileLayer extends MapLayer {
     protected Tile[][] map;
     protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<>();
 
-    @Setter
-    private int tileWidth;
-    @Setter
-    private int tileHeight;
+    private int tileWidth = 16;
+
+    private int tileHeight = 16;
 
     /**
      * Default contructor.
@@ -263,42 +261,23 @@ public class TileLayer extends MapLayer {
     /**
      * Returns the tile at the specified position.
      *
-     * @param tx Tile-space x coordinate
-     * @param ty Tile-space y coordinate
-     * @return tile at position (tx, ty) or <code>null</code> when (tx, ty) is
+     * @param tileX Tile-space x coordinate
+     * @param tileY Tile-space y coordinate
+     * @return tile at position (tileX, tileY) or <code>null</code> when (tileX, tileY) is
      * outside this layer
      */
-    public Tile getTileAt(int tx, int ty) {
-        return (bounds.contains(tx, ty)) ?
-                map[ty - bounds.y][tx - bounds.x] : null;
-    }
-    
-    /**
-     * Replaces all occurances of the Tile <code>find</code> with the Tile
-     * <code>replace</code> in the entire layer
-     *
-     * @param find    the tile to replace
-     * @param replace the replacement tile
-     */
-    public void replaceTile(Tile find, Tile replace) {
-        if (cannotEdit())
-            return;
-
-        for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-            for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                if (getTileAt(x, y) == find) {
-                    setTileAt(x, y, replace);
-                }
-            }
-        }
+    public Tile getTileAt(int tileX, int tileY) {
+        return (bounds.contains(tileX, tileY)) ?
+                map[tileY - bounds.y][tileX - bounds.x] : null;
     }
 
     /**
      * @inheritDoc MapLayer#mergeOnto(MapLayer)
      */
     public void mergeOnto(MapLayer other) {
-        if (other.cannotEdit())
+        if (other.cannotEdit()) {
             return;
+        }
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
@@ -318,8 +297,9 @@ public class TileLayer extends MapLayer {
      * @see TileLayer#mergeOnto(MapLayer)
      */
     public void maskedMergeOnto(MapLayer other, Area mask) {
-        if (cannotEdit())
+        if (cannotEdit()) {
             return;
+        }
 
         Rectangle boundBox = mask.getBounds();
 
@@ -341,8 +321,9 @@ public class TileLayer extends MapLayer {
      * @see MapLayer#mergeOnto
      */
     public void copyFrom(MapLayer other) {
-        if (cannotEdit())
+        if (cannotEdit()) {
             return;
+        }
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
@@ -359,8 +340,9 @@ public class TileLayer extends MapLayer {
      * @see TileLayer#copyFrom(MapLayer)
      */
     public void maskedCopyFrom(MapLayer other, Area mask) {
-        if (cannotEdit())
+        if (cannotEdit()) {
             return;
+        }
 
         Rectangle boundBox = mask.getBounds();
 
@@ -381,23 +363,24 @@ public class TileLayer extends MapLayer {
      * @see MapLayer#mergeOnto
      */
     public void copyTo(MapLayer other) {
-        if (other.cannotEdit())
+        if (other.cannotEdit()) {
             return;
+        }
 
-        TileLayer tl;
+        TileLayer tileLayer;
         try {
-            tl = (TileLayer) other;
-        } catch (ClassCastException ccx) {
+            tileLayer = (TileLayer) other;
+        } catch (ClassCastException e) {
             return;    // can't copy to this layer
         }
 
         super.copyTo(other);
 
-        tl.tileWidth = tileWidth;
-        tl.tileHeight = tileHeight;
+        tileLayer.tileWidth = tileWidth;
+        tileLayer.tileHeight = tileHeight;
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                tl.setTileAt(x, y, getTileAt(x, y));
+                tileLayer.setTileAt(x, y, getTileAt(x, y));
             }
         }
 
@@ -442,8 +425,9 @@ public class TileLayer extends MapLayer {
      * @see MultilayerPlane#resize
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (getLocked())
+        if (getLocked()) {
             return;
+        }
 
         Tile[][] newMap = new Tile[height][width];
         HashMap<Object, Properties> newTileInstanceProperties = new HashMap<>();

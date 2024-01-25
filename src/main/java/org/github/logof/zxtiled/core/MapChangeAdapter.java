@@ -25,7 +25,7 @@ public class MapChangeAdapter implements MapChangeListener {
     public void layerMoved(MapChangedEvent e) {
     }
 
-    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
+    public void tilesetAdded(MapChangedEvent e, Tileset tileset) {
     }
 
     public void tilesetRemoved(MapChangedEvent e, int index) {

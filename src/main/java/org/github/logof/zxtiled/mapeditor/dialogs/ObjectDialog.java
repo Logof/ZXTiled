@@ -14,7 +14,6 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import org.github.logof.zxtiled.util.TiledConfiguration;
@@ -23,8 +22,6 @@ import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * A dialog for editing the name, type, size and properties of an object.
@@ -37,21 +34,17 @@ public class ObjectDialog extends PropertiesDialog {
     private static final String NAME_LABEL = Resources.getString("dialog.object.name.label");
     private static final String TYPE_LABEL = Resources.getString("dialog.object.type.label");
     private static final String IMAGE_LABEL = Resources.getString("dialog.object.image.label");
-    private static final String WIDTH_LABEL = Resources.getString("dialog.object.width.label");
-    private static final String HEIGHT_LABEL = Resources.getString("dialog.object.height.label");
     private static final String UNTITLED_OBJECT = Resources.getString("general.object.object");
     private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
     private static String path;
     private final MapObject object;
-    private final UndoableEditSupport undoSupport;
     private JTextField objectName, objectType;
     private JTextField objectImageSource;
-    private IntegerSpinner objectWidth, objectHeight;
+
 
     public ObjectDialog(JFrame parent, MapObject object, UndoableEditSupport undoSupport) {
         super(parent, object.getProperties(), undoSupport);
         this.object = object;
-        this.undoSupport = undoSupport;
         setTitle(DIALOG_TITLE);
         pack();
         setLocationRelativeTo(parent);
@@ -62,81 +55,72 @@ public class ObjectDialog extends PropertiesDialog {
         JLabel nameLabel = new JLabel(NAME_LABEL);
         JLabel typeLabel = new JLabel(TYPE_LABEL);
         JLabel imageLabel = new JLabel(IMAGE_LABEL);
-        JLabel widthLabel = new JLabel(WIDTH_LABEL);
-        JLabel heightLabel = new JLabel(HEIGHT_LABEL);
 
         objectName = new JTextField(UNTITLED_OBJECT);
         objectType = new JTextField();
         objectImageSource = new JTextField();
-        objectWidth = new IntegerSpinner(0, 0, 1024);
-        objectHeight = new IntegerSpinner(0, 0, 1024);
 
-        final JButton browseButton = new JButton(BROWSE_BUTTON);
-        browseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                String startLocation = path;
-                if (startLocation == null) {
-                    startLocation = TiledConfiguration.fileDialogStartLocation();
-                }
-                JFileChooser ch = new JFileChooser(startLocation);
-
-                int ret = ch.showOpenDialog(ObjectDialog.this);
-                if (ret == JFileChooser.APPROVE_OPTION) {
-                    path = ch.getSelectedFile().getAbsolutePath();
-                    objectImageSource.setText(path);
-                }
-            }
-        });
+        final JButton browseButton = getBrowseButton();
 
         // Combine browse button and image source text field
         JPanel imageSourcePanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        imageSourcePanel.add(objectImageSource, c);
-        c.gridx = 1;
-        c.weightx = 0;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(0, 5, 0, 0);
-        imageSourcePanel.add(browseButton, c);
+        GridBagConstraints bagConstraints = new GridBagConstraints();
+        bagConstraints.gridx = 0;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 1;
+        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        imageSourcePanel.add(objectImageSource, bagConstraints);
+        bagConstraints.gridx = 1;
+        bagConstraints.weightx = 0;
+        bagConstraints.fill = GridBagConstraints.NONE;
+        bagConstraints.insets = new Insets(0, 5, 0, 0);
+        imageSourcePanel.add(browseButton, bagConstraints);
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.EAST;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(5, 0, 0, 5);
-        miscPropPanel.add(nameLabel, c);
-        c.gridy = 1;
-        miscPropPanel.add(typeLabel, c);
-        c.gridy = 2;
-        miscPropPanel.add(imageLabel, c);
-        c.gridy = 3;
-        miscPropPanel.add(widthLabel, c);
-        c.gridy = 4;
-        miscPropPanel.add(heightLabel, c);
-        c.insets = new Insets(5, 0, 0, 0);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        c.gridy = 0;
-        c.weightx = 1;
-        miscPropPanel.add(objectName, c);
-        c.gridy = 1;
-        miscPropPanel.add(objectType, c);
-        c.gridy = 2;
-        miscPropPanel.add(imageSourcePanel, c);
-        c.gridy = 3;
-        miscPropPanel.add(objectWidth, c);
-        c.gridy = 4;
-        miscPropPanel.add(objectHeight, c);
+        bagConstraints = new GridBagConstraints();
+        bagConstraints.anchor = GridBagConstraints.EAST;
+        bagConstraints.gridx = 0;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 0;
+        bagConstraints.fill = GridBagConstraints.NONE;
+        bagConstraints.insets = new Insets(5, 0, 0, 5);
+        miscPropPanel.add(nameLabel, bagConstraints);
+        bagConstraints.gridy = 1;
+        miscPropPanel.add(typeLabel, bagConstraints);
+        bagConstraints.gridy = 2;
+        miscPropPanel.add(imageLabel, bagConstraints);
+        bagConstraints.insets = new Insets(5, 0, 0, 0);
+        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        bagConstraints.gridx = 1;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 1;
+        miscPropPanel.add(objectName, bagConstraints);
+        bagConstraints.gridy = 1;
+        miscPropPanel.add(objectType, bagConstraints);
+        bagConstraints.gridy = 2;
+        miscPropPanel.add(imageSourcePanel, bagConstraints);
 
         mainPanel.add(miscPropPanel, 0);
+    }
+
+    private JButton getBrowseButton() {
+        final JButton browseButton = new JButton(BROWSE_BUTTON);
+        browseButton.addActionListener(actionEvent -> {
+            String startLocation = path;
+            if (startLocation == null) {
+                startLocation = TiledConfiguration.fileDialogStartLocation();
+            }
+            JFileChooser ch = new JFileChooser(startLocation);
+
+            int ret = ch.showOpenDialog(ObjectDialog.this);
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                path = ch.getSelectedFile().getAbsolutePath();
+                objectImageSource.setText(path);
+            }
+        });
+        return browseButton;
     }
 
     public void updateInfo() {
@@ -144,15 +128,14 @@ public class ObjectDialog extends PropertiesDialog {
         objectName.setText(object.getName());
         objectType.setText(object.getType());
         objectImageSource.setText(object.getImageSource());
-        objectWidth.setValue(object.getWidth());
-        objectHeight.setValue(object.getHeight());
     }
 
     protected UndoableEdit commit() {
         CompoundEdit ce = new CompoundEdit();
         UndoableEdit propertyEdit = super.commit();
-        if (propertyEdit != null)
+        if (propertyEdit != null) {
             ce.addEdit(propertyEdit);
+        }
 
         // Make sure the changes to the object can be undone
         ce.addEdit(new ChangeObjectEdit(object));
@@ -160,8 +143,6 @@ public class ObjectDialog extends PropertiesDialog {
         object.setName(objectName.getText());
         object.setType(objectType.getText());
         object.setImageSource(objectImageSource.getText());
-        object.setWidth(objectWidth.intValue());
-        object.setHeight(objectHeight.intValue());
 
         ce.end();
 

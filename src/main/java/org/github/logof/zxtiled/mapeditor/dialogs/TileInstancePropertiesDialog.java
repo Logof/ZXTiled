@@ -32,8 +32,7 @@ import java.util.Properties;
 /**
  * @version $Id$
  */
-public class TileInstancePropertiesDialog extends JDialog
-        implements TableModelListener {
+public class TileInstancePropertiesDialog extends JDialog implements TableModelListener {
     private static final String DIALOG_TITLE = "Tile Properties"; // todo: Resource this
     private static final String APPLY_BUTTON = Resources.getString("general.button.apply");
     private static final String APPLY_TOOLTIP = "Apply properties to selected tiles"; // todo: Resource this

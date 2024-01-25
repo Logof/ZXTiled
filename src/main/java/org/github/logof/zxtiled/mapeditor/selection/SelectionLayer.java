@@ -12,6 +12,8 @@
 
 package org.github.logof.zxtiled.mapeditor.selection;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -27,6 +29,8 @@ import java.util.prefs.Preferences;
  * which it uses to determine tile dimensions and other things
  */
 public class SelectionLayer extends TileLayer {
+    @Setter
+    @Getter
     private Color highlightColor;
     private Tile selTile;
     private Area selection;
@@ -178,24 +182,6 @@ public class SelectionLayer extends TileLayer {
                 selection.add(a);
             }
         }
-    }
-
-    /**
-     * Returns the highlight color.
-     *
-     * @return A Color instance of the highlight color
-     */
-    public Color getHighlightColor() {
-        return highlightColor;
-    }
-
-    /**
-     * Sets the highlight color.
-     *
-     * @param c the new highlight color to use when drawing this selection
-     */
-    public void setHighlightColor(Color c) {
-        highlightColor = c;
     }
 
     private void fillRegion(Area region, Tile fill) {

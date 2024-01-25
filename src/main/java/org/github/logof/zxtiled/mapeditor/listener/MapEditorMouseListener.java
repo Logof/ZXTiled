@@ -64,11 +64,12 @@ public class MapEditorMouseListener implements MouseListener,
     public void mousePressed(MouseEvent mouseEvent) {
         MapLayer mapLayer = mapEditor.getCurrentLayer();
 
-        Point tile = mapEditor.getMapView().screenToTileCoords(mapLayer, mouseEvent.getX(), mouseEvent.getY());
+        Point tile = mapEditor.getMapView().screenToTileCoordinates(mapLayer, mouseEvent.getX(), mouseEvent.getY());
         mouseButton = mouseEvent.getButton();
         bMouseIsDown = true;
         bMouseIsDragging = false;
-        mousePressLocation = mapEditor.getMapView().screenToTileCoords(mapLayer, mouseEvent.getX(), mouseEvent.getY());
+        mousePressLocation = mapEditor.getMapView()
+                                      .screenToTileCoordinates(mapLayer, mouseEvent.getX(), mouseEvent.getY());
         mouseInitialPressLocation = mousePressLocation;
 
         if (mouseButton == MouseEvent.BUTTON2 ||
@@ -127,7 +128,7 @@ public class MapEditorMouseListener implements MouseListener,
             return;
         }
 
-        Point tile = mapEditor.getMapView().screenToTileCoords(layer, event.getX(), event.getY());
+        Point tile = mapEditor.getMapView().screenToTileCoordinates(layer, event.getX(), event.getY());
 
         if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
@@ -387,7 +388,7 @@ public class MapEditorMouseListener implements MouseListener,
 
         if (PointerStateManager.getCurrentPointerState() == PS_PAINT ||
                 PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ) {
-            Point tile = mapEditor.getMapView().screenToTileCoords(
+            Point tile = mapEditor.getMapView().screenToTileCoordinates(
                     layer, mouseEvent.getX(), mouseEvent.getY());
             int minx = Math.min(limp.x, tile.x);
             int miny = Math.min(limp.y, tile.y);
@@ -482,8 +483,9 @@ public class MapEditorMouseListener implements MouseListener,
         doMouse(mouseEvent);
 
         MapLayer layer = mapEditor.getCurrentLayer();
-        mousePressLocation = mapEditor.getMapView().screenToTileCoords(layer, mouseEvent.getX(), mouseEvent.getY());
-        Point tile = mapEditor.getMapView().screenToTileCoords(layer, mouseEvent.getX(), mouseEvent.getY());
+        mousePressLocation = mapEditor.getMapView()
+                                      .screenToTileCoordinates(layer, mouseEvent.getX(), mouseEvent.getY());
+        Point tile = mapEditor.getMapView().screenToTileCoordinates(layer, mouseEvent.getX(), mouseEvent.getY());
 
         mapEditor.updateTileCoordsLabel(tile);
         mapEditor.updateCursorHighlight(tile);
@@ -501,7 +503,7 @@ public class MapEditorMouseListener implements MouseListener,
         MapLayer currentLayer = mapEditor.getCurrentLayer();
         if (currentLayer != null) {
             tile = mapEditor.getMapView()
-                            .screenToTileCoords(mapEditor.getCurrentLayer(), mouseEvent.getX(), mouseEvent.getY());
+                            .screenToTileCoordinates(mapEditor.getCurrentLayer(), mouseEvent.getX(), mouseEvent.getY());
         }
         mapEditor.updateTileCoordsLabel(tile);
         mapEditor.updateCursorHighlight(tile);

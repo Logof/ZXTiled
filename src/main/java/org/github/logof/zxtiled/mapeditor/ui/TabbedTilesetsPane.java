@@ -17,7 +17,7 @@ package org.github.logof.zxtiled.mapeditor.ui;
 
 import org.github.logof.zxtiled.core.MapChangeAdapter;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
@@ -40,7 +40,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Map of tile sets to tile palette panels
      */
-    private final HashMap<TileSet, TilePalettePanel> tilePanels = new HashMap<>();
+    private final HashMap<Tileset, TilePalettePanel> tilePanels = new HashMap<>();
     private final MyChangeListener listener = new MyChangeListener();
     private final MapEditor mapEditor;
     private TileMap tileMap;
@@ -84,7 +84,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      *
      * @param tilesets the list of tilesets to create panels for
      */
-    private void recreateTabs(List<TileSet> tilesets) {
+    private void recreateTabs(List<Tileset> tilesets) {
         // Stop listening to the tile palette panels and their tilesets
         for (TilePalettePanel panel : tilePanels.values()) {
             panel.removeTileSelectionListener(this);
@@ -97,7 +97,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
         if (tilesets != null) {
             // Add a new tab for each tileset of the map
-            for (TileSet tileset : tilesets) {
+            for (Tileset tileset : tilesets) {
                 if (tileset != null) {
                     addTabForTileset(tileset);
                 }
@@ -110,7 +110,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      *
      * @param tileset the given tileset
      */
-    private void addTabForTileset(TileSet tileset) {
+    private void addTabForTileset(Tileset tileset) {
         tileset.addTilesetChangeListener(listener);
         TilePalettePanel tilePanel = new TilePalettePanel();
         tilePanel.setTileset(tileset);
@@ -139,7 +139,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener {
 
         @Override
-        public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
+        public void tilesetAdded(MapChangedEvent e, Tileset tileset) {
             addTabForTileset(tileset);
         }
 
@@ -147,7 +147,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         public void tilesetRemoved(MapChangedEvent e, int index) {
             JScrollPane scroll = (JScrollPane) getComponentAt(index);
             TilePalettePanel panel = (TilePalettePanel) scroll.getViewport().getView();
-            TileSet set = panel.getTileset();
+            Tileset set = panel.getTileset();
             panel.removeTileSelectionListener(TabbedTilesetsPane.this);
             set.removeTilesetChangeListener(listener);
             tilePanels.remove(set);
@@ -183,7 +183,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         }
 
         public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
-            TileSet set = event.getTileset();
+            Tileset set = event.getTileset();
             int index = tileMap.getTilesets().indexOf(set);
 
             setTitleAt(index, newName);

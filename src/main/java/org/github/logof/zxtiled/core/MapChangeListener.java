@@ -51,7 +51,7 @@ public interface MapChangeListener extends EventListener {
     /// This event is fired every time the name of a layer is changed.
     void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent);
 
-    void tilesetAdded(MapChangedEvent e, TileSet tileset);
+    void tilesetAdded(MapChangedEvent e, Tileset tileset);
 
     void tilesetRemoved(MapChangedEvent e, int index);
 

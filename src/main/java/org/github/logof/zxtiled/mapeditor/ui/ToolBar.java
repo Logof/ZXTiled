@@ -110,6 +110,8 @@ public class ToolBar extends JToolBar {
         objectAddButton.setSelected(state == PointerStateEnum.PS_ADD_OBJ);
         objectRemoveButton.setSelected(state == PointerStateEnum.PS_REMOVE_OBJ);
         objectMoveButton.setSelected(state == PointerStateEnum.PS_MOVE_OBJ);
+        startPointButton.setSelected(state == PointerStateEnum.PS_START_OBJECT);
+        finishPointButton.setSelected(state == PointerStateEnum.PS_FINISH_OBJECT);
     }
 
     public void updateTileLayerOperations(boolean isEnable) {

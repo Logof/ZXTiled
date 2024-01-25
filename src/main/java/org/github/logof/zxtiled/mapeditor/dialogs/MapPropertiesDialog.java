@@ -7,9 +7,7 @@ package org.github.logof.zxtiled.mapeditor.dialogs;
 
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.ui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.ui.VerticalStaticJPanel;
-import org.github.logof.zxtiled.mapeditor.undo.MapViewportSettingsEdit;
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
@@ -20,15 +18,10 @@ import java.awt.*;
  * @author count
  */
 public class MapPropertiesDialog extends PropertiesDialog {
-    private static final String DIALOG_TITLE = Resources.getString("dialog.mapproperites.title");
-    private static final String WIDTH_LABEL = Resources.getString("dialog.mapproperites.viewport.width.label");
-    private static final String HEIGHT_LABEL = Resources.getString("dialog.mapproperites.viewport.height.label");
-    private final TileMap tileMap;
-    private IntegerSpinner viewportWidthSpinner, viewportHeightSpinner;
+    private static final String DIALOG_TITLE = Resources.getString("dialog.map.properties.title");
 
     public MapPropertiesDialog(JFrame parent, TileMap tileMap, UndoableEditSupport undoSupport) {
         super(parent, tileMap.getProperties(), undoSupport, false);
-        this.tileMap = tileMap;
         init();
         setTitle(DIALOG_TITLE);
         pack();
@@ -37,41 +30,23 @@ public class MapPropertiesDialog extends PropertiesDialog {
 
     public void init() {
         super.init();
-        JLabel viewportWidthLabel = new JLabel(WIDTH_LABEL);
-        JLabel viewportHeightLabel = new JLabel(HEIGHT_LABEL);
-
-        viewportWidthSpinner = new IntegerSpinner(0, 0, 4096);
-        viewportHeightSpinner = new IntegerSpinner(0, 0, 4096);
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.EAST;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(5, 0, 0, 5);
-        miscPropPanel.add(viewportWidthLabel, c);
-        c.gridy++;
-        miscPropPanel.add(viewportHeightLabel, c);
-        c.insets = new Insets(5, 0, 0, 0);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        c.gridy = 0;
-        c.weightx = 1;
-        miscPropPanel.add(viewportWidthSpinner, c);
-        c.gridy++;
-        miscPropPanel.add(viewportHeightSpinner, c);
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.anchor = GridBagConstraints.EAST;
+        gridBagConstraints.insets = new Insets(5, 0, 0, 0);
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 1;
 
         mainPanel.add(miscPropPanel, 0);
     }
 
     public void updateInfo() {
         super.updateInfo();
-        viewportWidthSpinner.setValue(tileMap.getViewportWidth());
-        viewportHeightSpinner.setValue(tileMap.getViewportHeight());
     }
 
     protected UndoableEdit commit() {
@@ -79,23 +54,11 @@ public class MapPropertiesDialog extends PropertiesDialog {
 
         UndoableEdit propertyEdit = super.commit();
 
-        boolean viewportDimensionsChanged =
-                viewportWidthSpinner.intValue() != tileMap.getViewportWidth()
-                        || viewportHeightSpinner.intValue() != tileMap.getViewportHeight();
-
-        if (!viewportDimensionsChanged)
-            return propertyEdit;
-
-        CompoundEdit ce = new CompoundEdit();
-        if (propertyEdit != null)
-            ce.addEdit(propertyEdit);
-
-        ce.addEdit(new MapViewportSettingsEdit(tileMap));
-        tileMap.setViewportWidth(viewportWidthSpinner.intValue());
-        tileMap.setViewportHeight(viewportHeightSpinner.intValue());
-
-        ce.end();
-
-        return ce;
+        CompoundEdit compoundEdit = new CompoundEdit();
+        if (propertyEdit != null) {
+            compoundEdit.addEdit(propertyEdit);
+        }
+        compoundEdit.end();
+        return compoundEdit;
     }
 }

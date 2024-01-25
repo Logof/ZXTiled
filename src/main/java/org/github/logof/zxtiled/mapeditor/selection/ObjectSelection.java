@@ -5,43 +5,37 @@
 
 package org.github.logof.zxtiled.mapeditor.selection;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectsLayer;
 
 /**
  * @author upachler
  */
+@Getter
 public class ObjectSelection implements Selection {
-    private final ObjectsLayer layer;
-    private final MapObject object;
+    private final ObjectsLayer objectsLayer;
+    private final MapObject mapObject;
 
-    public ObjectSelection(ObjectsLayer layer, MapObject o) {
-        this.layer = layer;
-        this.object = o;
+    public ObjectSelection(ObjectsLayer objectsLayer, MapObject mapObject) {
+        this.objectsLayer = objectsLayer;
+        this.mapObject = mapObject;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ObjectSelection))
+    public boolean equals(Object object) {
+        if (!(object instanceof ObjectSelection)) {
             return false;
-        ObjectSelection os = (ObjectSelection) o;
-        return os.getLayer() == layer && os.getObject() == object;
+        }
+        ObjectSelection objectSelection = (ObjectSelection) object;
+        return objectSelection.getObjectsLayer() == objectsLayer && objectSelection.getMapObject() == mapObject;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + (this.layer != null ? this.layer.hashCode() : 0);
-        hash = 97 * hash + (this.object != null ? this.object.hashCode() : 0);
+        hash = 97 * hash + (this.objectsLayer != null ? this.objectsLayer.hashCode() : 0);
+        hash = 97 * hash + (this.mapObject != null ? this.mapObject.hashCode() : 0);
         return hash;
     }
-
-    public ObjectsLayer getLayer() {
-        return layer;
-    }
-
-    public MapObject getObject() {
-        return object;
-    }
-
 }

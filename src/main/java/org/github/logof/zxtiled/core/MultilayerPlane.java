@@ -30,7 +30,7 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * Default constructor.
      */
     public MultilayerPlane() {
-        layers = new Vector<MapLayer>();
+        layers = new Vector<>();
         bounds = new Rectangle();
     }
 
@@ -226,7 +226,7 @@ public class MultilayerPlane implements Iterable<MapLayer> {
     public MapLayer getLayer(int i) {
         try {
             return layers.get(i);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
         return null;
     }

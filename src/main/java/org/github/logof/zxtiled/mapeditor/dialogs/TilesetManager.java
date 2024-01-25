@@ -18,11 +18,9 @@ import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.MapHelper;
-import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
 import org.github.logof.zxtiled.mapeditor.util.TilesetTableModel;
@@ -153,8 +151,8 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         int selectedRow = tilesetTable.getSelectedRow();
-        Vector<TileSet> tilesets = tileMap.getTilesets();
-        TileSet set = null;
+        Vector<Tileset> tilesets = tileMap.getTilesets();
+        Tileset set = null;
         try {
             set = tilesets.get(selectedRow);
         } catch (IndexOutOfBoundsException ignored) {
@@ -188,22 +186,12 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
                         JOptionPane.ERROR_MESSAGE);
             }
         } else if (command.equals(SAVE_AS_BUTTON)) {
-            JFileChooser ch = new ConfirmingFileChooser(tileMap.getFilename());
-
-            MapWriter[] writers = PluginClassLoader.getInstance().getWriters();
-            for (MapWriter writer : writers) {
-                try {
-                    ch.addChoosableFileFilter(new TiledFileFilter(
-                            writer.getFilter(), writer.getName()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            ch.addChoosableFileFilter
+            JFileChooser fileChooser = new ConfirmingFileChooser(tileMap.getFilename());
+            fileChooser.addChoosableFileFilter
                       (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
-            int ret = ch.showSaveDialog(this);
+            int ret = fileChooser.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
-                String filename = ch.getSelectedFile().getAbsolutePath();
+                String filename = fileChooser.getSelectedFile().getAbsolutePath();
                 try {
                     MapHelper.saveTileset(set, filename);
                     set.setSource(filename);
@@ -242,7 +230,7 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         tilesetTable.repaint();
     }
 
-    private int checkSetUsage(TileSet tileset) {
+    private int checkSetUsage(Tileset tileset) {
         int used = 0;
         Iterator tileIterator = tileset.iterator();
 
@@ -276,9 +264,9 @@ public class TilesetManager extends JDialog implements ActionListener, ListSelec
         moveDownButton.setEnabled(selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1);
 
         Vector tilesets = tileMap.getTilesets();
-        TileSet set = null;
+        Tileset set = null;
         try {
-            set = (TileSet) tilesets.get(selectedRow);
+            set = (Tileset) tilesets.get(selectedRow);
         } catch (IndexOutOfBoundsException e) {
         }
 

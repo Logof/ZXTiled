@@ -31,8 +31,8 @@ public class NewMapAction extends AbstractFileAction {
     }
 
     protected void doPerformAction() {
-        NewMapDialog nmd = new NewMapDialog(editor.getAppFrame());
-        TileMap newTileMap = nmd.create();
+        NewMapDialog newMapDialog = new NewMapDialog(editor.getAppFrame());
+        TileMap newTileMap = newMapDialog.create();
         if (newTileMap != null) {
             editor.setCurrentTileMap(newTileMap);
         }

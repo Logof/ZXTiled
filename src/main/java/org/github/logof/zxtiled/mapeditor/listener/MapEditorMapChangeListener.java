@@ -1,7 +1,7 @@
 package org.github.logof.zxtiled.mapeditor.listener;
 
 import org.github.logof.zxtiled.core.MapChangeListener;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
@@ -44,7 +44,7 @@ public class MapEditorMapChangeListener implements MapChangeListener {
     }
 
     @Override
-    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
+    public void tilesetAdded(MapChangedEvent e, Tileset tileset) {
 
     }
 

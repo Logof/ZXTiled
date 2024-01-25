@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.mapeditor.ui;
 import lombok.Getter;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileRegionSelectionEvent;
@@ -37,7 +37,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                                                         TilesetChangeListener {
     private static final int TILES_PER_ROW = 4;
     @Getter
-    private TileSet tileset;
+    private Tileset tileset;
     private final List<TileSelectionListener> tileSelectionListeners;
     private Vector<Tile> tilesetMap;
     private Rectangle selection;
@@ -165,7 +165,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      *
      * @param tileset the tileset to be displayed by this palette panel
      */
-    public void setTileset(TileSet tileset) {
+    public void setTileset(Tileset tileset) {
         // Remove any existing listener
         if (this.tileset != null) {
             this.tileset.removeTilesetChangeListener(this);

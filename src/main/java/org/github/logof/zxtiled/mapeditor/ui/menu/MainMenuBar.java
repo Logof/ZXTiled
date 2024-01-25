@@ -17,7 +17,6 @@ public class MainMenuBar extends JMenuBar {
         SelectMenu selectMenu = new SelectMenu();
         viewMenu = new ViewMenu();
         MapMenu mapMenu = new MapMenu();
-        LayerMenu layerMenu = new LayerMenu();
         TilesetMenu tilesetMenu = new TilesetMenu();
         HelpMenu helpMenu = new HelpMenu();
 
@@ -26,7 +25,6 @@ public class MainMenuBar extends JMenuBar {
         this.add(selectMenu);
         this.add(viewMenu);
         this.add(mapMenu);
-        this.add(layerMenu);
         this.add(tilesetMenu);
         this.add(helpMenu);
     }

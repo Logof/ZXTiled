@@ -25,8 +25,8 @@ import java.util.logging.Logger;
  */
 public class LayerPropertiesDialog extends PropertiesDialog {
     /* LANGUAGE PACK */
-    private static final String DIALOG_TITLE = Resources.getString("dialog.layerproperites.title");
-    private static final String NAME_LABEL = Resources.getString("dialog.layerproperites.name.label");
+    private static final String DIALOG_TITLE = Resources.getString("dialog.layerproperties.title");
+    private static final String NAME_LABEL = Resources.getString("dialog.layerproperties.name.label");
     private static final String WIDTH_LABEL = Resources.getString("dialog.layerproperties.width.label");
     private static final String HEIGHT_LABEL = Resources.getString("dialog.layerproperties.height.label");
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.layerproperties.tilewidth.label");

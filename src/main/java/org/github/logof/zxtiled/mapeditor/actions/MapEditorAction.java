@@ -18,14 +18,6 @@ public class MapEditorAction {
     public static Action selectAllAction;
     public static Action inverseAction;
     public static Action cancelSelectionAction;
-    public static Action addLayerAction;
-    public static Action cloneLayerAction;
-    public static Action deleteLayerAction;
-    public static Action moveLayerDownAction;
-    public static Action moveLayerUpAction;
-    public static Action mergeLayerDownAction;
-    public static Action mergeAllLayersAction;
-    public static Action addObjectGroupAction;
     public static Action showLayerPropertiesAction;
 
     public static NewMapAction newMapAction;
@@ -51,14 +43,6 @@ public class MapEditorAction {
         selectAllAction = new SelectAllAction(mapEditor);
         cancelSelectionAction = new CancelSelectionAction(mapEditor);
         inverseAction = new InverseSelectionAction(mapEditor);
-        addLayerAction = new AddLayerAction(mapEditor);
-        cloneLayerAction = new CloneLayerAction(mapEditor);
-        deleteLayerAction = new DeleteLayerAction(mapEditor);
-        moveLayerUpAction = new MoveLayerUpAction(mapEditor);
-        moveLayerDownAction = new MoveLayerDownAction(mapEditor);
-        mergeLayerDownAction = new MergeLayerDownAction(mapEditor);
-        mergeAllLayersAction = new MergeAllLayersAction(mapEditor);
-        addObjectGroupAction = new AddObjectGroupAction(mapEditor);
         showLayerPropertiesAction = new ShowLayerPropertiesAction(mapEditor);
 
         // File menu

@@ -32,38 +32,24 @@ import java.util.Vector;
  * @version $Id$
  */
 public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
-    /**
-     * Orthogonal.
-     */
-    public static final int MDO_ORTHOGONAL = 1;
-
     private final Vector<MapLayer> specialLayers;
     @Getter
-    private final Vector<TileSet> tilesets;
-
+    private final Vector<Tileset> tilesets;
     private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
     @Getter
     private int tileWidth = 16;
     @Getter
     private int tileHeight = 16;
-
     @Setter
     @Getter
-    private int orientation = MDO_ORTHOGONAL;
+    private MapTypeEnum mapType = MapTypeEnum.MAP_SIDE_SCROLLED;
+
     @Setter
     @Getter
     private Properties properties;
     @Getter
     @Setter
     private String filename;
-    @Getter
-    private final float eyeDistance = 100;
-    @Setter
-    @Getter
-    private int viewportWidth = 640;
-    @Setter
-    @Getter
-    private int viewportHeight = 480;
 
     /**
      * @param width  the map width in tiles.
@@ -162,7 +148,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      *
      * @param tileset the new tileset
      */
-    protected void fireTilesetAdded(TileSet tileset) {
+    protected void fireTilesetAdded(Tileset tileset) {
         Iterator<MapChangeListener> iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
 
@@ -217,9 +203,18 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      */
     public void addLayer() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName(Resources.getString("general.layer.layer") +
-                " " + super.getTotalLayers());
+        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
         insertLayer(getTotalLayers(), layer);
+    }
+
+    public void addAllLayers() {
+        MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
+        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
+        insertLayer(getTotalLayers(), layer);
+
+        ObjectsLayer objectsLayer = new ObjectsLayer(this);
+        objectsLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
+        insertLayer(getTotalLayers(), objectsLayer);
     }
 
     public void insertLayer(int index, MapLayer layer) {
@@ -255,7 +250,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      *
      * @param tileset a tileset to add
      */
-    public void addTileset(TileSet tileset) {
+    public void addTileset(Tileset tileset) {
         if (tileset == null || tilesets.contains(tileset)) {
             return;
         }
@@ -265,7 +260,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Removes a {@link TileSet} from the map, and removes any tiles in the set
+     * Removes a {@link Tileset} from the map, and removes any tiles in the set
      * from the map layers. A {@link MapChangedEvent} is fired when all
      * processing is complete.
      *
@@ -273,7 +268,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * @throws LayerLockedException when the tileset is in use on a locked
      *                              layer
      */
-    public void removeTileset(TileSet tileset) throws LayerLockedException {
+    public void removeTileset(Tileset tileset) throws LayerLockedException {
         // Sanity check
         final int tilesetIndex = tilesets.indexOf(tileset);
         if (tilesetIndex == -1) {
@@ -281,9 +276,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         }
 
         // Go through the map and remove any instances of the tiles in the set
-        Iterator<Object> tileIterator = tileset.iterator();
+        Iterator<Tile> tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
-            Tile tile = (Tile) tileIterator.next();
+            Tile tile = tileIterator.next();
             Iterator<MapLayer> layerIterator = getLayers();
             while (layerIterator.hasNext()) {
                 MapLayer mapLayer = layerIterator.next();
@@ -314,11 +309,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         if (specialLayers.remove(layer)) {
             fireMapChanged();
         }
-    }
-
-    public void removeAllSpecialLayers() {
-        specialLayers.clear();
-        fireMapChanged();
     }
 
     /**
@@ -418,9 +408,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * @return the tileset containing the tile with the given global tile id,
      * or <code>null</code> when no such tileset exists
      */
-    public TileSet findTileSetForTileGID(int gid) {
-        TileSet has = null;
-        for (TileSet tileset : tilesets) {
+    public Tileset findTileSetForTileGID(int gid) {
+        Tileset has = null;
+        for (Tileset tileset : tilesets) {
             if (tileset.getFirstGid() <= gid) {
                 has = tileset;
             }
@@ -468,7 +458,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     public int getTileHeightMax() {
         int maxHeight = tileHeight;
 
-        for (TileSet tileset : tilesets) {
+        for (Tileset tileset : tilesets) {
             int height = tileset.getTileHeight();
             if (height > maxHeight) {
                 maxHeight = height;
@@ -483,7 +473,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      */
     public void swapTileSets(int index0, int index1) {
         if (index0 == index1) return;
-        TileSet set = tilesets.get(index0);
+        Tileset set = tilesets.get(index0);
         tilesets.set(index0, tilesets.get(index1));
         tilesets.set(index1, set);
 

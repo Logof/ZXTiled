@@ -35,13 +35,13 @@ public class Tile {
     @Setter
     @Getter
     private Properties properties;
-    private TileSet tileset;
+    private Tileset tileset;
 
     public Tile() {
         properties = new Properties();
     }
 
-    public Tile(TileSet set) {
+    public Tile(Tileset set) {
         this();
         setTileSet(set);
     }
@@ -85,7 +85,7 @@ public class Tile {
      *
      * @param tileset
      */
-    public void setTileSet(TileSet tileset) {
+    public void setTileSet(Tileset tileset) {
         if (this.tileset != null && this.tileset != tileset) {
             setImage(tileset.addImage(getImage()));
         } else {
@@ -234,7 +234,6 @@ public class Tile {
                 return scaledImage;
             }
         }
-
         return null;
     }
 
