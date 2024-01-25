@@ -10,6 +10,10 @@ public class ProjectPanel extends AbstractPanel {
         super(parentPanel);
     }
 
+    public ProjectPanel(JDialog parentDialog) {
+        super(parentDialog);
+    }
+
     @Override
     protected void initComponent() {
         setLayout(new GridBagLayout());
