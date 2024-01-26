@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.mapeditor.actions;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.dialogs.NewMapDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.NewMapDialog;
 import javax.swing.*;
 
 /**

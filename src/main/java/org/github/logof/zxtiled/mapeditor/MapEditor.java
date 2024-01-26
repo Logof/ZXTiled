@@ -28,14 +28,23 @@ import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
-import org.github.logof.zxtiled.mapeditor.dialogs.AboutDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.ConfigurationDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.MapPropertiesDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.NewTilesetDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.ResizeDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.TilesetManager;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
+import org.github.logof.zxtiled.mapeditor.gui.ApplicationFrame;
+import org.github.logof.zxtiled.mapeditor.gui.FloatablePanel;
+import org.github.logof.zxtiled.mapeditor.gui.SmartSplitPane;
+import org.github.logof.zxtiled.mapeditor.gui.StatusBar;
+import org.github.logof.zxtiled.mapeditor.gui.TabbedTilesetsPane;
+import org.github.logof.zxtiled.mapeditor.gui.TilePalettePanel;
+import org.github.logof.zxtiled.mapeditor.gui.TilesetPanel;
+import org.github.logof.zxtiled.mapeditor.gui.ToolBar;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.AboutDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.ConfigurationDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.MapPropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.NewTilesetDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.PropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.ResizeDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.TilesetManager;
+import org.github.logof.zxtiled.mapeditor.gui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorActionListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorComponentListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorListSelectionListener;
@@ -44,15 +53,6 @@ import org.github.logof.zxtiled.mapeditor.listener.MapEditorMouseListener;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
-import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
-import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
-import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
-import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
-import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
-import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
-import org.github.logof.zxtiled.mapeditor.ui.TilesetPanel;
-import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
-import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.UndoHandler;
 import org.github.logof.zxtiled.mapeditor.util.LayerTableModel;
@@ -129,6 +129,7 @@ public class MapEditor {
     @Getter
     @Setter
     private float relativeMidY;
+
     private JPanel dataPanel;
 
     @Getter
@@ -723,7 +724,7 @@ public class MapEditor {
      * @return <code>true</code> if the file was loaded, <code>false</code> if
      * an error occured
      */
-    public boolean loadMap(String file) {
+    public void loadMap(String file) {
         File exist = new File(file);
         if (!exist.exists()) {
             String msg = Resources.getString("general.file.notexists.message");
@@ -732,7 +733,7 @@ public class MapEditor {
                     Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
             statusBar.getStatusLabel().setErrorText(msg);
-            return false;
+            //return false;
         }
 
         try {
@@ -742,7 +743,7 @@ public class MapEditor {
                 setCurrentTileMap(tileMap);
                 updateRecent(file);
                 statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_INFO_LOAD_SUCCESS);
-                return true;
+                //return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
                         Resources.getString("general.file.failed"),
@@ -760,7 +761,7 @@ public class MapEditor {
         }
 
         statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_ERROR_LOAD_FAILURE);
-        return false;
+        //return false;
     }
 
     //TODO как-то нужно вызывать из FileMenu

@@ -76,7 +76,7 @@ public class MersenneTwister extends Random {
             /* In the previous versions, MSBs of the seed affect   */
             /* only MSBs of the array mt[].                        */
             /* 2002/01/09 modified by Makoto Matsumoto             */
-            mt[mti] &= 0xffffffff;
+            mt[mti] &= 0xffffffffL;
             /* for >32 bit machines */
         }
     }
@@ -90,11 +90,11 @@ public class MersenneTwister extends Random {
         initGenRand(19650218);
         i = 1;
         j = 0;
-        k = (N > key_length ? N : key_length);
+        k = (Math.max(N, key_length));
         for (; k != 0; k--) {
             mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525))
                     + init_key[j] + j; /* non linear */
-            mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
+            mt[i] &= 0xffffffffL; /* for WORDSIZE > 32 machines */
             i++;
             j++;
             if (i >= N) {
@@ -106,7 +106,7 @@ public class MersenneTwister extends Random {
         for (k = N - 1; k != 0; k--) {
             mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941))
                     - i; /* non linear */
-            mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
+            mt[i] &= 0xffffffffL; /* for WORDSIZE > 32 machines */
             i++;
             if (i >= N) {
                 mt[0] = mt[N - 1];

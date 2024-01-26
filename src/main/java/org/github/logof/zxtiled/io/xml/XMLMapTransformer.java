@@ -25,7 +25,7 @@ import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.io.PluginLogger;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.util.cutter.BasicTileCutter;
+import org.github.logof.zxtiled.mapeditor.cutter.BasicTileCutter;
 import org.github.logof.zxtiled.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
