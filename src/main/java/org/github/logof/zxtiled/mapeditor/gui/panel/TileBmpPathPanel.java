@@ -10,7 +10,7 @@ public class TileBmpPathPanel extends AbstractPanel {
     private static final String TILESET_IMAGE_LABEL = Resources.getString("dialog.newtileset.image.label");
     private static final String TILESET_NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
 
-    public TileBmpPathPanel(JDialog parentDialog) {
+    public TileBmpPathPanel(JPanel parentDialog) {
         super(parentDialog);
     }
 

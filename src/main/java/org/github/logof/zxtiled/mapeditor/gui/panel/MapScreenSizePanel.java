@@ -16,7 +16,7 @@ public class MapScreenSizePanel extends AbstractPanel {
     private IntegerSpinner mapWidthSpinner;
     private IntegerSpinner mapHeightSpinner;
 
-    public MapScreenSizePanel(JDialog parentDialog) {
+    public MapScreenSizePanel(JPanel parentDialog) {
         super(parentDialog);
     }
 
@@ -45,6 +45,5 @@ public class MapScreenSizePanel extends AbstractPanel {
         add(mapWidthSpinner, gridBagConstraints);
         gridBagConstraints.gridy = 1;
         add(mapHeightSpinner, gridBagConstraints);
-
     }
 }

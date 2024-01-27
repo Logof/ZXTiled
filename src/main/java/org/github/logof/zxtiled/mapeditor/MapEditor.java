@@ -154,6 +154,7 @@ public class MapEditor {
     @Setter
     private MapLayerEdit paintEdit;
     private FloatablePanel layersPanel;
+    //private MapEditorLayersPanel layersPanel;
     private TilesetPanel tilesetPanel;
 
 
@@ -201,13 +202,15 @@ public class MapEditor {
                 MapEditorAction.exitAction.actionPerformed(null);
             }
         });
+
         appFrame.setContentPane(createContentPane());
+        //new MapEditorMainPanel(appFrame);
         mainMenuBar = new MainMenuBar();
         appFrame.setJMenuBar(mainMenuBar);
 
 
-        setCurrentTileMap(null);
-        updateRecent(null);
+        //setCurrentTileMap(null);
+        //updateRecent(null);
 
         appFrame.setVisible(true);
 
@@ -218,12 +221,12 @@ public class MapEditor {
         appFrame.updateExtendedState();
 
         // Restore the size and position of the layers and tileset panels.
-        layersPanel.restore();
-        tilesetPanel.restore();
+        //layersPanel.restore();
+        //tilesetPanel.restore();
 
-        rightSplit.restore();
-        mainSplit.restore();
-        paletteSplit.restore();
+        //rightSplit.restore();
+        //mainSplit.restore();
+        //paletteSplit.restore();
 
         // Make sure the map view is redrawn when grid preferences change.
         // todo: move this functionality out of here somehow, but not back into MapView
@@ -266,6 +269,9 @@ public class MapEditor {
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
         layersPanel = new FloatablePanel(getAppFrame(), dataPanel, Constants.PANEL_LAYERS, "layers");
+        //layersPanel = new MapEditorLayersPanel(getAppFrame());
+        //layersPanel.add(dataPanel);
+        //MapEditorDataPanel mapEditorDataPanel = new MapEditorDataPanel(layersPanel, listSelectionListener);
 
         rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel.getContentPane(), null, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
@@ -583,11 +589,11 @@ public class MapEditor {
         }
 
         // Allow the floatable panels to save their position and size
-        layersPanel.save();
+        /*layersPanel.save();
 
         mainSplit.save();
         paletteSplit.save();
-        rightSplit.save();
+        rightSplit.save();*/
     }
 
     private void showAboutDialog() {

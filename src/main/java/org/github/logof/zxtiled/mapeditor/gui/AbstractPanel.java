@@ -1,56 +1,47 @@
 package org.github.logof.zxtiled.mapeditor.gui;
 
+import lombok.Getter;
 import javax.swing.*;
+import java.awt.*;
 import java.util.Objects;
 
 public abstract class AbstractPanel extends JPanel {
-    private final JPanel parentPanel;
-    private final JFrame parentFrame;
-    private final JDialog parentDialog;
 
-    /*
+    @Getter
+    private final Container parentContainer;
+    private final boolean contentPane;
+
     public AbstractPanel() {
-        this.parentDialog = null;
-        this.parentPanel = null;
-        this.parentFrame = null;
+        this.parentContainer = null;
+        this.contentPane = false;
         initComponent();
-    }*/
+    }
 
-    public AbstractPanel(JPanel parentPanel) {
-        this.parentPanel = parentPanel;
-        this.parentDialog = null;
-        this.parentFrame = null;
+    public AbstractPanel(Container parentContainer) {
+        this.parentContainer = parentContainer;
+        this.contentPane = false;
         initComponent();
         addition();
     }
 
-    public AbstractPanel(JFrame parentFrame) {
-        this.parentDialog = null;
-        this.parentPanel = null;
-        this.parentFrame = parentFrame;
-        initComponent();
-        addition();
-    }
-
-    public AbstractPanel(JDialog parentDialog) {
-        this.parentDialog = parentDialog;
-        this.parentPanel = null;
-        this.parentFrame = null;
+    public AbstractPanel(Container parentContainer, boolean contentPane) {
+        this.parentContainer = parentContainer;
+        this.contentPane = contentPane;
         initComponent();
         addition();
     }
 
     protected abstract void initComponent();
 
-    private void addition() {
-        if (Objects.nonNull(parentPanel)) {
-            parentPanel.add(this);
+    protected void addition() {
+        if (Objects.isNull(parentContainer)) {
+            return;
         }
-        if (Objects.nonNull(parentFrame)) {
-            parentFrame.add(this);
-        }
-        if (Objects.nonNull(parentDialog)) {
-            parentDialog.add(this);
+
+        if (contentPane) {
+            ((JDialog) parentContainer).setContentPane(this);
+        } else {
+            parentContainer.add(this);
         }
     }
 }

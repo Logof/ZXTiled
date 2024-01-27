@@ -16,6 +16,7 @@ public class MapEditorDataPanel extends AbstractPanel {
     private final ListSelectionListener listSelectionListener;
     private JTable layerTable;
 
+
     public MapEditorDataPanel(JPanel parentPanel, ListSelectionListener listSelectionListener) {
         super(parentPanel);
         this.listSelectionListener = listSelectionListener;
