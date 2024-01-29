@@ -165,13 +165,15 @@ public class MapEditorMouseListener implements MouseListener,
                 }
             } else if (layer instanceof ObjectLayer && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
-                ObjectLayer group = (ObjectLayer) layer;
-                Point pos = mapEditor.getMapView().screenToPixelCoords(
-                        layer, event.getX(), event.getY());
-                MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
+                ObjectLayer objectLayer = (ObjectLayer) layer;
+
+                double zoom = mapEditor.getMapView().getZoom();
+                Point position = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), zoom);
+
+                MapObject obj = objectLayer.getObjectNear(position.x, position.y, mapEditor.getMapView().getZoom());
                 if (obj != null) {
-                    ObjectDialog od = new ObjectDialog(mapEditor.getAppFrame(), obj, mapEditor.getUndoSupport());
-                    od.getProps();
+                    ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), obj, mapEditor.getUndoSupport());
+                    objectDialog.getProps();
                 }
             }
         } else if (mouseButton == MouseEvent.BUTTON2 ||
@@ -314,8 +316,8 @@ public class MapEditorMouseListener implements MouseListener,
                 case PS_REMOVE_OBJ:
                     if (layer instanceof ObjectLayer) {
                         ObjectLayer group = (ObjectLayer) layer;
-                        Point pos = mapEditor.getMapView().screenToPixelCoords(
-                                layer, event.getX(), event.getY());
+                        Point pos = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), mapEditor.getMapView()
+                                                                                                                       .getZoom());
                         MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
                         if (obj != null) {
                             mapEditor.getUndoSupport().postEdit(new RemoveObjectEdit(group, obj));
@@ -327,8 +329,8 @@ public class MapEditorMouseListener implements MouseListener,
                     break;
                 case PS_MOVE_OBJ:
                     if (layer instanceof ObjectLayer) {
-                        Point point = mapEditor.getMapView().screenToPixelCoords(
-                                layer, event.getX(), event.getY());
+                        Point point = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), mapEditor.getMapView()
+                                                                                                                         .getZoom());
                         if (mapEditor.getCurrentObject() == null) {
                             ObjectLayer group = (ObjectLayer) layer;
                             mapEditor.setCurrentObject(group.getObjectNear(point.x, point.y, mapEditor.getMapView()
@@ -438,19 +440,24 @@ public class MapEditorMouseListener implements MouseListener,
                 }
             } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
                 ObjectLayer objectLayer = (ObjectLayer) layer;
-                // TODO: Fix this to use pixels in the first place (with optional snap to grid)
-                int w = mapEditor.getCurrentTileMap().getTileWidth();
-                int h = mapEditor.getCurrentTileMap().getTileHeight();
 
-                // TODO убрать затычки
-                int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(), 8, 1.5f);
+                int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(),
+                        mapEditor.getMapView()
+                                 .getWidth() / (int) (Constants.SCREEN_WIDTH * Constants.TILE_WIDTH * mapEditor.getMapView()
+                                                                                                               .getZoom()),
+                        mapEditor.getMapView().getZoom());
 
                 MapObject object = new MapObject(
-                        bounds.x * w,
-                        bounds.y * h, mapNumber
+                        bounds.x * Constants.TILE_WIDTH,
+                        bounds.y * Constants.TILE_HEIGHT, mapNumber
                 );
                 mapEditor.getUndoSupport().postEdit(new AddObjectEdit(objectLayer, object));
-                objectLayer.addObject(object);
+
+                if (objectLayer.addObject(object)) {
+                    ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
+                    objectDialog.getProps();
+                }
+                ;
 
                 mapEditor.getMapView().repaint();
             }

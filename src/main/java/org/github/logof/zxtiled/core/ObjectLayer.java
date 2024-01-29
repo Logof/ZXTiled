@@ -1,36 +1,19 @@
-/*
- *  Tiled Map Editor, (c) 2004-2008
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.core;
 
-import lombok.Getter;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Vector;
 
 /**
  * A layer containing {@link MapObject map objects}.
  */
 public class ObjectLayer extends MapLayer {
-
-    @Getter
-    private Map<Integer, LinkedList<MapObject>> objectMap = new HashMap<>();
     private LinkedList<MapObject> objects = new LinkedList<>();
 
     /**
@@ -127,11 +110,13 @@ public class ObjectLayer extends MapLayer {
         return null;
     }
 
-    public void addObject(MapObject mapObject) {
-        if (checkAbilityCreateObject()) {
+    public boolean addObject(MapObject mapObject) {
+        if (checkAbilityCreateObject(mapObject)) {
             objects.add(mapObject);
             mapObject.setObjectLayer(this);
+            return true;
         }
+        return false;
     }
 
     public void removeObject(MapObject mapObject) {
@@ -144,11 +129,16 @@ public class ObjectLayer extends MapLayer {
     }
 
     // There can be 3 objects on one screen
-    private boolean checkAbilityCreateObject() {
-        boolean result = true;
+    private boolean checkAbilityCreateObject(MapObject mapObject) {
+        if (mapObject.getType().equals("playerStart")) {
+            return objects.stream().noneMatch(object -> object.getType().equals("playerStart"));
+        }
 
+        if (mapObject.getType().equals("playerFinish")) {
+            return objects.stream().noneMatch(object -> object.getType().equals("playerFinish"));
+        }
 
-        return result;
+        return objects.stream().filter(object -> object.getScreenNumber() == mapObject.getScreenNumber()).count() < 3;
     }
 
     /**
@@ -209,8 +199,8 @@ public class ObjectLayer extends MapLayer {
             if (obj.getWidth() == 0 && obj.getHeight() == 0) {
                 shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
             } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getTileMap().getTileWidth(),
-                        obj.getY() + bounds.y * getTileMap().getTileHeight(),
+                shape = new Rectangle2D.Double(obj.getX() + bounds.x * Constants.TILE_WIDTH,
+                        obj.getY() + bounds.y * Constants.TILE_HEIGHT,
                         obj.getWidth() > 0 ? obj.getWidth() : zoom,
                         obj.getHeight() > 0 ? obj.getHeight() : zoom);
             }

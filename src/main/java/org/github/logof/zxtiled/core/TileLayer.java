@@ -5,9 +5,6 @@ import java.awt.geom.Area;
 import java.util.HashMap;
 import java.util.Properties;
 
-import static org.github.logof.zxtiled.mapeditor.Constants.TILE_HEIGHT;
-import static org.github.logof.zxtiled.mapeditor.Constants.TILE_WIDTH;
-
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional tile data.
  */
@@ -179,25 +176,6 @@ public class TileLayer extends MapLayer {
         }
     }
 
-    /// gets the tile width specific for this layer. The tile width and height
-    /// can be specified individually for layers of this type using
-    /// setTileDimensions().
-    /// @see setTileDimensions();
-    /// @return tile height that this layer uses
-    @Override
-    public int getTileHeight() {
-        return TILE_HEIGHT;
-    }
-
-    /// gets the tile height specific for this layer. The tile width and height
-    /// can be specified individually for layers of this type using
-    /// setTileDimensions().
-    /// @see setTileDimensions();
-    /// @return tile width that this layer uses
-    @Override
-    public int getTileWidth() {
-        return TILE_WIDTH;
-    }
 
     /**
      * Removes any occurences of the given tile from this map layer. If layer

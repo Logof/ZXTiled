@@ -13,6 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
@@ -226,10 +227,10 @@ public class ResizeDialog extends JDialog implements ActionListener,
 
         if (evt.getPropertyName().equalsIgnoreCase("offsetX")) {
             int val = (Integer) evt.getNewValue();
-            offsetX.setValue((int) (val / (currentTileMap.getTileWidth() * zoom)));
+            offsetX.setValue((int) (val / (Constants.TILE_WIDTH * zoom)));
         } else if (evt.getPropertyName().equalsIgnoreCase("offsetY")) {
             int val = (Integer) evt.getNewValue();
-            offsetY.setValue((int) (val / (currentTileMap.getTileHeight() * zoom)));
+            offsetY.setValue((int) (val / (Constants.TILE_HEIGHT * zoom)));
         }
     }
 
@@ -242,8 +243,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
             double zoom = orient.getZoom();
 
             orient.moveMap(
-                    (int) (dx * currentTileMap.getTileWidth() * zoom),
-                    (int) (dy * currentTileMap.getTileHeight() * zoom));
+                    (int) (dx * Constants.TILE_WIDTH * zoom),
+                    (int) (dy * Constants.TILE_HEIGHT * zoom));
         }
     }
 }

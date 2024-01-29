@@ -319,22 +319,6 @@ public abstract class MapLayer implements Cloneable {
         return getLocked() || !isVisible();
     }
 
-    /// returns the tile height that applies to this layer. To layers of this
-    /// type, the map's own tile height will apply. However, subtypes may
-    /// implement their own tile width and tile height settings that differ
-    /// from the one that the map is using.
-    public int getTileHeight() {
-        return getTileMap().getTileHeight();
-    }
-
-    /// returns the tile width that applies to this layer. To layers of this
-    /// type, the map's own tile width will apply. However, subtypes may
-    /// implement their own tile width and tile height settings that differ
-    /// from the one that the map is using.
-    public int getTileWidth() {
-        return getTileMap().getTileWidth();
-    }
-
     public void setViewPlaneDistance(float viewPlaneDistance) {
         if (this.viewPlaneDistance == viewPlaneDistance) {
             return;

@@ -18,6 +18,7 @@ import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +72,7 @@ public class SideScrelledMapView extends MapView {
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -109,7 +110,7 @@ public class SideScrelledMapView extends MapView {
 
     //TODO подумать, как хранить в координатах тайла или в пикселях
     protected void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer) {
-        final Dimension tileSize = getLayerTileSize(objectLayer);
+        final Dimension tileSize = getLayerTileSize();
         assert tileSize.width != 0 && tileSize.height != 0;
         final Rectangle bounds = objectLayer.getBounds();
         Iterator<MapObject> itr = objectLayer.getObjects();
@@ -169,7 +170,7 @@ public class SideScrelledMapView extends MapView {
             return;
 
         // Determine tile size
-        Dimension tileSize = getLayerTileSize(currentLayer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -207,7 +208,7 @@ public class SideScrelledMapView extends MapView {
             return;
         }
 
-        Dimension tileSize = getLayerTileSize(currentLayer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -245,7 +246,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public void repaintRegion(MapLayer layer, Rectangle region) {
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -262,7 +263,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public Point screenToTileCoordinates(MapLayer layer, int x, int y) {
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         return new Point(x / tileSize.width, y / tileSize.height);
     }
 
@@ -270,16 +271,16 @@ public class SideScrelledMapView extends MapView {
         return new Point(x * tileDimension.width, y * tileDimension.height);
     }
 
-    protected Dimension getLayerTileSize(MapLayer layer) {
+    protected Dimension getLayerTileSize() {
         return new Dimension(
-                (int) (layer.getTileWidth() * zoom),
-                (int) (layer.getTileHeight() * zoom));
+                (int) (Constants.TILE_WIDTH * zoom),
+                (int) (Constants.TILE_HEIGHT * zoom));
     }
 
     protected Dimension getMapTileSize() {
         return new Dimension(
-                (int) (tileMap.getTileWidth() * zoom),
-                (int) (tileMap.getTileHeight() * zoom));
+                (int) (Constants.TILE_WIDTH * zoom),
+                (int) (Constants.TILE_HEIGHT * zoom));
     }
 
     protected Polygon createGridPolygon(Dimension tileDimension, int tileX, int tileY, int border) {

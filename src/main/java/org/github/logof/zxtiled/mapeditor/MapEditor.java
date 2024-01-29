@@ -380,18 +380,17 @@ public class MapEditor {
 
             setCurrentLayerIndex(currentLayerIndex);
         }
-
         updateLayerOperations();
     }
 
     public void updateLayerOperations() {
-        final boolean validSelection = currentLayerIndex >= 0;
-        final boolean tileLayer = validSelection && getCurrentLayer() instanceof TileLayer;
-        final boolean objectGroup = validSelection && getCurrentLayer() instanceof ObjectLayer;
+        final boolean isValidSelection = currentLayerIndex >= 0;
+        final boolean isTileLayer = isValidSelection && getCurrentLayer() instanceof TileLayer;
+        final boolean isObjectLayer = isValidSelection && getCurrentLayer() instanceof ObjectLayer;
 
-        toolBar.updateTileLayerOperations(tileLayer);
-        toolBar.updateValidSelectionOperations(validSelection);
-        toolBar.updateObjectGroupOperations(objectGroup);
+        toolBar.updateTileLayerOperations(isTileLayer);
+        toolBar.updateValidSelectionOperations(isValidSelection);
+        toolBar.updateObjectGroupOperations(isObjectLayer);
     }
 
     /**
@@ -426,7 +425,11 @@ public class MapEditor {
         mapView.setCurrentLayer(mapLayer);
         Rectangle layerBounds = mapLayer.getBounds();
         statusBar.getStatusLabel()
-                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, mapLayer.getName(), layerBounds.width, layerBounds.height, layerBounds.x, layerBounds.y, mapLayer.getTileWidth(), mapLayer.getTileHeight()));
+                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT,
+                         mapLayer.getName(),
+                         layerBounds.width,
+                         layerBounds.height, layerBounds.x, layerBounds.y,
+                         Constants.TILE_WIDTH, Constants.TILE_HEIGHT));
         cursorHighlight.setParent(getCurrentLayer());
 
         pointerStateManager.updateToolSemantics();

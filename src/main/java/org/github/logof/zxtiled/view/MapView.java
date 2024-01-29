@@ -26,6 +26,7 @@ import org.github.logof.zxtiled.mapeditor.selection.Selection;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSetListener;
+import org.github.logof.zxtiled.util.CoordinateUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
@@ -476,25 +477,9 @@ public abstract class MapView extends JPanel implements Scrollable {
 
     public abstract Point screenToTileCoordinates(MapLayer layer, int x, int y);
 
-    /**
-     * Returns the pixel coordinates on the map based on the given screen
-     * coordinates. The map pixel coordinates may be different in more ways
-     * than the zoom level, depending on the projection the view implements.
-     *
-     * @param layer to calculate the coordinates for or null if
-     *              the coordinate transformation should be done in the map's coordinate
-     *              system.
-     * @param x     x in screen coordinates
-     * @param y     y in screen coordinates
-     * @return the position in map pixel coordinates
-     */
-    public Point screenToPixelCoords(MapLayer layer, int x, int y) {
-        return new Point((int) (x / zoom), (int) (y / zoom));
-    }
-
-    public Rectangle screenToPixelCoords(MapLayer layer, Rectangle r) {
-        Point p0 = screenToPixelCoords(layer, r.x, r.y);
-        Point p1 = screenToPixelCoords(layer, r.x + r.width, r.y + r.height);
+    public Rectangle screenToPixelCoordinates(Rectangle rectangle) {
+        Point p0 = CoordinateUtil.zoomedScreenToPixelCoordinates(rectangle.x, rectangle.y, zoom);
+        Point p1 = CoordinateUtil.zoomedScreenToPixelCoordinates(rectangle.x + rectangle.width, rectangle.y + rectangle.height, zoom);
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 
