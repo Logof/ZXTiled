@@ -29,7 +29,8 @@ import java.awt.event.MouseEvent;
 public class ResizePanel extends JPanel {
     private MapView inner;
     private TileMap currentTileMap;
-    private Dimension oldDim, newDim;
+    private Dimension oldDim;
+    private Dimension newDim;
     private int offsetX, offsetY;
     private Point startPress;
     @Getter
@@ -48,6 +49,7 @@ public class ResizePanel extends JPanel {
         DragHandler dragHandler = new DragHandler();
 
         inner = MapView.createViewforMap(tileMap);
+        assert inner != null;
         inner.setZoom(zoom);
         inner.addMouseListener(dragHandler);
         inner.addMouseMotionListener(dragHandler);

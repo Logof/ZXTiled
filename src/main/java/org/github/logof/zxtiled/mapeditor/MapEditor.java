@@ -30,7 +30,6 @@ import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.gui.ApplicationFrame;
-import org.github.logof.zxtiled.mapeditor.gui.FloatablePanel;
 import org.github.logof.zxtiled.mapeditor.gui.SmartSplitPane;
 import org.github.logof.zxtiled.mapeditor.gui.StatusBar;
 import org.github.logof.zxtiled.mapeditor.gui.TabbedTilesetsPane;
@@ -45,6 +44,7 @@ import org.github.logof.zxtiled.mapeditor.gui.dialogs.PropertiesDialog;
 import org.github.logof.zxtiled.mapeditor.gui.dialogs.ResizeDialog;
 import org.github.logof.zxtiled.mapeditor.gui.dialogs.TilesetManager;
 import org.github.logof.zxtiled.mapeditor.gui.menu.MainMenuBar;
+import org.github.logof.zxtiled.mapeditor.gui.panel.MapLayersPanel;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorActionListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorComponentListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorListSelectionListener;
@@ -153,8 +153,7 @@ public class MapEditor {
     @Getter
     @Setter
     private MapLayerEdit paintEdit;
-    private FloatablePanel layersPanel;
-    //private MapEditorLayersPanel layersPanel;
+    private MapLayersPanel mapLayersPanel;
     private TilesetPanel tilesetPanel;
 
 
@@ -221,8 +220,6 @@ public class MapEditor {
         appFrame.updateExtendedState();
 
         // Restore the size and position of the layers and tileset panels.
-        //layersPanel.restore();
-        //tilesetPanel.restore();
 
         //rightSplit.restore();
         //mainSplit.restore();
@@ -266,38 +263,32 @@ public class MapEditor {
         createData();
         statusBar = new StatusBar();
 
-        // todo: Make continuouslayout an option. Because it can be slow, some
-        // todo: people may prefer not to have that.
-        layersPanel = new FloatablePanel(getAppFrame(), dataPanel, Constants.PANEL_LAYERS, "layers");
-        //layersPanel = new MapEditorLayersPanel(getAppFrame());
-        //layersPanel.add(dataPanel);
-        //MapEditorDataPanel mapEditorDataPanel = new MapEditorDataPanel(layersPanel, listSelectionListener);
-
-        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel.getContentPane(), null, "rightSplit");
+        // todo: Make continuous layout an option. Because it can be slow, some people may prefer not to have that.
+        mapLayersPanel = new MapLayersPanel(dataPanel, Constants.PANEL_LAYERS);
+        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, mapLayersPanel.getContentPane(),
+                null, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
         rightSplit.setResizeWeight(0.5);
         rightSplit.setBorder(null);
 
-        mainSplit = new SmartSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
+        mainSplit = new SmartSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
                 rightSplit, "mainSplit");
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
-        tilesetPanel = new TilesetPanel(tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE, "tilesets");
-        paletteSplit = new SmartSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetPanel.getContentPane(), "paletteSplit");
+        tilesetPanel = new TilesetPanel(tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE);
+        paletteSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, mainSplit,
+                tilesetPanel.getContentPane(), "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(0.8);
 
-
         // GUI components
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(toolBar, BorderLayout.WEST);
+        mainPanel.add(toolBar, BorderLayout.LINE_START);
         mainPanel.add(paletteSplit, BorderLayout.CENTER);
-        mainPanel.add(statusBar, BorderLayout.SOUTH);
+        mainPanel.add(statusBar, BorderLayout.PAGE_END);
 
         return mainPanel;
     }
@@ -394,12 +385,6 @@ public class MapEditor {
     }
 
     public void updateLayerOperations() {
-        int nrLayers = 0;
-
-        if (currentTileMap != null) {
-            nrLayers = currentTileMap.getTotalLayers();
-        }
-
         final boolean validSelection = currentLayerIndex >= 0;
         final boolean tileLayer =
                 validSelection && getCurrentLayer() instanceof TileLayer;
@@ -588,12 +573,9 @@ public class MapEditor {
             mainDialogPrefs.putInt("height", appFrame.getHeight());
         }
 
-        // Allow the floatable panels to save their position and size
-        /*layersPanel.save();
-
         mainSplit.save();
         paletteSplit.save();
-        rightSplit.save();*/
+        rightSplit.save();
     }
 
     private void showAboutDialog() {
@@ -727,8 +709,6 @@ public class MapEditor {
      * Loads a map.
      *
      * @param file filename of map to load
-     * @return <code>true</code> if the file was loaded, <code>false</code> if
-     * an error occured
      */
     public void loadMap(String file) {
         File exist = new File(file);

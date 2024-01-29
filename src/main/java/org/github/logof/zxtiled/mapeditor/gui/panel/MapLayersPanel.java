@@ -1,17 +1,19 @@
-package org.github.logof.zxtiled.mapeditor.gui;
+package org.github.logof.zxtiled.mapeditor.gui.panel;
 
 import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 
-public class TilesetPanel {
-    @Getter
+@Getter
+public class MapLayersPanel {
+
     private final JPanel contentPane = new JPanel();
 
     /**
-     * @param title         the title of this panel
+     * @param child the child component
+     * @param title the title of this panel
      */
-    public TilesetPanel(JComponent child, String title) {
+    public MapLayersPanel(JPanel child, String title) {
         JLabel titleLabel = new JLabel(title);
 
         JPanel topPanel = new HeaderPanel(new BorderLayout());
