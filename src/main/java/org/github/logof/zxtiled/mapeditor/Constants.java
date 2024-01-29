@@ -4,6 +4,11 @@ import java.awt.*;
 
 public class Constants {
     public static final String DTD = "/home/user/mojontwins/ZXTiled/map.dtd";
+    public static final int SCREEN_WIDTH = 15;
+    public static final int SCREEN_HEIGHT = 10;
+
+    public static final int TILE_WIDTH = 16;
+    public static final int TILE_HEIGHT = 16;
 
     public static final Cursor CURSOR_EYED = new Cursor(Cursor.CROSSHAIR_CURSOR);
     public static final Cursor CURSOR_DEFAULT = new Cursor(Cursor.DEFAULT_CURSOR);

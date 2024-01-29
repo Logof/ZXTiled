@@ -43,6 +43,7 @@ public class MapObject implements Cloneable {
     private String imageSource = "";
     private Image image;
     private Image scaledImage;
+    @Getter
     private int screenNumber;
 
     public MapObject(int x, int y, int screenNumber) {

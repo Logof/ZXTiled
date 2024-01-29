@@ -631,7 +631,7 @@ public class MapEditor {
 
         Rectangle bounds = new Rectangle(
                 area.x, area.y, area.width + 1, area.height + 1);
-        after = new TileLayer(bounds, layer.getTileWidth(), layer.getTileHeight());
+        after = new TileLayer(bounds);
         after.copyFrom(layer);
 
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);

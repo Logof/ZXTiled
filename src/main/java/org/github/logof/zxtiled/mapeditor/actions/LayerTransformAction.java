@@ -44,7 +44,7 @@ public class LayerTransformAction extends AbstractAction {
             if (currentLayer instanceof TileLayer) {
                 layer = new TileLayer(
                         mapEditor.getMarqueeSelection()
-                                 .getSelectedAreaBounds(), currentLayer.getTileWidth(), currentLayer.getTileHeight());
+                                 .getSelectedAreaBounds());
             } else if (currentLayer instanceof ObjectLayer) {
                 layer = new ObjectLayer(
                         mapEditor.getMarqueeSelection().getSelectedAreaBounds());

@@ -197,16 +197,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         return layer;
     }
 
-    /**
-     * Create a new empty TileLayer with the dimensions of the map. By default,
-     * the new layer's name is set to "Layer [layer index]"
-     */
-    public void addLayer() {
-        MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), layer);
-    }
-
     public void addAllLayers() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
         layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());

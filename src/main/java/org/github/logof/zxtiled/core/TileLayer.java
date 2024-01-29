@@ -5,6 +5,9 @@ import java.awt.geom.Area;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static org.github.logof.zxtiled.mapeditor.Constants.TILE_HEIGHT;
+import static org.github.logof.zxtiled.mapeditor.Constants.TILE_WIDTH;
+
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional tile data.
  */
@@ -23,17 +26,15 @@ public class TileLayer extends MapLayer {
      */
     public TileLayer(int width, int height) {
         super(width, height);
-
     }
 
     /**
      * Create a tile layer using the given bounds.
      *
-     * @param r the bounds of the tile layer.
+     * @param rectangle the bounds of the tile layer.
      */
-    public TileLayer(Rectangle r, int tileWidth, int tileHeight) {
-        super(r);
-
+    public TileLayer(Rectangle rectangle) {
+        super(rectangle);
     }
 
     /**
@@ -167,7 +168,7 @@ public class TileLayer extends MapLayer {
 
             if (r != null) {
                 MapLayer diff = new TileLayer(
-                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1), mapLayer.getTileWidth(), mapLayer.getTileHeight());
+                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
                 diff.copyFrom(mapLayer);
                 return diff;
             } else {

@@ -27,8 +27,8 @@ public class CutAction extends AbstractAction {
             MapLayer mapLayer = mapEditor.getCurrentLayer();
 
             if (mapEditor.getCurrentLayer() instanceof TileLayer) {
-                mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds(),
-                        mapLayer.getTileWidth(), mapLayer.getTileHeight()));
+                mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()
+                ));
             } else if (mapEditor.getCurrentLayer() instanceof ObjectLayer) {
                 mapEditor.setClipboardLayer(new ObjectLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()));
             }

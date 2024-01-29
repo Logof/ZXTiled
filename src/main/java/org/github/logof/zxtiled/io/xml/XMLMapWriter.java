@@ -14,8 +14,7 @@ package org.github.logof.zxtiled.io.xml;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.MapTypeEnum;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
@@ -23,7 +22,7 @@ import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
-import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -75,43 +74,32 @@ public class XMLMapWriter implements MapWriter {
         }
     }
 
-    private static void writeObjectGroup(ObjectsLayer o, XMLWriter w, String wp)
-            throws IOException {
-        Iterator<MapObject> itr = o.getObjects();
-        while (itr.hasNext()) {
-            writeMapObject(itr.next(), w, wp);
+    private static void writeObjectLayer(ObjectLayer objectLayer, XMLWriter writer, String wp) throws IOException {
+        Iterator<MapObject> iterator = objectLayer.getObjects();
+        while (iterator.hasNext()) {
+            writeMapObject(iterator.next(), writer, wp);
         }
     }
 
-    private static void writeMapObject(MapObject mapObject, XMLWriter w, String wp)
-            throws IOException {
-        w.startElement("object");
-        w.writeAttribute("name", mapObject.getName());
+    private static void writeMapObject(MapObject mapObject, XMLWriter writer, String wp) throws IOException {
+        writer.startElement("object");
+        writer.writeAttribute("name", mapObject.getName());
 
         if (!mapObject.getType().isEmpty()) {
-            w.writeAttribute("type", mapObject.getType());
+            writer.writeAttribute("type", mapObject.getType());
         }
-
-        w.writeAttribute("x", mapObject.getX());
-        w.writeAttribute("y", mapObject.getY());
-
-        if (mapObject.getWidth() != 0) {
-            w.writeAttribute("width", mapObject.getWidth());
-        }
-        if (mapObject.getHeight() != 0) {
-            w.writeAttribute("height", mapObject.getHeight());
-        }
-
-        writeProperties(mapObject.getProperties(), w);
+        writer.writeAttribute("x", mapObject.getX());
+        writer.writeAttribute("y", mapObject.getY());
+        writer.writeAttribute("screen", mapObject.getScreenNumber());
+        writeProperties(mapObject.getProperties(), writer);
 
         if (!mapObject.getImageSource().isEmpty()) {
-            w.startElement("image");
-            w.writeAttribute("source",
-                    getRelativePath(wp, mapObject.getImageSource()));
-            w.endElement();
+            writer.startElement("image");
+            writer.writeAttribute("source", getRelativePath(wp, mapObject.getImageSource()));
+            writer.endElement();
         }
 
-        w.endElement();
+        writer.endElement();
     }
 
     /**
@@ -262,19 +250,12 @@ public class XMLMapWriter implements MapWriter {
     }
 
     private void writeMap(TileMap tileMap, XMLWriter writer, String wp) throws IOException {
-        writer.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
+        writer.writeDocType("map", null, Constants.DTD);
         writer.startElement("map");
-
         writer.writeAttribute("version", "1.0");
-
-        if (tileMap.getMapType() == MapTypeEnum.MAP_SIDE_SCROLLED) {
-            writer.writeAttribute("type", "side_scrolled");
-        }
-
+        writer.writeAttribute("type", tileMap.getMapType().getName());
         writer.writeAttribute("width", tileMap.getWidth());
         writer.writeAttribute("height", tileMap.getHeight());
-        writer.writeAttribute("tilewidth", tileMap.getTileWidth());
-        writer.writeAttribute("tileheight", tileMap.getTileHeight());
 
         writeProperties(tileMap.getProperties(), writer);
 
@@ -288,9 +269,9 @@ public class XMLMapWriter implements MapWriter {
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false)) {
             writer.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         }
-        Iterator<MapLayer> ml = tileMap.getLayers();
-        while (ml.hasNext()) {
-            MapLayer layer = ml.next();
+        Iterator<MapLayer> mapLayers = tileMap.getLayers();
+        while (mapLayers.hasNext()) {
+            MapLayer layer = mapLayers.next();
             writeMapLayer(layer, writer, wp);
         }
 
@@ -378,10 +359,6 @@ public class XMLMapWriter implements MapWriter {
             writer.writeAttribute("name", name);
         }
 
-        if (tileBmpFile != null) {
-            writer.writeAttribute("tilewidth", tileset.getTileWidth());
-            writer.writeAttribute("tileheight", tileset.getTileHeight());
-        }
 
         if (tileset.getBaseDir() != null) {
             writer.writeAttribute("basedir", tileset.getBaseDir());
@@ -480,27 +457,18 @@ public class XMLMapWriter implements MapWriter {
      * gids to be written to the layer data.
      */
     private void writeMapLayer(MapLayer mapLayer, XMLWriter xmlWriter, String wp) throws IOException {
-        boolean encodeLayerData =
-                prefs.getBoolean("encodeLayerData", true);
-        boolean compressLayerData =
-                prefs.getBoolean("layerCompression", true) &&
-                        encodeLayerData;
+        boolean encodeLayerData = prefs.getBoolean("encodeLayerData", true);
+        boolean compressLayerData = prefs.getBoolean("layerCompression", true) && encodeLayerData;
 
         Rectangle bounds = mapLayer.getBounds();
 
-        if (mapLayer.getClass() == SelectionLayer.class) {
-            xmlWriter.startElement("selection");
-        } else if (mapLayer instanceof ObjectsLayer) {
-            xmlWriter.startElement("objectgroup");
+        if (mapLayer instanceof ObjectLayer) {
+            xmlWriter.startElement("objectLayer");
         } else {
             xmlWriter.startElement("layer");
         }
 
         xmlWriter.writeAttribute("name", mapLayer.getName());
-        xmlWriter.writeAttribute("width", bounds.width);
-        xmlWriter.writeAttribute("height", bounds.height);
-        xmlWriter.writeAttribute("viewPlaneDistance", mapLayer.getViewPlaneDistance());
-        xmlWriter.writeAttribute("viewPlaneInfinitelyFarAway", mapLayer.isViewPlaneInfinitelyFarAway());
 
         if (bounds.x != 0) {
             xmlWriter.writeAttribute("x", bounds.x);
@@ -515,12 +483,10 @@ public class XMLMapWriter implements MapWriter {
 
         writeProperties(mapLayer.getProperties(), xmlWriter);
 
-        if (mapLayer instanceof ObjectsLayer) {
-            writeObjectGroup((ObjectsLayer) mapLayer, xmlWriter, wp);
+        if (mapLayer instanceof ObjectLayer) {
+            writeObjectLayer((ObjectLayer) mapLayer, xmlWriter, wp);
         } else if (mapLayer instanceof TileLayer) {
             final TileLayer tileLayer = (TileLayer) mapLayer;
-            xmlWriter.writeAttribute("tileWidth", tileLayer.getTileWidth());
-            xmlWriter.writeAttribute("tileHeight", tileLayer.getTileHeight());
             xmlWriter.startElement("data");
             if (encodeLayerData) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

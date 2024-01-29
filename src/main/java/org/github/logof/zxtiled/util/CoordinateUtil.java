@@ -1,5 +1,10 @@
 package org.github.logof.zxtiled.util;
 
+import static org.github.logof.zxtiled.mapeditor.Constants.SCREEN_HEIGHT;
+import static org.github.logof.zxtiled.mapeditor.Constants.SCREEN_WIDTH;
+import static org.github.logof.zxtiled.mapeditor.Constants.TILE_HEIGHT;
+import static org.github.logof.zxtiled.mapeditor.Constants.TILE_WIDTH;
+
 public class CoordinateUtil {
 
     public static void mouseToTile(int x, int y) {
@@ -15,8 +20,8 @@ public class CoordinateUtil {
      * @param mouseY mouse position by Y
      */
     public static int mouseToScreenNumber(int mouseX, int mouseY, int screenWidth, float zoom) {
-        int posX = mouseX / (int) (320 * zoom);
-        int posY = mouseY / (int) (160 * zoom);
+        int posX = mouseX / (int) (SCREEN_WIDTH * TILE_WIDTH * zoom);
+        int posY = mouseY / (int) (SCREEN_HEIGHT * TILE_HEIGHT * zoom);
         return posX + (posY * screenWidth);
     }
 }

@@ -25,9 +25,8 @@ public class CopyAction extends AbstractAction {
             MapLayer mapLayer = mapEditor.getCurrentLayer();
             if (mapLayer instanceof TileLayer) {
                 mapEditor.setClipboardLayer(new TileLayer(
-                        mapEditor.getMarqueeSelection().getSelectedAreaBounds(),
-                        mapLayer.getTileWidth(),
-                        mapLayer.getTileHeight()));
+                        mapEditor.getMarqueeSelection().getSelectedAreaBounds()
+                ));
             } else if (mapEditor.getCurrentLayer() instanceof ObjectLayer) {
                 mapEditor.setClipboardLayer(new ObjectLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()));
             }

@@ -419,7 +419,7 @@ public class MapEditorMouseListener implements MouseListener,
             if (mouseButton == MouseEvent.BUTTON3 && layer instanceof TileLayer) {
                 // Right mouse button dragged: create and set custom brush
                 MapLayer mapLayer = mapEditor.getCurrentLayer();
-                TileLayer brushLayer = new TileLayer(bounds, mapLayer.getTileWidth(), mapLayer.getTileHeight());
+                TileLayer brushLayer = new TileLayer(bounds);
                 brushLayer.copyFrom(mapEditor.getCurrentLayer());
                 brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
                         tile.y - (int) bounds.getHeight() / 2);

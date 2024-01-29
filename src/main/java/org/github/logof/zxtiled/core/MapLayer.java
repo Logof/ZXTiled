@@ -35,10 +35,6 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
-    public static final int TILE_WIDTH = 16;
-    public static final int TILE_HEIGHT = 16;
-
-
     @Getter
     protected String name;
     protected boolean isVisible = true;
@@ -68,9 +64,9 @@ public abstract class MapLayer implements Cloneable {
         this(new Rectangle(0, 0, width, height));
     }
 
-    public MapLayer(Rectangle r) {
+    public MapLayer(Rectangle rectangle) {
         this();
-        setBounds(r);
+        setBounds(rectangle);
     }
 
     /**
