@@ -107,26 +107,25 @@ public class SideScrelledMapView extends MapView {
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectLayer og) {
-        final Dimension tileSize = getLayerTileSize(og);
+    //TODO подумать, как хранить в координатах тайла или в пикселях
+    protected void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer) {
+        final Dimension tileSize = getLayerTileSize(objectLayer);
         assert tileSize.width != 0 && tileSize.height != 0;
-        final Rectangle bounds = og.getBounds();
-        Iterator<MapObject> itr = og.getObjects();
-        g2d.translate(
-                bounds.x * tileSize.width,
-                bounds.y * tileSize.height);
+        final Rectangle bounds = objectLayer.getBounds();
+        Iterator<MapObject> itr = objectLayer.getObjects();
+        g2d.translate(bounds.x * tileSize.width, bounds.y * tileSize.height);
 
         while (itr.hasNext()) {
-            MapObject mo = itr.next();
-            double ox = mo.getX() * zoom;
-            double oy = mo.getY() * zoom;
+            MapObject mapObject = itr.next();
+            double ox = mapObject.getX() * zoom;
+            double oy = mapObject.getY() * zoom;
 
-            Image objectImage = mo.getImage(zoom);
+            Image objectImage = mapObject.getImage(zoom);
             if (objectImage != null) {
                 g2d.drawImage(objectImage, (int) ox, (int) oy, null);
             }
 
-            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+            if (mapObject.getWidth() == 0 || mapObject.getHeight() == 0) {
                 g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -142,15 +141,15 @@ public class SideScrelledMapView extends MapView {
             } else {
                 g2d.setColor(Color.black);
                 g2d.drawRect((int) ox + 1, (int) oy + 1,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
                 g2d.setColor(Color.orange);
                 g2d.drawRect((int) ox, (int) oy,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
             }
             if (zoom > 0.0625) {
-                final String s = mo.getName() != null ? mo.getName() : "(null)";
+                final String s = mapObject.getName() != null ? mapObject.getName() : "(null)";
                 g2d.setColor(Color.black);
                 g2d.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
                 g2d.setColor(Color.white);

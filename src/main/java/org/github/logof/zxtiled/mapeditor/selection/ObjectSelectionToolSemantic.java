@@ -95,9 +95,9 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             int x = mouseEvent.getX();
             int y = mouseEvent.getY();
             MapObject o = findObject(x, y);
-            ObjectLayer og;
+            ObjectLayer objectLayer;
             try {
-                og = (ObjectLayer) getEditor().getCurrentLayer();
+                objectLayer = (ObjectLayer) getEditor().getCurrentLayer();
             } catch (ClassCastException ccx) {
                 return; // should never happen though, as ObjectSelectionToolSemantic should only ever be active when an ObjectGroup is the current layer...
             }
@@ -110,7 +110,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
                 if (modifiers == selectionClickMask)
                     ss.clearSelection();
             } else {
-                ObjectSelection newSelection = new ObjectSelection(og, o);
+                ObjectSelection newSelection = new ObjectSelection(objectLayer, o);
                 if (modifiers == addSelectionMask)
                     ss.addSelection(newSelection);
                 else
@@ -178,22 +178,22 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
     private MapObject findObject(int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectLayer og = (ObjectLayer) (getEditor().getCurrentLayer());
+        ObjectLayer objectLayer = (ObjectLayer) (getEditor().getCurrentLayer());
         final int margin = 1;   // one pixel margin around selection point
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
-        r = mapView.screenToPixelCoords(og, r);
-        MapObject[] objects = og.findObjectsByOutline(r);
+        r = mapView.screenToPixelCoords(objectLayer, r);
+        MapObject[] objects = objectLayer.findObjectsByOutline(r);
 
         return objects.length != 0 ? objects[0] : null;
     }
 
     private Corner findObjectCorner(MapObject o, int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectLayer og = (ObjectLayer) (getEditor().getCurrentLayer());
+        ObjectLayer objectLayer = (ObjectLayer) (getEditor().getCurrentLayer());
         final int margin = 2;   // one pixel margin around selection point
 
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
-        r = mapView.screenToPixelCoords(og, r);
+        r = mapView.screenToPixelCoords(objectLayer, r);
         return Corner.findCorner(o.getBounds(), r);
     }
 
@@ -252,12 +252,12 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         if (mode != Mode.SELECT)
             return;
 
-        ObjectLayer og = (ObjectLayer) selectedLayer;
-        MapObject[] objects = og.findObjects(selectionRubberband);
+        ObjectLayer objectLayer = (ObjectLayer) selectedLayer;
+        MapObject[] objects = objectLayer.findObjects(selectionRubberband);
         if (objects.length > 0) {
             Selection[] selection = new Selection[objects.length];
             for (int i = 0; i < objects.length; ++i)
-                selection[i] = new ObjectSelection(og, objects[i]);
+                selection[i] = new ObjectSelection(objectLayer, objects[i]);
             SelectionSet ss = getEditor().getSelectionSet();
             if (mergeSelection)
                 ss.addSelection(selection);

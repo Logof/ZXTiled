@@ -412,7 +412,7 @@ public abstract class MapView extends JPanel implements Scrollable {
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
                     } else if (layer instanceof ObjectLayer) {
-                        paintObjectGroup(g2d, (ObjectLayer) layer);
+                        paintObjectLayer(g2d, (ObjectLayer) layer);
                     }
                 }
             }
@@ -431,9 +431,9 @@ public abstract class MapView extends JPanel implements Scrollable {
      * Draws an ObjectGroup. Implemented in a subclass.
      *
      * @param g2d the graphics context to draw the object group onto
-     * @param og  the ObjectGroup to be drawn
+     * @param objectLayer  the ObjectGroup to be drawn
      */
-    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectLayer og);
+    protected abstract void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer);
 
     /**
      * Tells this view a certain region of the map needs to be repainted.
