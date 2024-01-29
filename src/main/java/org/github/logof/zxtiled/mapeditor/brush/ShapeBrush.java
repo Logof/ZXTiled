@@ -124,7 +124,7 @@ public class ShapeBrush extends AbstractBrush {
         for (int layer = 0; layer < numLayers; layer++) {
             TileLayer tl = (TileLayer) affectedMp.getLayer(initLayer + layer);
 
-            if (!tl.canEdit()) {
+            if (tl.cannotEdit()) {
                 if (tl.getLocked()) {
                     throw new LayerLockedBrushException(tl);
                 } else if (!tl.isVisible()) {

@@ -13,12 +13,11 @@
 package org.github.logof.zxtiled.io;
 
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.xml.XMLMapTransformer;
 import org.github.logof.zxtiled.io.xml.XMLMapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.plugin.PluginClassLoader;
 import javax.swing.*;
 import java.io.IOException;
 
@@ -75,9 +74,9 @@ public class MapHelper {
      * @param filename Filename to save the tileset to.
      * @param set      The TileSet instance to save to the file
      * @throws Exception
-     * @see MapWriter#writeTileset(TileSet, String)
+     * @see MapWriter#writeTileset(Tileset, String)
      */
-    public static void saveTileset(TileSet set, String filename)
+    public static void saveTileset(Tileset set, String filename)
             throws Exception {
         MapWriter mapWriter;
         if (filename.endsWith(".tsx")) {
@@ -168,8 +167,8 @@ public class MapHelper {
      * @throws Exception
      * @see MapReader#readTileset(String)
      */
-    public static TileSet loadTileset(String file) throws Exception {
-        TileSet ret = null;
+    public static Tileset loadTileset(String file) throws Exception {
+        Tileset ret = null;
         try {
             MapReader mapReader;
             if (file.endsWith(".tsx")) {

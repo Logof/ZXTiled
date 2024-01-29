@@ -14,7 +14,7 @@ public class MapEditorListSelectionListener implements ListSelectionListener {
 
     @Override
     public void valueChanged(ListSelectionEvent listSelectionEvent) {
-        int selectedRow = mapEditor.getLayerTable().getSelectedRow();
+        int selectedRow = mapEditor./*getDataPanel().*/getLayerTable().getSelectedRow();
 
         // At the moment, this can only be a new layer selection
         if (mapEditor.getCurrentTileMap() != null && selectedRow >= 0) {

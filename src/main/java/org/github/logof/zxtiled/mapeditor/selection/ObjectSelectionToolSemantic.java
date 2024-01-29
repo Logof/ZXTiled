@@ -7,7 +7,7 @@ package org.github.logof.zxtiled.mapeditor.selection;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import org.github.logof.zxtiled.view.MapView;
@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.util.Objects;
 
 /**
  * @author upachler
@@ -51,13 +52,13 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         }
 
         @Override
-        public void mouseMoved(MouseEvent e) {
+        public void mouseMoved(MouseEvent mouseEvent) {
             MapView mapView = getEditor().getMapView();
-            Mode m = determineMode(e.getX(), e.getY());
-            int x = e.getX();
-            int y = e.getY();
+            Mode mode = determineMode(mouseEvent.getX(), mouseEvent.getY());
+            int x = mouseEvent.getX();
+            int y = mouseEvent.getY();
 
-            switch (m) {
+            switch (mode) {
                 case SELECT:
                     mapView.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     break;
@@ -65,8 +66,8 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
                     mapView.setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     break;
                 case RESIZE_OBJECT: {
-                    Corner c = findObjectCorner(findObject(x, y), x, y);
-                    mapView.setCursor(mapResizeCursor(c));
+                    Corner corner = findObjectCorner(Objects.requireNonNull(findObject(x, y)), x, y);
+                    mapView.setCursor(mapResizeCursor(corner));
                 }
                 break;
             }
@@ -90,13 +91,13 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
     private final MouseListener mouseListener = new MouseAdapter() {
 
         @Override
-        public void mouseClicked(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
+        public void mouseClicked(MouseEvent mouseEvent) {
+            int x = mouseEvent.getX();
+            int y = mouseEvent.getY();
             MapObject o = findObject(x, y);
-            ObjectGroup og;
+            ObjectsLayer og;
             try {
-                og = (ObjectGroup) getEditor().getCurrentLayer();
+                og = (ObjectsLayer) getEditor().getCurrentLayer();
             } catch (ClassCastException ccx) {
                 return; // should never happen though, as ObjectSelectionToolSemantic should only ever be active when an ObjectGroup is the current layer...
             }
@@ -104,7 +105,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             final int allMask = MouseEvent.SHIFT_DOWN_MASK;
             final int addSelectionMask = MouseEvent.SHIFT_DOWN_MASK;
             final int selectionClickMask = 0;
-            final int modifiers = e.getModifiersEx() & allMask;
+            final int modifiers = mouseEvent.getModifiersEx() & allMask;
             if (o == null) {  // o==null if mouse click did not hit a MapObject
                 if (modifiers == selectionClickMask)
                     ss.clearSelection();
@@ -117,9 +118,9 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             }
         }
 
-        public void mousePressed(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
+        public void mousePressed(MouseEvent mouseEvent) {
+            int x = mouseEvent.getX();
+            int y = mouseEvent.getY();
             Mode m = determineMode(x, y);
             switch (m) {
                 case SELECT:
@@ -134,12 +135,12 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             }
         }
 
-        public void mouseReleased(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
+        public void mouseReleased(MouseEvent mouseEvent) {
+            int x = mouseEvent.getX();
+            int y = mouseEvent.getY();
             switch (mode) {
                 case SELECT: {
-                    boolean mergeSelection = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0;
+                    boolean mergeSelection = (mouseEvent.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0;
                     finishSelection(x, y, mergeSelection);
                 }
                 break;
@@ -152,8 +153,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
             }
         }
 
-        public void mouseExited(MouseEvent e) {
-            //            finishSelection(e.getX(), e.getY());
+        public void mouseExited(MouseEvent mouseEvent) {
         }
     };
 
@@ -178,7 +178,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
     private MapObject findObject(int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectGroup og = (ObjectGroup) (getEditor().getCurrentLayer());
+        ObjectsLayer og = (ObjectsLayer) (getEditor().getCurrentLayer());
         final int margin = 1;   // one pixel margin around selection point
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
         r = mapView.screenToPixelCoords(og, r);
@@ -189,7 +189,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
 
     private Corner findObjectCorner(MapObject o, int x, int y) {
         MapView mapView = getEditor().getMapView();
-        ObjectGroup og = (ObjectGroup) (getEditor().getCurrentLayer());
+        ObjectsLayer og = (ObjectsLayer) (getEditor().getCurrentLayer());
         final int margin = 2;   // one pixel margin around selection point
 
         Rectangle r = new Rectangle(x - margin, y - margin, 1 + 2 * margin, 1 + 2 * margin);
@@ -252,7 +252,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic {
         if (mode != Mode.SELECT)
             return;
 
-        ObjectGroup og = (ObjectGroup) selectedLayer;
+        ObjectsLayer og = (ObjectsLayer) selectedLayer;
         MapObject[] objects = og.findObjects(selectionRubberband);
         if (objects.length > 0) {
             Selection[] selection = new Selection[objects.length];

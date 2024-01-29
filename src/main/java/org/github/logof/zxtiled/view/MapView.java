@@ -16,7 +16,7 @@ import lombok.Getter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -94,18 +94,19 @@ public abstract class MapView extends JPanel implements Scrollable {
      * Creates a MapView instance that will render the map in the right
      * orientation.
      *
-     * @param p the Map to create a view for
+     * @param tileMap the Map to create a view for
      * @return a suitable instance of a MapView for the given Map
-     * @see TileMap#getOrientation()
+     * @see TileMap#getMapType()
      */
-    public static MapView createViewforMap(TileMap p) {
-        MapView mapView = null;
-
-        int orientation = p.getOrientation();
-        if (orientation == TileMap.MDO_ORTHOGONAL) {
-            mapView = new OrthoMapView(p);
+    public static MapView createViewforMap(TileMap tileMap) {
+        switch (tileMap.getMapType()) {
+            case MAP_SIDE_SCROLLED:
+                return new SideScrelledMapView(tileMap);
+            case MAP_TOP_DOWN:
+                return new SideScrelledMapView(tileMap);
+            default:
+                return null;
         }
-        return mapView;
     }
 
     public void setSelectionSet(SelectionSet selectionSet) {
@@ -382,7 +383,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         for (Selection selection : selectionSet) {
             if (ObjectSelection.class.isAssignableFrom(selection.getClass())) {
                 ObjectSelection objectSelection = (ObjectSelection) selection;
-                MapObject mapObject = objectSelection.getObject();
+                MapObject mapObject = objectSelection.getMapObject();
                 Rectangle rectangle = pixelToScreenCoordinates(mapObject.getBounds());
                 paintSelectionRectangle(g2d, rectangle);
             }
@@ -411,8 +412,8 @@ public abstract class MapView extends JPanel implements Scrollable {
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectGroup) {
-                        paintObjectGroup(g2d, (ObjectGroup) layer);
+                    } else if (layer instanceof ObjectsLayer) {
+                        paintObjectGroup(g2d, (ObjectsLayer) layer);
                     }
                 }
             }
@@ -433,7 +434,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param g2d the graphics context to draw the object group onto
      * @param og  the ObjectGroup to be drawn
      */
-    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectGroup og);
+    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectsLayer og);
 
     /**
      * Tells this view a certain region of the map needs to be repainted.
@@ -474,7 +475,7 @@ public abstract class MapView extends JPanel implements Scrollable {
 
     // Conversion functions
 
-    public abstract Point screenToTileCoords(MapLayer layer, int x, int y);
+    public abstract Point screenToTileCoordinates(MapLayer layer, int x, int y);
 
     /**
      * Returns the pixel coordinates on the map based on the given screen

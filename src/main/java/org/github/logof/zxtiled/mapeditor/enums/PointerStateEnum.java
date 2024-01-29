@@ -10,5 +10,7 @@ public enum PointerStateEnum {
     PS_MOVE,
     PS_ADD_OBJ,
     PS_REMOVE_OBJ,
-    PS_MOVE_OBJ
+    PS_MOVE_OBJ,
+    PS_START_OBJECT,
+    PS_FINISH_OBJECT
 }

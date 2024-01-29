@@ -17,29 +17,35 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
 import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
-import org.github.logof.zxtiled.mapeditor.dialogs.AboutDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.BrushDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.ConfigurationDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.MapPropertiesDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.NewTilesetDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.ResizeDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.SearchDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.TilesetManager;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
+import org.github.logof.zxtiled.mapeditor.gui.ApplicationFrame;
+import org.github.logof.zxtiled.mapeditor.gui.SmartSplitPane;
+import org.github.logof.zxtiled.mapeditor.gui.StatusBar;
+import org.github.logof.zxtiled.mapeditor.gui.TabbedTilesetsPane;
+import org.github.logof.zxtiled.mapeditor.gui.TilePalettePanel;
+import org.github.logof.zxtiled.mapeditor.gui.TilesetPanel;
+import org.github.logof.zxtiled.mapeditor.gui.ToolBar;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.AboutDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.ConfigurationDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.MapPropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.NewTilesetDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.PropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.ResizeDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.TilesetManager;
+import org.github.logof.zxtiled.mapeditor.gui.menu.MainMenuBar;
+import org.github.logof.zxtiled.mapeditor.gui.panel.MapLayersPanel;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorActionListener;
-import org.github.logof.zxtiled.mapeditor.listener.MapEditorChangeListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorComponentListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorListSelectionListener;
 import org.github.logof.zxtiled.mapeditor.listener.MapEditorMapChangeListener;
@@ -47,16 +53,6 @@ import org.github.logof.zxtiled.mapeditor.listener.MapEditorMouseListener;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
-import org.github.logof.zxtiled.mapeditor.ui.ApplicationFrame;
-import org.github.logof.zxtiled.mapeditor.ui.FloatablePanel;
-import org.github.logof.zxtiled.mapeditor.ui.SmartSplitPane;
-import org.github.logof.zxtiled.mapeditor.ui.StatusBar;
-import org.github.logof.zxtiled.mapeditor.ui.TButton;
-import org.github.logof.zxtiled.mapeditor.ui.TabbedTilesetsPane;
-import org.github.logof.zxtiled.mapeditor.ui.TilePalettePanel;
-import org.github.logof.zxtiled.mapeditor.ui.TilesetPanel;
-import org.github.logof.zxtiled.mapeditor.ui.ToolBar;
-import org.github.logof.zxtiled.mapeditor.ui.menu.MainMenuBar;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.UndoHandler;
 import org.github.logof.zxtiled.mapeditor.util.LayerTableModel;
@@ -65,7 +61,6 @@ import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
 import org.github.logof.zxtiled.util.TiledConfiguration;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
@@ -134,6 +129,7 @@ public class MapEditor {
     @Getter
     @Setter
     private float relativeMidY;
+
     private JPanel dataPanel;
 
     @Getter
@@ -157,7 +153,7 @@ public class MapEditor {
     @Getter
     @Setter
     private MapLayerEdit paintEdit;
-    private FloatablePanel layersPanel;
+    private MapLayersPanel mapLayersPanel;
     private TilesetPanel tilesetPanel;
 
 
@@ -174,7 +170,6 @@ public class MapEditor {
 
     private final ListSelectionListener listSelectionListener;
     private final MapChangeListener mapChangeListener;
-    private final ChangeListener changeListener;
     private final ComponentListener componentListener;
     public MapEditor() {
         MapEditorAction.init(this);
@@ -187,8 +182,8 @@ public class MapEditor {
         pointerStateManager = new PointerStateManager(this);
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
+
         mapChangeListener = new MapEditorMapChangeListener(this);
-        changeListener = new MapEditorChangeListener(this);
         componentListener = new MapEditorComponentListener(this);
 
         undoHandler = new UndoHandler(this);
@@ -206,13 +201,15 @@ public class MapEditor {
                 MapEditorAction.exitAction.actionPerformed(null);
             }
         });
+
         appFrame.setContentPane(createContentPane());
+        //new MapEditorMainPanel(appFrame);
         mainMenuBar = new MainMenuBar();
         appFrame.setJMenuBar(mainMenuBar);
 
 
-        setCurrentTileMap(null);
-        updateRecent(null);
+        //setCurrentTileMap(null);
+        //updateRecent(null);
 
         appFrame.setVisible(true);
 
@@ -223,12 +220,10 @@ public class MapEditor {
         appFrame.updateExtendedState();
 
         // Restore the size and position of the layers and tileset panels.
-        layersPanel.restore();
-        tilesetPanel.restore();
 
-        rightSplit.restore();
-        mainSplit.restore();
-        paletteSplit.restore();
+        //rightSplit.restore();
+        //mainSplit.restore();
+        //paletteSplit.restore();
 
         // Make sure the map view is redrawn when grid preferences change.
         // todo: move this functionality out of here somehow, but not back into MapView
@@ -268,35 +263,32 @@ public class MapEditor {
         createData();
         statusBar = new StatusBar();
 
-        // todo: Make continuouslayout an option. Because it can be slow, some
-        // todo: people may prefer not to have that.
-        layersPanel = new FloatablePanel(getAppFrame(), dataPanel, Constants.PANEL_LAYERS, "layers");
-
-        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel.getContentPane(), null, "rightSplit");
+        // todo: Make continuous layout an option. Because it can be slow, some people may prefer not to have that.
+        mapLayersPanel = new MapLayersPanel(dataPanel, Constants.PANEL_LAYERS);
+        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, mapLayersPanel.getContentPane(),
+                null, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
         rightSplit.setResizeWeight(0.5);
         rightSplit.setBorder(null);
 
-        mainSplit = new SmartSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
+        mainSplit = new SmartSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
                 rightSplit, "mainSplit");
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
-        tilesetPanel = new TilesetPanel(tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE, "tilesets");
-        paletteSplit = new SmartSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetPanel.getContentPane(), "paletteSplit");
+        tilesetPanel = new TilesetPanel(tabbedTilesetsPane, Constants.PANEL_TILE_PALETTE);
+        paletteSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, mainSplit,
+                tilesetPanel.getContentPane(), "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(0.8);
 
-
         // GUI components
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(toolBar, BorderLayout.WEST);
+        mainPanel.add(toolBar, BorderLayout.LINE_START);
         mainPanel.add(paletteSplit, BorderLayout.CENTER);
-        mainPanel.add(statusBar, BorderLayout.SOUTH);
+        mainPanel.add(statusBar, BorderLayout.PAGE_END);
 
         return mainPanel;
     }
@@ -309,18 +301,6 @@ public class MapEditor {
         dataPanel = new JPanel(new BorderLayout());
 
         layerPopupMenu = new JPopupMenu();
-        layerPopupMenu.add(MapEditorAction.addLayerAction);
-        layerPopupMenu.add(MapEditorAction.addObjectGroupAction);
-        layerPopupMenu.add(MapEditorAction.cloneLayerAction);
-        layerPopupMenu.addSeparator();
-        layerPopupMenu.add(MapEditorAction.deleteLayerAction);
-        layerPopupMenu.add(MapEditorAction.moveLayerUpAction);
-        layerPopupMenu.add(MapEditorAction.moveLayerDownAction);
-        layerPopupMenu.addSeparator();
-        layerPopupMenu.add(MapEditorAction.mergeLayerDownAction);
-        layerPopupMenu.addSeparator();
-        layerPopupMenu.add(MapEditorAction.mergeAllLayersAction);
-        layerPopupMenu.addSeparator();
         layerPopupMenu.add(MapEditorAction.showLayerPropertiesAction);
 
         //navigation and tool options
@@ -347,22 +327,9 @@ public class MapEditor {
         sliderPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                 sliderPanel.getPreferredSize().height));
 
-        // Layer buttons
-        AbstractButton layerAddButton = new TButton(MapEditorAction.addLayerAction);
-        MapEventAdapter.addListener(layerAddButton);
-
-        JPanel layerButtons = new JPanel();
-        layerButtons.setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1;
-        layerButtons.add(layerAddButton, gridBagConstraints);
-        layerButtons.add(new TButton(MapEditorAction.moveLayerUpAction), gridBagConstraints);
-        layerButtons.add(new TButton(MapEditorAction.moveLayerDownAction), gridBagConstraints);
-        layerButtons.add(new TButton(MapEditorAction.cloneLayerAction), gridBagConstraints);
-        layerButtons.add(new TButton(MapEditorAction.deleteLayerAction), gridBagConstraints);
-        layerButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                layerButtons.getPreferredSize().height));
 
         JPanel layerPanel = new JPanel();
         layerPanel.setLayout(new GridBagLayout());
@@ -379,10 +346,6 @@ public class MapEditor {
         gridBagConstraints.weighty = 1;
         gridBagConstraints.gridy += 1;
         layerPanel.add(new JScrollPane(layerTable), gridBagConstraints);
-        gridBagConstraints.weighty = 0;
-        gridBagConstraints.insets = new Insets(0, 0, 0, 0);
-        gridBagConstraints.gridy += 1;
-        layerPanel.add(layerButtons, gridBagConstraints);
 
         // Create paint panel
         TilePalettePanel tilePalettePanel = new TilePalettePanel();
@@ -422,19 +385,11 @@ public class MapEditor {
     }
 
     public void updateLayerOperations() {
-        int nrLayers = 0;
-
-        if (currentTileMap != null) {
-            nrLayers = currentTileMap.getTotalLayers();
-        }
-
         final boolean validSelection = currentLayerIndex >= 0;
-        final boolean notBottom = currentLayerIndex > 0;
-        final boolean notTop = currentLayerIndex < nrLayers - 1 && validSelection;
         final boolean tileLayer =
                 validSelection && getCurrentLayer() instanceof TileLayer;
         final boolean objectGroup =
-                validSelection && getCurrentLayer() instanceof ObjectGroup;
+                validSelection && getCurrentLayer() instanceof ObjectsLayer;
 
         if (validSelection) {
             MapLayer mapLayer = getCurrentLayer();
@@ -444,12 +399,6 @@ public class MapEditor {
         toolBar.updateValidSelectionOperations(validSelection);
         toolBar.updateObjectGroupOperations(objectGroup);
 
-        MapEditorAction.cloneLayerAction.setEnabled(validSelection);
-        MapEditorAction.deleteLayerAction.setEnabled(validSelection);
-        MapEditorAction.moveLayerUpAction.setEnabled(notTop);
-        MapEditorAction.moveLayerDownAction.setEnabled(notBottom);
-        MapEditorAction.mergeLayerDownAction.setEnabled(notBottom);
-        MapEditorAction.mergeAllLayersAction.setEnabled(nrLayers > 1);
     }
 
     /**
@@ -480,11 +429,11 @@ public class MapEditor {
         currentLayerIndex = index;
         layerTable.changeSelection(totalLayers - currentLayerIndex - 1, 0,
                 false, false);
-        MapLayer l = currentTileMap.getLayer(currentLayerIndex);
-        mapView.setCurrentLayer(l);
-        Rectangle r = l.getBounds();
+        MapLayer mapLayer = currentTileMap.getLayer(currentLayerIndex);
+        mapView.setCurrentLayer(mapLayer);
+        Rectangle layerBounds = mapLayer.getBounds();
         statusBar.getStatusLabel()
-                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
+                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, mapLayer.getName(), layerBounds.width, layerBounds.height, layerBounds.x, layerBounds.y, mapLayer.getTileWidth(), mapLayer.getTileHeight()));
         cursorHighlight.setParent(getCurrentLayer());
 
         pointerStateManager.updateToolSemantics();
@@ -533,14 +482,11 @@ public class MapEditor {
     public void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
-        if (command.equals(Resources.getString("menu.edit.brush"))) {
-            BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
-            bd.setVisible(true);
-        } else if (command.equals(Resources.getString("menu.tilesets.new"))) {
+        if (command.equals(Resources.getString("menu.tilesets.new"))) {
             if (currentTileMap != null) {
                 NewTilesetDialog dialog =
                         new NewTilesetDialog(appFrame, getCurrentLayer(), undoSupport);
-                TileSet newSet = dialog.create();
+                Tileset newSet = dialog.create();
                 if (newSet != null) {
                     currentTileMap.addTileset(newSet);
                 }
@@ -554,7 +500,7 @@ public class MapEditor {
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     String filename = chooser.getSelectedFile().getAbsolutePath();
                     try {
-                        TileSet set = MapHelper.loadTileset(filename);
+                        Tileset set = MapHelper.loadTileset(filename);
                         currentTileMap.addTileset(set);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -563,8 +509,8 @@ public class MapEditor {
             }
         } else if (command.equals(Resources.getString("menu.tilesets.refresh"))) {
             if (currentTileMap != null) {
-                Vector<TileSet> tilesets = currentTileMap.getTilesets();
-                for (TileSet tileset : tilesets) {
+                Vector<Tileset> tilesets = currentTileMap.getTilesets();
+                for (Tileset tileset : tilesets) {
                     try {
                         tileset.checkUpdate();
                     } catch (IOException e) {
@@ -603,9 +549,6 @@ public class MapEditor {
         } else if (command.equals(Resources.getString("menu.map.resize"))) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.setVisible(true);
-        } else if (command.equals(Resources.getString("menu.map.search"))) {
-            SearchDialog sd = new SearchDialog(appFrame, currentTileMap);
-            sd.setVisible(true);
         } else if (command.equals(Resources.getString("menu.help.about"))) {
             showAboutDialog();
         } else if (command.equals(Resources.getString("menu.edit.preferences"))) {
@@ -630,9 +573,6 @@ public class MapEditor {
             mainDialogPrefs.putInt("height", appFrame.getHeight());
         }
 
-        // Allow the floatable panels to save their position and size
-        layersPanel.save();
-
         mainSplit.save();
         paletteSplit.save();
         rightSplit.save();
@@ -648,7 +588,7 @@ public class MapEditor {
 
     public void pour(TileLayer layer, int x, int y,
                       Tile newTile, Tile oldTile) {
-        if (newTile == oldTile || !layer.canEdit()) return;
+        if (newTile == oldTile || layer.cannotEdit()) return;
 
         Rectangle area;
         TileLayer before = (TileLayer) createLayerCopy(layer);
@@ -769,10 +709,8 @@ public class MapEditor {
      * Loads a map.
      *
      * @param file filename of map to load
-     * @return <code>true</code> if the file was loaded, <code>false</code> if
-     * an error occured
      */
-    public boolean loadMap(String file) {
+    public void loadMap(String file) {
         File exist = new File(file);
         if (!exist.exists()) {
             String msg = Resources.getString("general.file.notexists.message");
@@ -781,7 +719,7 @@ public class MapEditor {
                     Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
             statusBar.getStatusLabel().setErrorText(msg);
-            return false;
+            //return false;
         }
 
         try {
@@ -791,7 +729,7 @@ public class MapEditor {
                 setCurrentTileMap(tileMap);
                 updateRecent(file);
                 statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_INFO_LOAD_SUCCESS);
-                return true;
+                //return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
                         Resources.getString("general.file.failed"),
@@ -809,7 +747,7 @@ public class MapEditor {
         }
 
         statusBar.getStatusLabel().setInfoText(Constants.STATUS_FILE_ERROR_LOAD_FAILURE);
-        return false;
+        //return false;
     }
 
     //TODO как-то нужно вызывать из FileMenu
@@ -830,14 +768,14 @@ public class MapEditor {
         }*/
     }
 
-    public void setCurrentTileMap(TileMap newTileMap) {
+    public void setCurrentTileMap(TileMap tileMap) {
         // Cancel any active selection
         if (marqueeSelection != null && currentTileMap != null) {
             currentTileMap.removeLayerSpecial(marqueeSelection);
         }
         marqueeSelection = null;
 
-        currentTileMap = newTileMap;
+        currentTileMap = tileMap;
         boolean mapLoaded = currentTileMap != null;
 
         // Create a default brush (protect against a bug with custom brushes)
@@ -874,10 +812,6 @@ public class MapEditor {
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
             mapView.setShowGrid(display.getBoolean("showGrid", true));
-            JViewport mapViewport = new JViewport();
-            mapViewport.setView(mapView);
-            mapViewport.addChangeListener(changeListener);
-            mapScrollPane.setViewport(mapViewport);
             pointerStateManager.setCurrentPointerState(PointerStateEnum.PS_PAINT);
 
             currentTileMap.addMapChangeListener(mapChangeListener);
@@ -896,10 +830,10 @@ public class MapEditor {
 
             // Get the first non-null tile from the first tileset containing
             // non-null tiles.
-            Vector<TileSet> tilesets = currentTileMap.getTilesets();
+            Vector<Tileset> tilesets = currentTileMap.getTilesets();
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
-                Iterator<TileSet> it = tilesets.iterator();
+                Iterator<Tileset> it = tilesets.iterator();
                 while (it.hasNext() && firstTile == null) {
                     firstTile = it.next().getFirstTile();
                 }

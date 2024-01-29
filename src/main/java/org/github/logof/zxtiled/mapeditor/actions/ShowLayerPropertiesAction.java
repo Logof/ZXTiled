@@ -8,8 +8,8 @@ package org.github.logof.zxtiled.mapeditor.actions;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.dialogs.LayerPropertiesDialog;
-import org.github.logof.zxtiled.mapeditor.dialogs.PropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.LayerPropertiesDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs.PropertiesDialog;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 

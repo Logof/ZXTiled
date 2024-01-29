@@ -15,8 +15,8 @@ import java.util.Vector;
  * @author upachler
  */
 public class SelectionSet implements Iterable<Selection> {
-    Set<Selection> set = new HashSet<Selection>();
-    private final Vector<SelectionSetListener> listeners = new Vector<SelectionSetListener>();
+    Set<Selection> set = new HashSet<>();
+    private final Vector<SelectionSetListener> listeners = new Vector<>();
 
     public void addSelectionListener(SelectionSetListener l) {
         listeners.add(l);
@@ -41,8 +41,9 @@ public class SelectionSet implements Iterable<Selection> {
     }
 
     void clearSelection() {
-        if (set.size() == 0)
+        if (set.isEmpty()) {
             return;
+        }
         Selection[] a = set.toArray(new Selection[set.size()]);
         set.clear();
         fireSelectionRemoved(a);
@@ -73,6 +74,4 @@ public class SelectionSet implements Iterable<Selection> {
         for (SelectionSetListener l : listeners)
             l.selectionRemoved(this, a);
     }
-
-
 }

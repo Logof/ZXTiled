@@ -10,9 +10,6 @@ import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.UndoableEdit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * @author upachler
  */
@@ -28,20 +25,6 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
         backupState.readFrom(layer);
         this.layer = layer;
         this.significant = significant;
-    }
-
-    public void undo() {
-        super.undo();
-        assert !undone;
-        swapViewportState();
-        undone = true;
-    }
-
-    public void redo() {
-        super.redo();
-        assert undone;
-        swapViewportState();
-        undone = false;
     }
 
     @Override
@@ -63,13 +46,6 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
 
         // inisignificant changes are merged
         return !other.isSignificant();
-    }
-
-    private void swapViewportState() {
-        ViewportState s = backupState.duplicate();
-        s.readFrom(layer);
-        backupState.writeTo(layer);
-        backupState = s;
     }
 
     @Override
@@ -95,7 +71,6 @@ public class MapLayerViewportSettingsEdit extends AbstractUndoableEdit {
             try {
                 return (ViewportState) clone();
             } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(MapViewportSettingsEdit.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
             }
         }

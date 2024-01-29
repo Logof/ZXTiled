@@ -1,7 +1,7 @@
 package org.github.logof.zxtiled.mapeditor.actions;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.ObjectGroup;
+import org.github.logof.zxtiled.core.ObjectsLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -18,27 +18,6 @@ public class LayerTransformAction extends AbstractAction {
         this.mapEditor = mapEditor;
 
         switch (transform) {
-            case MapLayer.ROTATE_90:
-                putValue(NAME, Resources.getString("action.layer.transform.rotate90.name"));
-                putValue(SHORT_DESCRIPTION,
-                        Resources.getString("action.layer.transform.rotate90.tooltip"));
-                putValue(SMALL_ICON,
-                        Resources.getIcon("icon/gimp-rotate-90-16.png"));
-                break;
-            case MapLayer.ROTATE_180:
-                putValue(NAME, Resources.getString("action.layer.transform.rotate180.name"));
-                putValue(SHORT_DESCRIPTION,
-                        Resources.getString("action.layer.transform.rotate180.tooltip"));
-                putValue(SMALL_ICON,
-                        Resources.getIcon("icon/gimp-rotate-180-16.png"));
-                break;
-            case MapLayer.ROTATE_270:
-                putValue(NAME, Resources.getString("action.layer.transform.rotate270.name"));
-                putValue(SHORT_DESCRIPTION,
-                        Resources.getString("action.layer.transform.rotate270.tooltip"));
-                putValue(SMALL_ICON,
-                        Resources.getIcon("icon/gimp-rotate-270-16.png"));
-                break;
             case MapLayer.MIRROR_VERTICAL:
                 putValue(NAME, Resources.getString("action.layer.transform.vertical.name"));
                 putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.vertical.tooltip"));
@@ -66,8 +45,8 @@ public class LayerTransformAction extends AbstractAction {
                 layer = new TileLayer(
                         mapEditor.getMarqueeSelection()
                                  .getSelectedAreaBounds(), currentLayer.getTileWidth(), currentLayer.getTileHeight());
-            } else if (currentLayer instanceof ObjectGroup) {
-                layer = new ObjectGroup(
+            } else if (currentLayer instanceof ObjectsLayer) {
+                layer = new ObjectsLayer(
                         mapEditor.getMarqueeSelection().getSelectedAreaBounds());
             }
             layer.setMap(mapEditor.getCurrentTileMap());
@@ -77,13 +56,6 @@ public class LayerTransformAction extends AbstractAction {
         }
 
         switch (transform) {
-            case MapLayer.ROTATE_90:
-            case MapLayer.ROTATE_180:
-            case MapLayer.ROTATE_270:
-                transEdit.setPresentationName("Rotate");
-                layer.rotate(transform);
-                //if(mapEditor.getMarqueeSelection() != null) mapEditor.getMarqueeSelection().rotate(transform);
-                break;
             case MapLayer.MIRROR_VERTICAL:
                 transEdit.setPresentationName("Vertical Flip");
                 layer.mirror(MapLayer.MIRROR_VERTICAL);

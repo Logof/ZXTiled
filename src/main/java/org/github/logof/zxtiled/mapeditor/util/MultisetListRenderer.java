@@ -13,7 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.util;
 
 import org.github.logof.zxtiled.core.Tile;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.*;
 import java.awt.*;
@@ -79,7 +79,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
                 // Selected entry always uses unscaled image
                 setIcon(new ImageIcon(tile.getImage()));
             }
-        } else if (value instanceof TileSet) {
+        } else if (value instanceof Tileset) {
             setIcon(setIcon);
         }
 

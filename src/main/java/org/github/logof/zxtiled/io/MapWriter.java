@@ -13,14 +13,14 @@
 package org.github.logof.zxtiled.io;
 
 import org.github.logof.zxtiled.core.TileMap;
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import java.io.FileFilter;
 import java.io.OutputStream;
 
 /**
  * Used by Tiled to denote a plugin for writing maps. The map file
  * can have any format, as long as the MapWriter implementor accepts
- * instances of {@link TileMap} and {@link TileSet}.
+ * instances of {@link TileMap} and {@link Tileset}.
  * <p>
  * $Id$
  */
@@ -41,7 +41,7 @@ public interface MapWriter extends PluggableMapIO, FileFilter {
      * @param filename the filename of the tileset file
      * @throws Exception
      */
-    void writeTileset(TileSet set, String filename) throws Exception;
+    void writeTileset(Tileset set, String filename) throws Exception;
 
     /**
      * Writes a map to an already opened stream. Useful
@@ -60,5 +60,5 @@ public interface MapWriter extends PluggableMapIO, FileFilter {
      * @param out
      * @throws Exception
      */
-    void writeTileset(TileSet set, OutputStream out) throws Exception;
+    void writeTileset(Tileset set, OutputStream out) throws Exception;
 }

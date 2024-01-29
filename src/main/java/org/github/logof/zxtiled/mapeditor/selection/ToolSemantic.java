@@ -5,6 +5,7 @@
 
 package org.github.logof.zxtiled.mapeditor.selection;
 
+import lombok.Getter;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 
 /**
@@ -21,6 +22,7 @@ import org.github.logof.zxtiled.mapeditor.MapEditor;
  *
  * @author upachler
  */
+@Getter
 public abstract class ToolSemantic {
     private final MapEditor editor;
 
@@ -43,10 +45,6 @@ public abstract class ToolSemantic {
      * active for that tool.
      */
     public void deactivate() {
-    }
-
-    public MapEditor getEditor() {
-        return editor;
     }
 
 

@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.core.event;
 
-import org.github.logof.zxtiled.core.TileSet;
+import org.github.logof.zxtiled.core.Tileset;
 import java.util.EventObject;
 
 /**
@@ -21,11 +21,11 @@ import java.util.EventObject;
  * @version $Id$
  */
 public class TilesetChangedEvent extends EventObject {
-    public TilesetChangedEvent(TileSet set) {
+    public TilesetChangedEvent(Tileset set) {
         super(set);
     }
 
-    public TileSet getTileset() {
-        return (TileSet) getSource();
+    public Tileset getTileset() {
+        return (Tileset) getSource();
     }
 }

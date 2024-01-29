@@ -35,19 +35,6 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
-    /**
-     * ROTATE_90
-     */
-    public static final int ROTATE_90 = 90;
-    /**
-     * ROTATE_180
-     */
-    public static final int ROTATE_180 = 180;
-    /**
-     * ROTATE_270
-     */
-    public static final int ROTATE_270 = 270;
-
     @Getter
     protected String name;
     protected boolean isVisible = true;
@@ -58,9 +45,11 @@ public abstract class MapLayer implements Cloneable {
     private float viewPlaneDistance = 0.0f;
     @Getter
     private boolean viewPlaneInfinitelyFarAway = false;
-    private TileMap myTileMap;
+    @Getter
+    private TileMap tileMap;
+    @Getter
     private Properties properties = new Properties();
-    private final Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
+    private final Vector<MapLayerChangeListener> listeners = new Vector<>();
 
     public MapLayer() {
         bounds = new Rectangle();
@@ -68,11 +57,11 @@ public abstract class MapLayer implements Cloneable {
     }
 
     /**
-     * @param w width in tiles
-     * @param h height in tiles
+     * @param width width in tiles
+     * @param height height in tiles
      */
-    public MapLayer(int w, int h) {
-        this(new Rectangle(0, 0, w, h));
+    public MapLayer(int width, int height) {
+        this(new Rectangle(0, 0, width, height));
     }
 
     public MapLayer(Rectangle r) {
@@ -114,13 +103,7 @@ public abstract class MapLayer implements Cloneable {
         bounds.y += dy;
     }
 
-    public abstract void rotate(int angle);
-
     public abstract void mirror(int dir);
-
-    public TileMap getMap() {
-        return myTileMap;
-    }
 
     /**
      * Sets the map this layer is part of.
@@ -128,7 +111,7 @@ public abstract class MapLayer implements Cloneable {
      * @param tileMap the Map object
      */
     public void setMap(TileMap tileMap) {
-        myTileMap = tileMap;
+        this.tileMap = tileMap;
     }
 
     /**
@@ -232,8 +215,8 @@ public abstract class MapLayer implements Cloneable {
     public void setVisible(boolean visible) {
         if (isVisible != visible) {
             isVisible = visible;
-            if (getMap() != null) {
-                getMap().fireMapChanged();
+            if (getTileMap() != null) {
+                getTileMap().fireMapChanged();
             }
         }
     }
@@ -271,7 +254,7 @@ public abstract class MapLayer implements Cloneable {
         other.setLocked(bLocked);
         other.setViewPlaneDistance(getViewPlaneDistance());
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
-        other.myTileMap = myTileMap;
+        other.tileMap = tileMap;
         other.bounds.setBounds(bounds);
         if (other.properties != properties) {
             other.properties.clear();
@@ -327,17 +310,13 @@ public abstract class MapLayer implements Cloneable {
         bLocked = lock;
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
     public void setProperties(Properties p) {
         properties.clear();
         properties.putAll(p);
     }
 
-    public boolean canEdit() {
-        return !getLocked() && isVisible();
+    public boolean cannotEdit() {
+        return getLocked() || !isVisible();
     }
 
     /// returns the tile height that applies to this layer. To layers of this
@@ -345,7 +324,7 @@ public abstract class MapLayer implements Cloneable {
     /// implement their own tile width and tile height settings that differ
     /// from the one that the map is using.
     public int getTileHeight() {
-        return getMap().getTileHeight();
+        return getTileMap().getTileHeight();
     }
 
     /// returns the tile width that applies to this layer. To layers of this
@@ -353,7 +332,7 @@ public abstract class MapLayer implements Cloneable {
     /// implement their own tile width and tile height settings that differ
     /// from the one that the map is using.
     public int getTileWidth() {
-        return getMap().getTileWidth();
+        return getTileMap().getTileWidth();
     }
 
     public void setViewPlaneDistance(float viewPlaneDistance) {
@@ -361,8 +340,6 @@ public abstract class MapLayer implements Cloneable {
             return;
         }
         this.viewPlaneDistance = viewPlaneDistance;
-        if (getMap() == null) {
-        }
     }
 
     public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway) {
@@ -370,8 +347,6 @@ public abstract class MapLayer implements Cloneable {
             return;
         }
         this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
-        if (getMap() == null) {
-        }
     }
 
     private void fireRenamed(String newName, String oldName) {
