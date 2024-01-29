@@ -48,7 +48,6 @@ public class MapEditorActionListener implements ActionListener {
             mapEditor.getPointerStateManager().setCurrentPointerState(PointerStateEnum.PS_MOVE_OBJ);
             mapEditor.resetBrush();
         } else if ("startPointObject".equals(command)) {
-            //mapEditor.getCurrentTileMap().getLayers().forEachRemaining(layer -> (layer instanceof ObjectsLayer) ? "" : null);
             mapEditor.getPointerStateManager().setCurrentPointerState(PointerStateEnum.PS_START_OBJECT);
             mapEditor.resetBrush();
         } else if ("finishPointButton".equals(command)) {

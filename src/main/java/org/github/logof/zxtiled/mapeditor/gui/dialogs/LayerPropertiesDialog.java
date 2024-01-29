@@ -166,9 +166,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
                 MapLayer before = (MapLayer) layer.clone();
 
                 layer.setName(layerName.getText());
-                if (isTileLayer) {
-                    ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
-                }
                 MapLayer after = (MapLayer) layer.clone();
                 MapLayerEdit mle = new MapLayerEdit(layer, before, after);
                 mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));

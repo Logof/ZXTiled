@@ -212,9 +212,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
         insertLayer(getTotalLayers(), layer);
 
-        ObjectsLayer objectsLayer = new ObjectsLayer(this);
-        objectsLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), objectsLayer);
+        ObjectLayer objectLayer = new ObjectLayer(this);
+        objectLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
+        insertLayer(getTotalLayers(), objectLayer);
     }
 
     public void insertLayer(int index, MapLayer layer) {
@@ -237,7 +237,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * to "ObjectGroup [layer index]"
      */
     public void addObjectGroup() {
-        MapLayer layer = new ObjectsLayer(this);
+        MapLayer layer = new ObjectLayer(this);
         layer.setName(Resources.getString("general.objectgroup.objectgroup") +
                 " " + super.getTotalLayers());
         super.addLayer(layer);

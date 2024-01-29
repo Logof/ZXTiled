@@ -37,13 +37,13 @@ public class SelectionLayer extends TileLayer {
     private MapLayer parentLayer;
 
     public SelectionLayer(MapLayer parent) {
-        super(parent.getWidth(), parent.getHeight(), parent.getTileWidth(), parent.getTileHeight());
+        super(parent.getWidth(), parent.getHeight());
         parentLayer = parent;
         init();
     }
 
     public SelectionLayer(int width, int height, int tileWidth, int tileHeight) {
-        super(width, height, tileWidth, tileHeight);
+        super(width, height);
         parentLayer = null;
         init();
     }

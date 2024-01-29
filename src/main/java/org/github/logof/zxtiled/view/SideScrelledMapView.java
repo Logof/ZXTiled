@@ -14,7 +14,7 @@ package org.github.logof.zxtiled.view;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
@@ -107,7 +107,7 @@ public class SideScrelledMapView extends MapView {
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectsLayer og) {
+    protected void paintObjectGroup(Graphics2D g2d, ObjectLayer og) {
         final Dimension tileSize = getLayerTileSize(og);
         assert tileSize.width != 0 && tileSize.height != 0;
         final Rectangle bounds = og.getBounds();

@@ -35,6 +35,10 @@ public abstract class MapLayer implements Cloneable {
      */
     public static final int MIRROR_VERTICAL = 2;
 
+    public static final int TILE_WIDTH = 16;
+    public static final int TILE_HEIGHT = 16;
+
+
     @Getter
     protected String name;
     protected boolean isVisible = true;
@@ -118,12 +122,12 @@ public abstract class MapLayer implements Cloneable {
      * Sets the offset of this map layer. The offset is a distance by which to
      * shift this layer from the origin of the map.
      *
-     * @param xOff x offset in tiles
-     * @param yOff y offset in tiles
+     * @param offsetX x offset in tiles
+     * @param offsetY y offset in tiles
      */
-    public void setOffset(int xOff, int yOff) {
-        bounds.x = xOff;
-        bounds.y = yOff;
+    public void setOffset(int offsetX, int offsetY) {
+        bounds.x = offsetX;
+        bounds.y = offsetY;
     }
 
     /**

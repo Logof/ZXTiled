@@ -64,7 +64,6 @@ public class LayerTableModel extends AbstractTableModel {
 
             }
         }
-
         this.map = map;
         if (Objects.nonNull(map)) {
             ((TileMap) map).addMapChangeListener(listener);

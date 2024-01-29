@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -386,19 +386,12 @@ public class MapEditor {
 
     public void updateLayerOperations() {
         final boolean validSelection = currentLayerIndex >= 0;
-        final boolean tileLayer =
-                validSelection && getCurrentLayer() instanceof TileLayer;
-        final boolean objectGroup =
-                validSelection && getCurrentLayer() instanceof ObjectsLayer;
+        final boolean tileLayer = validSelection && getCurrentLayer() instanceof TileLayer;
+        final boolean objectGroup = validSelection && getCurrentLayer() instanceof ObjectLayer;
 
-        if (validSelection) {
-            MapLayer mapLayer = getCurrentLayer();
-            cursorHighlight.setTileDimensions(mapLayer.getTileWidth(), mapLayer.getTileHeight());
-        }
         toolBar.updateTileLayerOperations(tileLayer);
         toolBar.updateValidSelectionOperations(validSelection);
         toolBar.updateObjectGroupOperations(objectGroup);
-
     }
 
     /**

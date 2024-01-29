@@ -16,7 +16,7 @@ import lombok.Getter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -304,7 +304,6 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param graphics the Graphics2D object to paint to
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see MapLayer
-     * @see SelectionLayer
      */
     @Override
     public void paintComponent(Graphics graphics) {
@@ -412,8 +411,8 @@ public abstract class MapView extends JPanel implements Scrollable {
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectsLayer) {
-                        paintObjectGroup(g2d, (ObjectsLayer) layer);
+                    } else if (layer instanceof ObjectLayer) {
+                        paintObjectGroup(g2d, (ObjectLayer) layer);
                     }
                 }
             }
@@ -434,7 +433,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param g2d the graphics context to draw the object group onto
      * @param og  the ObjectGroup to be drawn
      */
-    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectsLayer og);
+    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectLayer og);
 
     /**
      * Tells this view a certain region of the map needs to be repainted.

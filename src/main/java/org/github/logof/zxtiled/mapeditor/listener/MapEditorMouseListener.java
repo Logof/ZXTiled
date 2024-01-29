@@ -2,7 +2,7 @@ package org.github.logof.zxtiled.mapeditor.listener;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -22,6 +22,7 @@ import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MoveLayerEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MoveObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.RemoveObjectEdit;
+import org.github.logof.zxtiled.util.CoordinateUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -162,9 +163,9 @@ public class MapEditorMouseListener implements MouseListener,
                         mapEditor.getMapView().repaintRegion(layer, oldArea);
                     }
                 }
-            } else if (layer instanceof ObjectsLayer && !bMouseIsDragging) {
+            } else if (layer instanceof ObjectLayer && !bMouseIsDragging) {
                 // Get the object on this location and display the relative options dialog
-                ObjectsLayer group = (ObjectsLayer) layer;
+                ObjectLayer group = (ObjectLayer) layer;
                 Point pos = mapEditor.getMapView().screenToPixelCoords(
                         layer, event.getX(), event.getY());
                 MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
@@ -189,8 +190,7 @@ public class MapEditorMouseListener implements MouseListener,
                     currentPosition.x - dx,
                     currentPosition.y - dy);
 
-            // Take into account map boundaries in order to prevent
-            // scrolling past them
+            // Take into account map boundaries in order to prevent scrolling past them
             int maxX = java.lang.Math.max(0, mapEditor.getMapView().getWidth() - mapViewPort.getWidth());
             int maxY = java.lang.Math.max(0, mapEditor.getMapView().getHeight() - mapViewPort.getHeight());
             newPosition.x = Math.min(maxX, Math.max(0, newPosition.x));
@@ -203,8 +203,8 @@ public class MapEditorMouseListener implements MouseListener,
                     mapEditor.getPaintEdit().setPresentationName(Constants.TOOL_PAINT);
                     if (layer instanceof TileLayer) {
                         try {
-                            mapEditor.getMapView().repaintRegion(
-                                    layer, mapEditor.getCurrentBrush().doPaint(tile.x, tile.y));
+                            mapEditor.getMapView()
+                                     .repaintRegion(layer, mapEditor.getCurrentBrush().doPaint(tile.x, tile.y));
                             mapEditor.getStatusBar().getStatusLabel().clearText();
                         } catch (LayerLockedBrushException llx) {
                             mapEditor.getStatusBar().getStatusLabel()
@@ -287,7 +287,7 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_ADD_OBJ:
-                    if (layer instanceof ObjectsLayer) {
+                    if (layer instanceof ObjectLayer) {
                         if (mapEditor.getMarqueeSelection() == null) {
                             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
                             mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
@@ -312,8 +312,8 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_REMOVE_OBJ:
-                    if (layer instanceof ObjectsLayer) {
-                        ObjectsLayer group = (ObjectsLayer) layer;
+                    if (layer instanceof ObjectLayer) {
+                        ObjectLayer group = (ObjectLayer) layer;
                         Point pos = mapEditor.getMapView().screenToPixelCoords(
                                 layer, event.getX(), event.getY());
                         MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
@@ -326,11 +326,11 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_MOVE_OBJ:
-                    if (layer instanceof ObjectsLayer) {
+                    if (layer instanceof ObjectLayer) {
                         Point point = mapEditor.getMapView().screenToPixelCoords(
                                 layer, event.getX(), event.getY());
                         if (mapEditor.getCurrentObject() == null) {
-                            ObjectsLayer group = (ObjectsLayer) layer;
+                            ObjectLayer group = (ObjectLayer) layer;
                             mapEditor.setCurrentObject(group.getObjectNear(point.x, point.y, mapEditor.getMapView()
                                                                                                   .getZoom()));
                             if (mapEditor.getCurrentObject() == null) { // No object to move
@@ -350,13 +350,30 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_START_OBJECT: {
-                    if (layer instanceof ObjectsLayer) {
+                    if (layer instanceof ObjectLayer) {
+                        if (mapEditor.getMarqueeSelection() == null) {
+                            mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
+                            mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                        }
 
+                        Point limp = mouseInitialPressLocation;
+                        Rectangle oldArea = mapEditor.getMarqueeSelection().getSelectedAreaBounds();
+                        int minx = Math.min(limp.x, tile.x);
+                        int miny = Math.min(limp.y, tile.y);
+
+                        Rectangle selRect = new Rectangle(
+                                minx, miny, 16, 16);
+
+                        mapEditor.getMarqueeSelection().selectRegion(selRect);
+                        if (oldArea != null) {
+                            oldArea.add(mapEditor.getMarqueeSelection().getSelectedAreaBounds());
+                            mapEditor.getMapView().repaintRegion(layer, oldArea);
+                        }
                     }
+                    break;
                 }
-                break;
                 case PS_FINISH_OBJECT: {
-                    if (layer instanceof ObjectsLayer) {
+                    if (layer instanceof ObjectLayer) {
 
                     }
                 }
@@ -379,7 +396,7 @@ public class MapEditorMouseListener implements MouseListener,
                 mapEditor.getCurrentBrush().endPaint();
             }
         } else if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MOVE_OBJ) {
-            if (layer instanceof ObjectsLayer && mapEditor.getCurrentObject() != null &&
+            if (layer instanceof ObjectLayer && mapEditor.getCurrentObject() != null &&
                     (moveDist.x != 0 || moveDist.y != 0)) {
                 mapEditor.getUndoSupport().postEdit(
                         new MoveObjectEdit(mapEditor.getCurrentObject(), moveDist));
@@ -399,12 +416,10 @@ public class MapEditorMouseListener implements MouseListener,
                     (Math.max(limp.y, tile.y) - miny) + 1);
 
             // STAMP
-            if (mouseButton == MouseEvent.BUTTON3 &&
-                    layer instanceof TileLayer) {
-
+            if (mouseButton == MouseEvent.BUTTON3 && layer instanceof TileLayer) {
                 // Right mouse button dragged: create and set custom brush
-                MapLayer cl = mapEditor.getCurrentLayer();
-                TileLayer brushLayer = new TileLayer(bounds, cl.getTileWidth(), cl.getTileHeight());
+                MapLayer mapLayer = mapEditor.getCurrentLayer();
+                TileLayer brushLayer = new TileLayer(bounds, mapLayer.getTileWidth(), mapLayer.getTileHeight());
                 brushLayer.copyFrom(mapEditor.getCurrentLayer());
                 brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
                         tile.y - (int) bounds.getHeight() / 2);
@@ -421,20 +436,22 @@ public class MapEditorMouseListener implements MouseListener,
                             tile.x - (int) bounds.getWidth() / 2,
                             tile.y - (int) bounds.getHeight() / 2);
                 }
-            } else if (mouseButton == MouseEvent.BUTTON1 &&
-                    layer instanceof ObjectsLayer) {
-                // TODO: Fix this to use pixels in the first place
-                // (with optional snap to grid)
+            } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
+                ObjectLayer objectLayer = (ObjectLayer) layer;
+                // TODO: Fix this to use pixels in the first place (with optional snap to grid)
                 int w = mapEditor.getCurrentTileMap().getTileWidth();
                 int h = mapEditor.getCurrentTileMap().getTileHeight();
+
+                // TODO убрать затычки
+                int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(), 8, 1.5f);
+
                 MapObject object = new MapObject(
                         bounds.x * w,
-                        bounds.y * h,
-                        bounds.width * w,
-                        bounds.height * h);
-                ObjectsLayer group = (ObjectsLayer) layer;
-                mapEditor.getUndoSupport().postEdit(new AddObjectEdit(group, object));
-                group.addObject(object);
+                        bounds.y * h, mapNumber
+                );
+                mapEditor.getUndoSupport().postEdit(new AddObjectEdit(objectLayer, object));
+                objectLayer.addObject(object);
+
                 mapEditor.getMapView().repaint();
             }
 
