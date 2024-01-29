@@ -14,6 +14,7 @@ package org.github.logof.zxtiled.mapeditor.gui;
 
 import lombok.Getter;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -71,8 +72,8 @@ public class ResizePanel extends JPanel {
     public void moveMap(int x, int y) {
         // snap!
         inner.setLocation(
-                (int) (x * (currentTileMap.getTileWidth() * zoom)),
-                (int) (y * (currentTileMap.getTileHeight() * zoom)));
+                (int) (x * (Constants.TILE_WIDTH * zoom)),
+                (int) (y * (Constants.TILE_HEIGHT * zoom)));
     }
 
     public void setNewDimensions(Dimension n) {
@@ -97,8 +98,8 @@ public class ResizePanel extends JPanel {
             int newOffsetX = offsetX + (e.getX() - startPress.x);
             int newOffsetY = offsetY + (e.getY() - startPress.y);
 
-            newOffsetX /= (int) (currentTileMap.getTileWidth() * zoom);
-            newOffsetY /= (int) (currentTileMap.getTileHeight() * zoom);
+            newOffsetX /= (int) (Constants.TILE_WIDTH * zoom);
+            newOffsetY /= (int) (Constants.TILE_HEIGHT * zoom);
 
             if (newOffsetX != offsetX) {
                 firePropertyChange("offsetX", offsetX, newOffsetX);

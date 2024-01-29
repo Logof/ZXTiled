@@ -37,8 +37,8 @@ public class MultilayerPlane implements Iterable<MapLayer> {
     /**
      * Construct a MultilayerPlane to the specified dimensions.
      *
-     * @param width
-     * @param height
+     * @param width - Count of screens horizontally
+     * @param height - Count of screens vertically
      */
     public MultilayerPlane(int width, int height) {
         this();

@@ -1,17 +1,6 @@
-/*
- *  Tiled Map Editor, (c) 2004-2008
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.mapeditor.Constants;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -24,19 +13,19 @@ import java.util.Vector;
 /**
  * A layer containing {@link MapObject map objects}.
  */
-public class ObjectsLayer extends MapLayer {
+public class ObjectLayer extends MapLayer {
     private LinkedList<MapObject> objects = new LinkedList<>();
 
     /**
      * Default constructor.
      */
-    public ObjectsLayer() {
+    public ObjectLayer() {
     }
 
     /**
      * @param tileMap the map this object group is part of
      */
-    public ObjectsLayer(TileMap tileMap) {
+    public ObjectLayer(TileMap tileMap) {
         super(tileMap);
     }
 
@@ -48,7 +37,7 @@ public class ObjectsLayer extends MapLayer {
      * @param origX the x origin of this layer
      * @param origY the y origin of this layer
      */
-    public ObjectsLayer(TileMap tileMap, int origX, int origY) {
+    public ObjectLayer(TileMap tileMap, int origX, int origY) {
         super(tileMap);
         setBounds(new Rectangle(origX, origY, 0, 0));
     }
@@ -59,7 +48,7 @@ public class ObjectsLayer extends MapLayer {
      *
      * @param area the area of the object group
      */
-    public ObjectsLayer(Rectangle area) {
+    public ObjectLayer(Rectangle area) {
         super(area);
     }
 
@@ -104,12 +93,12 @@ public class ObjectsLayer extends MapLayer {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        ObjectsLayer clone = (ObjectsLayer) super.clone();
+        ObjectLayer clone = (ObjectLayer) super.clone();
         clone.objects = new LinkedList<>();
         for (MapObject object : objects) {
             final MapObject objectClone = (MapObject) object.clone();
             clone.objects.add(objectClone);
-            objectClone.setObjectsLayer(clone);
+            objectClone.setObjectLayer(clone);
         }
         return clone;
     }
@@ -121,40 +110,35 @@ public class ObjectsLayer extends MapLayer {
         return null;
     }
 
-    public void addObject(MapObject mapObject) {
-        objects.add(mapObject);
-        mapObject.setObjectsLayer(this);
+    public boolean addObject(MapObject mapObject) {
+        if (checkAbilityCreateObject(mapObject)) {
+            objects.add(mapObject);
+            mapObject.setObjectLayer(this);
+            return true;
+        }
+        return false;
     }
 
     public void removeObject(MapObject mapObject) {
         objects.remove(mapObject);
-        mapObject.setObjectsLayer(null);
+        mapObject.setObjectLayer(null);
     }
 
     public Iterator<MapObject> getObjects() {
         return objects.iterator();
     }
 
-    public MapObject getObjectAt(int x, int y) {
-        for (MapObject obj : objects) {
-            // Attempt to get an object bordering the point that has no width
-            if (obj.getWidth() == 0 && obj.getX() + bounds.x == x) {
-                return obj;
-            }
-
-            // Attempt to get an object bordering the point that has no height
-            if (obj.getHeight() == 0 && obj.getY() + bounds.y == y) {
-                return obj;
-            }
-
-            Rectangle rect = new Rectangle(obj.getX() + bounds.x * getTileMap().getTileWidth(),
-                    obj.getY() + bounds.y * getTileMap().getTileHeight(),
-                    obj.getWidth(), obj.getHeight());
-            if (rect.contains(x, y)) {
-                return obj;
-            }
+    // There can be 3 objects on one screen
+    private boolean checkAbilityCreateObject(MapObject mapObject) {
+        if (mapObject.getType().equals("playerStart")) {
+            return objects.stream().noneMatch(object -> object.getType().equals("playerStart"));
         }
-        return null;
+
+        if (mapObject.getType().equals("playerFinish")) {
+            return objects.stream().noneMatch(object -> object.getType().equals("playerFinish"));
+        }
+
+        return objects.stream().filter(object -> object.getScreenNumber() == mapObject.getScreenNumber()).count() < 3;
     }
 
     /**
@@ -215,8 +199,8 @@ public class ObjectsLayer extends MapLayer {
             if (obj.getWidth() == 0 && obj.getHeight() == 0) {
                 shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
             } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getTileMap().getTileWidth(),
-                        obj.getY() + bounds.y * getTileMap().getTileHeight(),
+                shape = new Rectangle2D.Double(obj.getX() + bounds.x * Constants.TILE_WIDTH,
+                        obj.getY() + bounds.y * Constants.TILE_HEIGHT,
                         obj.getWidth() > 0 ? obj.getWidth() : zoom,
                         obj.getHeight() > 0 ? obj.getHeight() : zoom);
             }

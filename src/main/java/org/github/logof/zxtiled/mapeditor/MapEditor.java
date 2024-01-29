@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.MapChangeListener;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
@@ -380,25 +380,17 @@ public class MapEditor {
 
             setCurrentLayerIndex(currentLayerIndex);
         }
-
         updateLayerOperations();
     }
 
     public void updateLayerOperations() {
-        final boolean validSelection = currentLayerIndex >= 0;
-        final boolean tileLayer =
-                validSelection && getCurrentLayer() instanceof TileLayer;
-        final boolean objectGroup =
-                validSelection && getCurrentLayer() instanceof ObjectsLayer;
+        final boolean isValidSelection = currentLayerIndex >= 0;
+        final boolean isTileLayer = isValidSelection && getCurrentLayer() instanceof TileLayer;
+        final boolean isObjectLayer = isValidSelection && getCurrentLayer() instanceof ObjectLayer;
 
-        if (validSelection) {
-            MapLayer mapLayer = getCurrentLayer();
-            cursorHighlight.setTileDimensions(mapLayer.getTileWidth(), mapLayer.getTileHeight());
-        }
-        toolBar.updateTileLayerOperations(tileLayer);
-        toolBar.updateValidSelectionOperations(validSelection);
-        toolBar.updateObjectGroupOperations(objectGroup);
-
+        toolBar.updateTileLayerOperations(isTileLayer);
+        toolBar.updateValidSelectionOperations(isValidSelection);
+        toolBar.updateObjectGroupOperations(isObjectLayer);
     }
 
     /**
@@ -433,7 +425,11 @@ public class MapEditor {
         mapView.setCurrentLayer(mapLayer);
         Rectangle layerBounds = mapLayer.getBounds();
         statusBar.getStatusLabel()
-                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT, mapLayer.getName(), layerBounds.width, layerBounds.height, layerBounds.x, layerBounds.y, mapLayer.getTileWidth(), mapLayer.getTileHeight()));
+                 .setInfoText(String.format(Constants.STATUS_LAYER_SELECTED_FORMAT,
+                         mapLayer.getName(),
+                         layerBounds.width,
+                         layerBounds.height, layerBounds.x, layerBounds.y,
+                         Constants.TILE_WIDTH, Constants.TILE_HEIGHT));
         cursorHighlight.setParent(getCurrentLayer());
 
         pointerStateManager.updateToolSemantics();
@@ -638,7 +634,7 @@ public class MapEditor {
 
         Rectangle bounds = new Rectangle(
                 area.x, area.y, area.width + 1, area.height + 1);
-        after = new TileLayer(bounds, layer.getTileWidth(), layer.getTileHeight());
+        after = new TileLayer(bounds);
         after.copyFrom(layer);
 
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);

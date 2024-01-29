@@ -14,10 +14,11 @@ package org.github.logof.zxtiled.view;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +72,7 @@ public class SideScrelledMapView extends MapView {
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -107,26 +108,25 @@ public class SideScrelledMapView extends MapView {
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectsLayer og) {
-        final Dimension tileSize = getLayerTileSize(og);
+    //TODO подумать, как хранить в координатах тайла или в пикселях
+    protected void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer) {
+        final Dimension tileSize = getLayerTileSize();
         assert tileSize.width != 0 && tileSize.height != 0;
-        final Rectangle bounds = og.getBounds();
-        Iterator<MapObject> itr = og.getObjects();
-        g2d.translate(
-                bounds.x * tileSize.width,
-                bounds.y * tileSize.height);
+        final Rectangle bounds = objectLayer.getBounds();
+        Iterator<MapObject> itr = objectLayer.getObjects();
+        g2d.translate(bounds.x * tileSize.width, bounds.y * tileSize.height);
 
         while (itr.hasNext()) {
-            MapObject mo = itr.next();
-            double ox = mo.getX() * zoom;
-            double oy = mo.getY() * zoom;
+            MapObject mapObject = itr.next();
+            double ox = mapObject.getX() * zoom;
+            double oy = mapObject.getY() * zoom;
 
-            Image objectImage = mo.getImage(zoom);
+            Image objectImage = mapObject.getImage(zoom);
             if (objectImage != null) {
                 g2d.drawImage(objectImage, (int) ox, (int) oy, null);
             }
 
-            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+            if (mapObject.getWidth() == 0 || mapObject.getHeight() == 0) {
                 g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -142,15 +142,15 @@ public class SideScrelledMapView extends MapView {
             } else {
                 g2d.setColor(Color.black);
                 g2d.drawRect((int) ox + 1, (int) oy + 1,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
                 g2d.setColor(Color.orange);
                 g2d.drawRect((int) ox, (int) oy,
-                        (int) (mo.getWidth() * zoom),
-                        (int) (mo.getHeight() * zoom));
+                        (int) (mapObject.getWidth() * zoom),
+                        (int) (mapObject.getHeight() * zoom));
             }
             if (zoom > 0.0625) {
-                final String s = mo.getName() != null ? mo.getName() : "(null)";
+                final String s = mapObject.getName() != null ? mapObject.getName() : "(null)";
                 g2d.setColor(Color.black);
                 g2d.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
                 g2d.setColor(Color.white);
@@ -170,7 +170,7 @@ public class SideScrelledMapView extends MapView {
             return;
 
         // Determine tile size
-        Dimension tileSize = getLayerTileSize(currentLayer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -208,7 +208,7 @@ public class SideScrelledMapView extends MapView {
             return;
         }
 
-        Dimension tileSize = getLayerTileSize(currentLayer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -246,7 +246,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public void repaintRegion(MapLayer layer, Rectangle region) {
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -263,7 +263,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public Point screenToTileCoordinates(MapLayer layer, int x, int y) {
-        Dimension tileSize = getLayerTileSize(layer);
+        Dimension tileSize = getLayerTileSize();
         return new Point(x / tileSize.width, y / tileSize.height);
     }
 
@@ -271,16 +271,16 @@ public class SideScrelledMapView extends MapView {
         return new Point(x * tileDimension.width, y * tileDimension.height);
     }
 
-    protected Dimension getLayerTileSize(MapLayer layer) {
+    protected Dimension getLayerTileSize() {
         return new Dimension(
-                (int) (layer.getTileWidth() * zoom),
-                (int) (layer.getTileHeight() * zoom));
+                (int) (Constants.TILE_WIDTH * zoom),
+                (int) (Constants.TILE_HEIGHT * zoom));
     }
 
     protected Dimension getMapTileSize() {
         return new Dimension(
-                (int) (tileMap.getTileWidth() * zoom),
-                (int) (tileMap.getTileHeight() * zoom));
+                (int) (Constants.TILE_WIDTH * zoom),
+                (int) (Constants.TILE_HEIGHT * zoom));
     }
 
     protected Polygon createGridPolygon(Dimension tileDimension, int tileX, int tileY, int border) {

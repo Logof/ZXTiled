@@ -64,9 +64,9 @@ public abstract class MapLayer implements Cloneable {
         this(new Rectangle(0, 0, width, height));
     }
 
-    public MapLayer(Rectangle r) {
+    public MapLayer(Rectangle rectangle) {
         this();
-        setBounds(r);
+        setBounds(rectangle);
     }
 
     /**
@@ -118,12 +118,12 @@ public abstract class MapLayer implements Cloneable {
      * Sets the offset of this map layer. The offset is a distance by which to
      * shift this layer from the origin of the map.
      *
-     * @param xOff x offset in tiles
-     * @param yOff y offset in tiles
+     * @param offsetX x offset in tiles
+     * @param offsetY y offset in tiles
      */
-    public void setOffset(int xOff, int yOff) {
-        bounds.x = xOff;
-        bounds.y = yOff;
+    public void setOffset(int offsetX, int offsetY) {
+        bounds.x = offsetX;
+        bounds.y = offsetY;
     }
 
     /**
@@ -317,22 +317,6 @@ public abstract class MapLayer implements Cloneable {
 
     public boolean cannotEdit() {
         return getLocked() || !isVisible();
-    }
-
-    /// returns the tile height that applies to this layer. To layers of this
-    /// type, the map's own tile height will apply. However, subtypes may
-    /// implement their own tile width and tile height settings that differ
-    /// from the one that the map is using.
-    public int getTileHeight() {
-        return getTileMap().getTileHeight();
-    }
-
-    /// returns the tile width that applies to this layer. To layers of this
-    /// type, the map's own tile width will apply. However, subtypes may
-    /// implement their own tile width and tile height settings that differ
-    /// from the one that the map is using.
-    public int getTileWidth() {
-        return getTileMap().getTileWidth();
     }
 
     public void setViewPlaneDistance(float viewPlaneDistance) {

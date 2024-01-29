@@ -14,6 +14,7 @@ package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
 import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.gui.AbstractDialog;
 import org.github.logof.zxtiled.mapeditor.gui.panel.NewMapMainPanel;
@@ -27,7 +28,6 @@ import java.util.prefs.Preferences;
 public class NewMapDialog extends AbstractDialog implements ActionListener {
     private static final String DIALOG_TITLE = Resources.getString("dialog.newmap.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
-    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
 
     private final Preferences preferences = TiledConfiguration.node("dialog/newmap");
     private TileMap tileMap;
@@ -60,9 +60,7 @@ public class NewMapDialog extends AbstractDialog implements ActionListener {
 
             //int orientation = TileMap.MDO_ORTHOGONAL;
 
-            tileMap = new TileMap(width * 15, height * 10);
-            tileMap.setTileWidth(16);
-            tileMap.setTileHeight(16);
+            tileMap = new TileMap(width * Constants.SCREEN_WIDTH, height * Constants.SCREEN_HEIGHT);
             tileMap.addAllLayers();
             tileMap.setMapType(MapTypeEnum.MAP_SIDE_SCROLLED);
             //tileMap.setOrientation(orientation);
@@ -70,8 +68,8 @@ public class NewMapDialog extends AbstractDialog implements ActionListener {
             // Save dialog options
             preferences.putInt("mapWidth", width);
             preferences.putInt("mapHeight", height);
-            preferences.putInt("tileWidth", 16);
-            preferences.putInt("tileHeight", 16);
+            preferences.putInt("tileWidth", Constants.TILE_WIDTH);
+            preferences.putInt("tileHeight", Constants.TILE_HEIGHT);
         }
         dispose();
     }

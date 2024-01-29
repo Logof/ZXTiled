@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.core;
 
 import java.awt.*;
@@ -18,22 +6,12 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * A TileLayer is a specialized MapLayer, used for tracking two dimensional
- * tile data.
- *
- * @version $Id$
+ * A TileLayer is a specialized MapLayer, used for tracking two dimensional tile data.
  */
 public class TileLayer extends MapLayer {
     protected Tile[][] map;
     protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<>();
 
-    private int tileWidth = 16;
-
-    private int tileHeight = 16;
-
-    /**
-     * Default contructor.
-     */
     public TileLayer() {
     }
 
@@ -43,19 +21,17 @@ public class TileLayer extends MapLayer {
      * @param width width in tiles
      * @param height height in tiles
      */
-    public TileLayer(int width, int height, int tileWidth, int tileHeight) {
+    public TileLayer(int width, int height) {
         super(width, height);
-        setTileDimensions(tileWidth, tileHeight);
     }
 
     /**
      * Create a tile layer using the given bounds.
      *
-     * @param r the bounds of the tile layer.
+     * @param rectangle the bounds of the tile layer.
      */
-    public TileLayer(Rectangle r, int tileWidth, int tileHeight) {
-        super(r);
-        setTileDimensions(tileWidth, tileHeight);
+    public TileLayer(Rectangle rectangle) {
+        super(rectangle);
     }
 
     /**
@@ -65,7 +41,6 @@ public class TileLayer extends MapLayer {
      */
     public TileLayer(TileMap tileMap, int width, int height) {
         super(width, height);
-        setTileDimensions(tileMap.getTileWidth(), tileMap.getTileHeight());
         setMap(tileMap);
     }
 
@@ -154,8 +129,7 @@ public class TileLayer extends MapLayer {
         super.setBounds(bounds);
         map = new Tile[bounds.height][bounds.width];
 
-        // Tile instance properties is null when this method is called from
-        // the constructor of MapLayer
+        // Tile instance properties is null when this method is called from the constructor of MapLayer
         if (tileInstanceProperties != null) {
             tileInstanceProperties.clear();
         }
@@ -191,7 +165,7 @@ public class TileLayer extends MapLayer {
 
             if (r != null) {
                 MapLayer diff = new TileLayer(
-                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1), mapLayer.getTileWidth(), mapLayer.getTileHeight());
+                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
                 diff.copyFrom(mapLayer);
                 return diff;
             } else {
@@ -202,25 +176,6 @@ public class TileLayer extends MapLayer {
         }
     }
 
-    /// gets the tile width specific for this layer. The tile width and height
-    /// can be specified individually for layers of this type using
-    /// setTileDimensions().
-    /// @see setTileDimensions();
-    /// @return tile height that this layer uses
-    @Override
-    public int getTileHeight() {
-        return tileHeight;
-    }
-
-    /// gets the tile height specific for this layer. The tile width and height
-    /// can be specified individually for layers of this type using
-    /// setTileDimensions().
-    /// @see setTileDimensions();
-    /// @return tile width that this layer uses
-    @Override
-    public int getTileWidth() {
-        return tileWidth;
-    }
 
     /**
      * Removes any occurences of the given tile from this map layer. If layer
@@ -376,8 +331,6 @@ public class TileLayer extends MapLayer {
 
         super.copyTo(other);
 
-        tileLayer.tileWidth = tileWidth;
-        tileLayer.tileHeight = tileHeight;
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 tileLayer.setTileAt(x, y, getTileAt(x, y));
@@ -450,12 +403,5 @@ public class TileLayer extends MapLayer {
         tileInstanceProperties = newTileInstanceProperties;
         bounds.width = width;
         bounds.height = height;
-    }
-
-    /// sets both tile width and tile height for this layer. Equivalent to
-    /// calling setTileWidth() and setTileHeight()
-    public void setTileDimensions(int tileWidth, int tileHeight) {
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
     }
 }

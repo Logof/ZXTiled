@@ -7,6 +7,7 @@ package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.gui.VerticalStaticJPanel;
@@ -113,8 +114,8 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         layerName.setText(layer.getName());
         layerWidth.setValue(layer.getWidth());
         layerHeight.setValue(layer.getHeight());
-        layerTileWidth.setValue(layer.getTileWidth());
-        layerTileHeight.setValue(layer.getTileHeight());
+        layerTileWidth.setValue(Constants.TILE_WIDTH);
+        layerTileHeight.setValue(Constants.TILE_HEIGHT);
     }
 
     protected UndoableEdit commit() {
@@ -128,8 +129,8 @@ public class LayerPropertiesDialog extends PropertiesDialog {
                         || layer.getHeight() != layerHeight.intValue();
         if (isTileLayer) {
             miscLayerSettingsChanged = miscLayerSettingsChanged
-                    || layer.getTileWidth() != layerTileWidth.intValue()
-                    || layer.getTileHeight() != layerTileHeight.intValue()
+                    || Constants.TILE_WIDTH != layerTileWidth.intValue()
+                    || Constants.TILE_HEIGHT != layerTileHeight.intValue()
             ;
         }
 
@@ -149,8 +150,8 @@ public class LayerPropertiesDialog extends PropertiesDialog {
 
             boolean layerSettingsChanged =
                     !layer.getName().equals(layerName.getText())
-                            || layer.getTileWidth() != layerTileWidth.intValue()
-                            || layer.getTileHeight() != layerTileHeight.intValue();
+                            || Constants.TILE_WIDTH != layerTileWidth.intValue()
+                            || Constants.TILE_HEIGHT != layerTileHeight.intValue();
 
             // apply changes and record edits for undo
             if (layerResized) {
@@ -166,9 +167,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
                 MapLayer before = (MapLayer) layer.clone();
 
                 layer.setName(layerName.getText());
-                if (isTileLayer) {
-                    ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
-                }
                 MapLayer after = (MapLayer) layer.clone();
                 MapLayerEdit mle = new MapLayerEdit(layer, before, after);
                 mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));

@@ -16,7 +16,7 @@ import lombok.Getter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -26,6 +26,7 @@ import org.github.logof.zxtiled.mapeditor.selection.Selection;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSet;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionSetListener;
+import org.github.logof.zxtiled.util.CoordinateUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
@@ -304,7 +305,6 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param graphics the Graphics2D object to paint to
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see MapLayer
-     * @see SelectionLayer
      */
     @Override
     public void paintComponent(Graphics graphics) {
@@ -412,8 +412,8 @@ public abstract class MapView extends JPanel implements Scrollable {
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectsLayer) {
-                        paintObjectGroup(g2d, (ObjectsLayer) layer);
+                    } else if (layer instanceof ObjectLayer) {
+                        paintObjectLayer(g2d, (ObjectLayer) layer);
                     }
                 }
             }
@@ -432,9 +432,9 @@ public abstract class MapView extends JPanel implements Scrollable {
      * Draws an ObjectGroup. Implemented in a subclass.
      *
      * @param g2d the graphics context to draw the object group onto
-     * @param og  the ObjectGroup to be drawn
+     * @param objectLayer  the ObjectGroup to be drawn
      */
-    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectsLayer og);
+    protected abstract void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer);
 
     /**
      * Tells this view a certain region of the map needs to be repainted.
@@ -477,25 +477,9 @@ public abstract class MapView extends JPanel implements Scrollable {
 
     public abstract Point screenToTileCoordinates(MapLayer layer, int x, int y);
 
-    /**
-     * Returns the pixel coordinates on the map based on the given screen
-     * coordinates. The map pixel coordinates may be different in more ways
-     * than the zoom level, depending on the projection the view implements.
-     *
-     * @param layer to calculate the coordinates for or null if
-     *              the coordinate transformation should be done in the map's coordinate
-     *              system.
-     * @param x     x in screen coordinates
-     * @param y     y in screen coordinates
-     * @return the position in map pixel coordinates
-     */
-    public Point screenToPixelCoords(MapLayer layer, int x, int y) {
-        return new Point((int) (x / zoom), (int) (y / zoom));
-    }
-
-    public Rectangle screenToPixelCoords(MapLayer layer, Rectangle r) {
-        Point p0 = screenToPixelCoords(layer, r.x, r.y);
-        Point p1 = screenToPixelCoords(layer, r.x + r.width, r.y + r.height);
+    public Rectangle screenToPixelCoordinates(Rectangle rectangle) {
+        Point p0 = CoordinateUtil.zoomedScreenToPixelCoordinates(rectangle.x, rectangle.y, zoom);
+        Point p1 = CoordinateUtil.zoomedScreenToPixelCoordinates(rectangle.x + rectangle.width, rectangle.y + rectangle.height, zoom);
         return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
     }
 

@@ -1,7 +1,7 @@
 package org.github.logof.zxtiled.mapeditor.actions;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.ObjectsLayer;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -44,9 +44,9 @@ public class LayerTransformAction extends AbstractAction {
             if (currentLayer instanceof TileLayer) {
                 layer = new TileLayer(
                         mapEditor.getMarqueeSelection()
-                                 .getSelectedAreaBounds(), currentLayer.getTileWidth(), currentLayer.getTileHeight());
-            } else if (currentLayer instanceof ObjectsLayer) {
-                layer = new ObjectsLayer(
+                                 .getSelectedAreaBounds());
+            } else if (currentLayer instanceof ObjectLayer) {
+                layer = new ObjectLayer(
                         mapEditor.getMarqueeSelection().getSelectedAreaBounds());
             }
             layer.setMap(mapEditor.getCurrentTileMap());

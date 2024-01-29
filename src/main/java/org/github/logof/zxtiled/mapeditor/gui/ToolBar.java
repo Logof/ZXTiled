@@ -23,17 +23,17 @@ public class ToolBar extends JToolBar {
     private static final Icon ICON_PLAYER_START = Resources.getIcon("icon/start.png");
     private static final Icon ICON_PLAYER_FINISH = Resources.getIcon("icon/finish.png");
 
-    private AbstractButton paintButton;
-    private AbstractButton eraseButton;
-    private AbstractButton pourButton;
-    private AbstractButton eyedButton;
-    private AbstractButton marqueeButton;
-    private AbstractButton moveButton;
-    private AbstractButton objectMoveButton;
-    private AbstractButton objectAddButton;
-    private AbstractButton objectRemoveButton;
-    private AbstractButton startPointButton;
-    private AbstractButton finishPointButton;
+    private final AbstractButton paintButton;
+    private final AbstractButton eraseButton;
+    private final AbstractButton pourButton;
+    private final AbstractButton eyedButton;
+    private final AbstractButton marqueeButton;
+    private final AbstractButton moveButton;
+    private final AbstractButton objectMoveButton;
+    private final AbstractButton objectAddButton;
+    private final AbstractButton objectRemoveButton;
+    private final AbstractButton startPointButton;
+    private final AbstractButton finishPointButton;
 
     @Getter
     private static final BrushPreview brushPreview = new BrushPreview();
@@ -129,5 +129,7 @@ public class ToolBar extends JToolBar {
         objectAddButton.setEnabled(isEnable);
         objectRemoveButton.setEnabled(isEnable);
         objectMoveButton.setEnabled(isEnable);
+        startPointButton.setEnabled(isEnable);
+        finishPointButton.setEnabled(isEnable);
     }
 }

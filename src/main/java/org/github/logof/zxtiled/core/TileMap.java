@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,10 +37,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     @Getter
     private final Vector<Tileset> tilesets;
     private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
-    @Getter
-    private int tileWidth = 16;
-    @Getter
-    private int tileHeight = 16;
+
     @Setter
     @Getter
     private MapTypeEnum mapType = MapTypeEnum.MAP_SIDE_SCROLLED;
@@ -174,12 +172,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         }
     }
 
-    /**
-     * Causes a MapChangedEvent to be fired.
-     */
-    public void touch() {
-        fireMapChanged();
-    }
 
     public void addLayerSpecial(MapLayer layer) {
         layer.setMap(this);
@@ -197,24 +189,14 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         return layer;
     }
 
-    /**
-     * Create a new empty TileLayer with the dimensions of the map. By default,
-     * the new layer's name is set to "Layer [layer index]"
-     */
-    public void addLayer() {
-        MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), layer);
-    }
-
     public void addAllLayers() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
         layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
         insertLayer(getTotalLayers(), layer);
 
-        ObjectsLayer objectsLayer = new ObjectsLayer(this);
-        objectsLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), objectsLayer);
+        ObjectLayer objectLayer = new ObjectLayer(this);
+        objectLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
+        insertLayer(getTotalLayers(), objectLayer);
     }
 
     public void insertLayer(int index, MapLayer layer) {
@@ -233,18 +215,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Create a new empty ObjectGroup. By default, the new layer's name is set
-     * to "ObjectGroup [layer index]"
-     */
-    public void addObjectGroup() {
-        MapLayer layer = new ObjectsLayer(this);
-        layer.setName(Resources.getString("general.objectgroup.objectgroup") +
-                " " + super.getTotalLayers());
-        super.addLayer(layer);
-        fireMapChanged();
-    }
-
-    /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
      * <code>addTileset</code> simply returns.
      *
@@ -254,7 +224,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         if (tileset == null || tilesets.contains(tileset)) {
             return;
         }
-
         tilesets.add(tileset);
         fireTilesetAdded(tileset);
     }
@@ -367,26 +336,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Sets a new tile width.
-     *
-     * @param width the new tile width
-     */
-    public void setTileWidth(int width) {
-        tileWidth = width;
-        fireMapChanged();
-    }
-
-    /**
-     * Sets a new tile height.
-     *
-     * @param height the new tile height
-     */
-    public void setTileHeight(int height) {
-        tileHeight = height;
-        fireMapChanged();
-    }
-
-    /**
      * Calls super method, and additionally fires a {@link MapChangedEvent}.
      *
      * @see MultilayerPlane#resize
@@ -456,16 +405,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * @return int The maximum tile height
      */
     public int getTileHeightMax() {
-        int maxHeight = tileHeight;
-
-        for (Tileset tileset : tilesets) {
-            int height = tileset.getTileHeight();
-            if (height > maxHeight) {
-                maxHeight = height;
-            }
-        }
-
-        return maxHeight;
+        return Constants.TILE_HEIGHT;
     }
 
     /**
@@ -495,8 +435,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      */
     public String toString() {
         return "Map[" + bounds.width + "x" + bounds.height + "x" +
-                getTotalLayers() + "][" + tileWidth + "x" +
-                tileHeight + "]";
+                getTotalLayers() + "][" + Constants.TILE_WIDTH + "x" + Constants.TILE_HEIGHT + "]";
     }
 
 

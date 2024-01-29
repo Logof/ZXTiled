@@ -82,20 +82,15 @@ public class XMLWriter {
         w.write(">" + newLine);
     }
 
-    public void startElement(String name)
-            throws IOException, XMLWriterException {
+    public void startElement(String name) throws IOException, XMLWriterException {
         if (!bDocumentOpen) {
-            throw new XMLWriterException(
-                    "Can't start new element, no open document.");
+            throw new XMLWriterException("Can't start new element, no open document.");
         }
-
         if (bStartTagOpen) {
             w.write(">" + newLine);
         }
-
         writeIndent();
         w.write("<" + name);
-
         openElements.push(name);
         bStartTagOpen = true;
     }

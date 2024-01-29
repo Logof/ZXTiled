@@ -24,8 +24,8 @@ public class CopyAllAction extends AbstractAction {
         //FIXME: only works for TileLayers
         if (mapEditor.getCurrentTileMap() != null && mapEditor.getMarqueeSelection() != null) {
             MapLayer mapLayer = mapEditor.getCurrentLayer();
-            mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds(),
-                    mapLayer.getTileWidth(), mapLayer.getTileHeight()));
+            mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()
+            ));
             ListIterator<MapLayer> itr = mapEditor.getCurrentTileMap().getLayers();
             while (itr.hasNext()) {
                 MapLayer layer = itr.next();

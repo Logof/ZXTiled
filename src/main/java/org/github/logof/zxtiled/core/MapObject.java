@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * An object occupying an {@link ObjectsLayer}.
+ * An object occupying an {@link ObjectLayer}.
  */
 public class MapObject implements Cloneable {
     @Setter
@@ -29,7 +29,7 @@ public class MapObject implements Cloneable {
     private Properties properties = new Properties();
     @Getter
     @Setter
-    private ObjectsLayer objectsLayer;
+    private ObjectLayer objectLayer;
     @Setter
     @Getter
     private Rectangle bounds;
@@ -43,9 +43,12 @@ public class MapObject implements Cloneable {
     private String imageSource = "";
     private Image image;
     private Image scaledImage;
+    @Getter
+    private int screenNumber;
 
-    public MapObject(int x, int y, int width, int height) {
-        this.bounds = new Rectangle(x, y, width, height);
+    public MapObject(int x, int y, int screenNumber) {
+        this.bounds = new Rectangle(x, y, 16, 16);
+        this.screenNumber = screenNumber;
     }
 
     public Object clone() throws CloneNotSupportedException {
