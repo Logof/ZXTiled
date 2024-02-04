@@ -27,6 +27,7 @@ import org.github.logof.zxtiled.io.PluginLogger;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.cutter.BasicTileCutter;
+import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
 import org.github.logof.zxtiled.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -458,22 +459,20 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
-    private MapObject readMapObject(Node t) throws Exception {
-        final String name = getAttributeValue(t, "name");
-        final String type = getAttributeValue(t, "type");
-        final int x = getAttribute(t, "x", 0);
-        final int y = getAttribute(t, "y", 0);
-        final int screenNumber = getAttribute(t, "screen", 0);
+    private MapObject readMapObject(Node node) throws Exception {
+        final String name = getAttributeValue(node, "name");
+        final String typeString = getAttributeValue(node, "type");
+        final int x = getAttribute(node, "x", 0);
+        final int y = getAttribute(node, "y", 0);
+        final int screenNumber = getAttribute(node, "screen", 0);
 
         MapObject obj = new MapObject(x, y, screenNumber);
         if (name != null) {
             obj.setName(name);
         }
-        if (type != null) {
-            obj.setType(type);
-        }
+        obj.setType(EnemyEnum.valueOf(typeString));
 
-        NodeList children = t.getChildNodes();
+        NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("image".equalsIgnoreCase(child.getNodeName())) {

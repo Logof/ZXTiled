@@ -29,6 +29,7 @@ public class TiledFileFilter extends ConfirmableFileFilter {
     public static final int FILTER_TSX = 2;
     public static final int FILTER_BOTH = 3;
     public static final int FILTER_PLUG = 4;
+    public static final int FILTER_PNG = 5;
 
     private static final String FILETYPE_TILED = Resources.getString("general.filetype.tiled");
     private static final String FILETYPE_TMX = Resources.getString("general.filetype.tiledmap");
@@ -67,6 +68,12 @@ public class TiledFileFilter extends ConfirmableFileFilter {
             if (pmio == null) {
                 pmio = new XMLMapWriter();
             }
+        }
+
+        if ((filter & FILTER_PNG) != 0) {
+            desc = FILETYPE_TMX;
+            exts.add("png");
+            pmio = new XMLMapWriter();
         }
 
         if (filter == FILTER_EXT) {

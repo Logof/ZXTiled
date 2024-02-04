@@ -14,6 +14,7 @@ package org.github.logof.zxtiled.mapeditor.undo;
 
 import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -62,7 +63,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit {
     class State {
         private final Properties properties = new Properties();
         private String name;
-        private String type;
+        private EnemyEnum type;
         private String imageSource;
         private Rectangle bounds;
 

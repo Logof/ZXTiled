@@ -84,12 +84,9 @@ public class XMLMapWriter implements MapWriter {
     private static void writeMapObject(MapObject mapObject, XMLWriter writer, String wp) throws IOException {
         writer.startElement("object");
         writer.writeAttribute("name", mapObject.getName());
-
-        if (!mapObject.getType().isEmpty()) {
-            writer.writeAttribute("type", mapObject.getType());
-        }
-        writer.writeAttribute("x", mapObject.getX());
-        writer.writeAttribute("y", mapObject.getY());
+        writer.writeAttribute("type", mapObject.getType().name());
+        writer.writeAttribute("x", mapObject.getCoordinateXAt());
+        writer.writeAttribute("y", mapObject.getCoordinateYAt());
         writer.writeAttribute("screen", mapObject.getScreenNumber());
         writeProperties(mapObject.getProperties(), writer);
 

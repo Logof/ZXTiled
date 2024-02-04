@@ -29,8 +29,7 @@ import java.util.Iterator;
 /**
  * An orthographic map view.
  */
-public class SideScrelledMapView extends MapView {
-
+public class SideScrolledMapView extends MapView {
 
     /**
      *
@@ -38,13 +37,13 @@ public class SideScrelledMapView extends MapView {
      *
      * @param tileMap the map to be displayed by this map view
      */
-    public SideScrelledMapView(TileMap tileMap) {
+    public SideScrolledMapView(TileMap tileMap) {
         super(tileMap);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
                                            int orientation, int direction) {
-        Dimension tileSize = getMapTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
 
         if (orientation == SwingConstants.VERTICAL) {
             return (visibleRect.height / tileSize.height) * tileSize.height;
@@ -55,7 +54,7 @@ public class SideScrelledMapView extends MapView {
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
                                           int orientation, int direction) {
-        Dimension tileSize = getMapTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         if (orientation == SwingConstants.VERTICAL) {
             return tileSize.height;
         } else {
@@ -65,14 +64,14 @@ public class SideScrelledMapView extends MapView {
 
     public Dimension getPreferredSize() {
         return new Dimension(
-                tileMap.getWidth() * getMapTileSize().width,
-                tileMap.getHeight() * getMapTileSize().height);
+                tileMap.getWidth() * getTileSizeWithZoom().width,
+                tileMap.getHeight() * getTileSizeWithZoom().height);
     }
 
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tileSize = getLayerTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -110,7 +109,7 @@ public class SideScrelledMapView extends MapView {
 
     //TODO подумать, как хранить в координатах тайла или в пикселях
     protected void paintObjectLayer(Graphics2D g2d, ObjectLayer objectLayer) {
-        final Dimension tileSize = getLayerTileSize();
+        final Dimension tileSize = getTileSizeWithZoom();
         assert tileSize.width != 0 && tileSize.height != 0;
         final Rectangle bounds = objectLayer.getBounds();
         Iterator<MapObject> itr = objectLayer.getObjects();
@@ -166,11 +165,12 @@ public class SideScrelledMapView extends MapView {
     protected void paintGrid(Graphics2D g2d) {
         MapLayer currentLayer = getCurrentLayer();
         // the grid size is dependent on the current layer - no current layer, no grid.
-        if (currentLayer == null)
+        if (currentLayer == null) {
             return;
+        }
 
         // Determine tile size
-        Dimension tileSize = getLayerTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -187,13 +187,13 @@ public class SideScrelledMapView extends MapView {
         Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
 
         for (int x = start.x; x < end.x; x += tileSize.width) {
-            g2d.setColor((x % (15 * tileSize.width) == 0)
+            g2d.setColor((x % (Constants.SCREEN_WIDTH * tileSize.width) == 0)
                     ? DEFAULT_GRID_SCREEN_COLOR
                     : DEFAULT_GRID_COLOR);
             g2d.drawLine(x, clipRect.y, x, clipRect.y + clipRect.height - 1);
         }
         for (int y = start.y; y < end.y; y += tileSize.height) {
-            g2d.setColor((y % (10 * tileSize.height) == 0)
+            g2d.setColor((y % (Constants.SCREEN_HEIGHT * tileSize.height) == 0)
                     ? DEFAULT_GRID_SCREEN_COLOR
                     : DEFAULT_GRID_COLOR);
             g2d.drawLine(clipRect.x, y, clipRect.x + clipRect.width - 1, y);
@@ -208,7 +208,7 @@ public class SideScrelledMapView extends MapView {
             return;
         }
 
-        Dimension tileSize = getLayerTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -246,7 +246,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public void repaintRegion(MapLayer layer, Rectangle region) {
-        Dimension tileSize = getLayerTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
         }
@@ -263,7 +263,7 @@ public class SideScrelledMapView extends MapView {
     }
 
     public Point screenToTileCoordinates(MapLayer layer, int x, int y) {
-        Dimension tileSize = getLayerTileSize();
+        Dimension tileSize = getTileSizeWithZoom();
         return new Point(x / tileSize.width, y / tileSize.height);
     }
 
@@ -271,13 +271,7 @@ public class SideScrelledMapView extends MapView {
         return new Point(x * tileDimension.width, y * tileDimension.height);
     }
 
-    protected Dimension getLayerTileSize() {
-        return new Dimension(
-                (int) (Constants.TILE_WIDTH * zoom),
-                (int) (Constants.TILE_HEIGHT * zoom));
-    }
-
-    protected Dimension getMapTileSize() {
+    protected Dimension getTileSizeWithZoom() {
         return new Dimension(
                 (int) (Constants.TILE_WIDTH * zoom),
                 (int) (Constants.TILE_HEIGHT * zoom));

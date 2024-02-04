@@ -102,9 +102,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     public static MapView createViewforMap(TileMap tileMap) {
         switch (tileMap.getMapType()) {
             case MAP_SIDE_SCROLLED:
-                return new SideScrelledMapView(tileMap);
+                return new SideScrolledMapView(tileMap);
             case MAP_TOP_DOWN:
-                return new SideScrelledMapView(tileMap);
+                return new SideScrolledMapView(tileMap);
             default:
                 return null;
         }

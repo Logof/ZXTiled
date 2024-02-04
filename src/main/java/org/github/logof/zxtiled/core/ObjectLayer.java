@@ -130,13 +130,13 @@ public class ObjectLayer extends MapLayer {
 
     // There can be 3 objects on one screen
     private boolean checkAbilityCreateObject(MapObject mapObject) {
-        if (mapObject.getType().equals("playerStart")) {
+        /*if (mapObject.getType().equals("playerStart")) {
             return objects.stream().noneMatch(object -> object.getType().equals("playerStart"));
         }
 
         if (mapObject.getType().equals("playerFinish")) {
             return objects.stream().noneMatch(object -> object.getType().equals("playerFinish"));
-        }
+        }*/
 
         return objects.stream().filter(object -> object.getScreenNumber() == mapObject.getScreenNumber()).count() < 3;
     }

@@ -441,24 +441,13 @@ public class MapEditorMouseListener implements MouseListener,
             } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
                 ObjectLayer objectLayer = (ObjectLayer) layer;
 
-                int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(),
-                        mapEditor.getMapView()
-                                 .getWidth() / (int) (Constants.SCREEN_WIDTH * Constants.TILE_WIDTH * mapEditor.getMapView()
-                                                                                                               .getZoom()),
-                        mapEditor.getMapView().getZoom());
-
-                MapObject object = new MapObject(
-                        bounds.x * Constants.TILE_WIDTH,
-                        bounds.y * Constants.TILE_HEIGHT, mapNumber
-                );
+                MapObject object = createMapObject(mouseEvent, bounds);
                 mapEditor.getUndoSupport().postEdit(new AddObjectEdit(objectLayer, object));
 
                 if (objectLayer.addObject(object)) {
                     ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
                     objectDialog.getProps();
                 }
-                ;
-
                 mapEditor.getMapView().repaint();
             }
 
@@ -489,6 +478,21 @@ public class MapEditorMouseListener implements MouseListener,
         bMouseIsDragging = false;
     }
 
+    private MapObject createMapObject(MouseEvent mouseEvent, Rectangle bounds) {
+        int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(),
+                mapEditor.getMapView()
+                         .getWidth() / (int) (Constants.SCREEN_WIDTH * Constants.TILE_WIDTH * mapEditor.getMapView()
+                                                                                                       .getZoom()),
+                mapEditor.getMapView().getZoom());
+
+        MapObject object = new MapObject(
+                bounds.x * Constants.TILE_WIDTH,
+                bounds.y * Constants.TILE_HEIGHT,
+                mapNumber
+        );
+        return object;
+    }
+
     @Override
     public void mouseEntered(MouseEvent mouseEvent) {
 
@@ -511,7 +515,7 @@ public class MapEditorMouseListener implements MouseListener,
                                       .screenToTileCoordinates(layer, mouseEvent.getX(), mouseEvent.getY());
         Point tile = mapEditor.getMapView().screenToTileCoordinates(layer, mouseEvent.getX(), mouseEvent.getY());
 
-        mapEditor.updateTileCoordsLabel(tile);
+        mapEditor.updateTileCoordinatesLabel(tile);
         mapEditor.updateCursorHighlight(tile);
     }
 
@@ -529,7 +533,7 @@ public class MapEditorMouseListener implements MouseListener,
             tile = mapEditor.getMapView()
                             .screenToTileCoordinates(mapEditor.getCurrentLayer(), mouseEvent.getX(), mouseEvent.getY());
         }
-        mapEditor.updateTileCoordsLabel(tile);
+        mapEditor.updateTileCoordinatesLabel(tile);
         mapEditor.updateCursorHighlight(tile);
     }
 

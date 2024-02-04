@@ -435,7 +435,7 @@ public class MapEditor {
         pointerStateManager.updateToolSemantics();
     }
 
-    public void updateTileCoordsLabel(Point tile) {
+    public void updateTileCoordinatesLabel(Point tile) {
         if (tile != null && currentTileMap.inBounds(tile.x, tile.y)) {
             statusBar.getTilePositionLabel().setText(tile.x + ", " + tile.y);
         } else {
@@ -474,7 +474,7 @@ public class MapEditor {
     }
 
 
-    // TODO: Most if not all of the below should be moved into action objects
+    // TODO: Вынести в отдельный класс
     public void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
@@ -503,6 +503,12 @@ public class MapEditor {
                     }
                 }
             }
+        } else if (command.equals(Resources.getString("menu.sprites.new"))) {
+            NewTilesetDialog dialog = new NewTilesetDialog(appFrame, getCurrentLayer(), undoSupport);
+            Tileset newSet = dialog.create();
+            if (newSet != null) {
+                //spriteMap.addTileset(newSet);
+            }
         } else if (command.equals(Resources.getString("menu.tilesets.refresh"))) {
             if (currentTileMap != null) {
                 Vector<Tileset> tilesets = currentTileMap.getTilesets();
@@ -524,8 +530,7 @@ public class MapEditor {
                 manager.setVisible(true);
             }
         } else if (command.equals(Resources.getString("menu.map.properties"))) {
-            PropertiesDialog pd = new MapPropertiesDialog(appFrame,
-                    currentTileMap, undoSupport);
+            PropertiesDialog pd = new MapPropertiesDialog(appFrame, currentTileMap, undoSupport);
             pd.setTitle(Resources.getString("dialog.properties.map.title"));
             pd.getProps();
         } else if (command.equals(Resources.getString("menu.view.boundaries")) ||
@@ -555,7 +560,6 @@ public class MapEditor {
         }
     }
 
-
     /**
      * Called when the editor is exiting.
      */
@@ -582,9 +586,10 @@ public class MapEditor {
     }
 
 
-    public void pour(TileLayer layer, int x, int y,
-                      Tile newTile, Tile oldTile) {
-        if (newTile == oldTile || layer.cannotEdit()) return;
+    public void pour(TileLayer layer, int x, int y, Tile newTile, Tile oldTile) {
+        if (newTile == oldTile || layer.cannotEdit()) {
+            return;
+        }
 
         Rectangle area;
         TileLayer before = (TileLayer) createLayerCopy(layer);
@@ -643,8 +648,7 @@ public class MapEditor {
     }
 
     public void resetBrush() {
-        //FIXME: this is an in-elegant hack, but it gets the user out
-        //       of custom brush mode
+        //FIXME: this is an in-elegant hack, but it gets the user out of custom brush mode
         //(reset the brush if necessary)
         if (currentBrush instanceof CustomBrush) {
             ShapeBrush sb = new ShapeBrush();

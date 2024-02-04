@@ -14,6 +14,8 @@ package org.github.logof.zxtiled.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.github.logof.zxtiled.mapeditor.Constants;
+import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
@@ -38,17 +40,31 @@ public class MapObject implements Cloneable {
     private String name = "Object";
     @Setter
     @Getter
-    private String type = "";
+    private EnemyEnum type;
     @Getter
     private String imageSource = "";
     private Image image;
     private Image scaledImage;
     @Getter
-    private int screenNumber;
+    private final int screenNumber;
+    @Getter
+    private final int coordinateXAt;
+    @Getter
+    private final int coordinateYAt;
+
+    @Getter
+    @Setter
+    private Rectangle path;
 
     public MapObject(int x, int y, int screenNumber) {
-        this.bounds = new Rectangle(x, y, 16, 16);
+        this.bounds = new Rectangle(
+                x * Constants.TILE_WIDTH,
+                y * Constants.TILE_HEIGHT,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT);
         this.screenNumber = screenNumber;
+        this.coordinateXAt = x;
+        this.coordinateYAt = y;
     }
 
     public Object clone() throws CloneNotSupportedException {
