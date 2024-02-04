@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.github.logof.zxtiled.mapeditor.brush;
+package org.github.logof.zxtiled.mapeditor.exception;
 
 import org.github.logof.zxtiled.core.MapLayer;
 
