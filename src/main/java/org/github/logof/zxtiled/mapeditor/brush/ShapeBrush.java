@@ -18,7 +18,6 @@ import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.view.MapView;
 import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -31,57 +30,26 @@ public class ShapeBrush extends AbstractBrush {
     public ShapeBrush() {
     }
 
-    public ShapeBrush(Area shape) {
-        this.shape = shape;
-    }
-
-    public ShapeBrush(AbstractBrush sb) {
-        super(sb);
-        if (sb instanceof ShapeBrush) {
-            shape = ((ShapeBrush) sb).shape;
-            paintTile = ((ShapeBrush) sb).paintTile;
-        }
-    }
-
-    /**
-     * Makes this brush a circular brush.
-     *
-     * @param rad the radius of the circular region
-     */
-    public void makeCircleBrush(double rad) {
-        shape = new Area(new Ellipse2D.Double(0, 0, rad * 2, rad * 2));
-        resize((int) (rad * 2), (int) (rad * 2), 0, 0);
-    }
-
     /**
      * Makes this brush a rectangular brush.
      *
-     * @param r a Rectangle to use as the shape of the brush
+     * @param rectangle a Rectangle to use as the shape of the brush
      */
-    public void makeQuadBrush(Rectangle r) {
-        shape = new Area(new Rectangle2D.Double(r.x, r.y, r.width, r.height));
-        resize(r.width, r.height, 0, 0);
-    }
-
-    public void makePolygonBrush(Polygon p) {
+    public void makeQuadBrush(Rectangle rectangle) {
+        shape = new Area(new Rectangle2D.Double(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+        resize(rectangle.width, rectangle.height, 0, 0);
     }
 
     public void setSize(int size) {
-        if (shape.isRectangular()) {
-            makeQuadBrush(new Rectangle(0, 0, size, size));
-        } else if (!shape.isPolygonal()) {
-            makeCircleBrush(size / 2);
-        } else {
-            // TODO: scale the polygon brush
-        }
+        makeQuadBrush(new Rectangle(0, 0, size, size));
     }
 
     public Tile getTile() {
         return paintTile;
     }
 
-    public void setTile(Tile t) {
-        paintTile = t;
+    public void setTile(Tile tile) {
+        paintTile = tile;
     }
 
     public Rectangle getBounds() {
@@ -113,7 +81,7 @@ public class ShapeBrush extends AbstractBrush {
      * affect several layers.
      *
      * @throws Exception
-     * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
+     * @see org.github.logof.zxtiled.mapeditor.brush.Brush#doPaint(int, int)
      */
     public Rectangle doPaint(int x, int y) throws Exception {
         Rectangle shapeBounds = shape.getBounds();

@@ -1,6 +1,5 @@
 package org.github.logof.zxtiled.mapeditor.gui;
 
-import lombok.Getter;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -32,9 +31,6 @@ public class ToolBar extends JToolBar {
     private final AbstractButton objectRemoveButton;
     private final AbstractButton startPointButton;
     private final AbstractButton finishPointButton;
-
-    @Getter
-    private static final BrushPreview brushPreview = new BrushPreview();
 
     public ToolBar() {
         super(JToolBar.VERTICAL);
@@ -77,10 +73,6 @@ public class ToolBar extends JToolBar {
         this.add(new TButton(MapEditorAction.zoomOutAction));
         this.add(Box.createRigidArea(new Dimension(5, 5)));
         this.add(Box.createGlue());
-
-        MapEventAdapter.addListener(brushPreview);
-        this.add(brushPreview);
-
     }
 
     private AbstractButton createToggleButton(Icon icon, String command, String tipText) {

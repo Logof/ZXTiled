@@ -513,7 +513,6 @@ public class MapEditor {
                     }
                 }
                 mapView.repaint();
-                ToolBar.getBrushPreview().setBrush(currentBrush);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentTileMap != null) {
@@ -856,7 +855,6 @@ public class MapEditor {
             if (currentBrush instanceof ShapeBrush) {
                 ((ShapeBrush) currentBrush).setTile(tile);
             }
-            ToolBar.getBrushPreview().setBrush(currentBrush);
         }
     }
 }
