@@ -467,7 +467,13 @@ public class XMLMapTransformer implements MapReader {
         final int y = getAttribute(node, "y", 0);
         final int screenNumber = getAttribute(node, "screen", 0);
 
+        final int speed = getAttribute(node, "speed", 1);
+        final int moveByX = getAttribute(node, "moveByX", x);
+        final int moveByY = getAttribute(node, "moveByY", y);
+
         MapObject obj = new MapObject(x, y, screenNumber);
+        obj.setSpeed(speed);
+        obj.setPath(new Rectangle(moveByX, moveByY));
         if (name != null) {
             obj.setName(name);
         }

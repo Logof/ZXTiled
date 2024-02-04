@@ -51,6 +51,9 @@ public class MapObject implements Cloneable {
     private int coordinateXAt;
     @Getter
     private int coordinateYAt;
+    @Getter
+    @Setter
+    private int speed;
 
     @Getter
     @Setter

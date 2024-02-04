@@ -46,6 +46,8 @@ public class ObjectDialog extends PropertiesDialog {
     private JTextField objectName;
     private JComboBox<EnemyEnum> objectType;
     private JTextField objectImageSource;
+
+    private IntegerSpinner speedValue;
     private IntegerSpinner deltaX;
     private IntegerSpinner deltaY;
 
@@ -121,7 +123,10 @@ public class ObjectDialog extends PropertiesDialog {
         miscConstraints.gridy = 1;
         miscPropPanel.add(objectType, miscConstraints);
         miscConstraints.gridy = 2;
-        miscPropPanel.add(new IntegerSpinner(0, 0, 4, 2), miscConstraints); //TODO fixme: 1, 2, 4 2^0, 2^1, 2^2
+
+        //TODO fixme: 1, 2, 4 2^0, 2^1, 2^2
+        speedValue = new IntegerSpinner(0, 0, 4);
+        miscPropPanel.add(speedValue, miscConstraints);
 
         miscConstraints.gridy = 4;
         deltaX = new IntegerSpinner(object.getCoordinateXAt(), 0, Constants.SCREEN_WIDTH);
@@ -160,6 +165,10 @@ public class ObjectDialog extends PropertiesDialog {
         objectName.setText(object.getName());
         objectType.setSelectedItem(object.getType());
         objectImageSource.setText(object.getImageSource());
+        speedValue.setValue(object.getSpeed());
+        deltaX.setValue(object.getPath().width);
+        deltaY.setValue(object.getPath().height);
+
     }
 
     protected UndoableEdit commit() {
@@ -175,7 +184,8 @@ public class ObjectDialog extends PropertiesDialog {
         object.setName(objectName.getText());
         objectType.setSelectedItem(object.getType());
         object.setImageSource(objectImageSource.getText());
-        object.setPath(new Rectangle(4, 5));
+        object.setSpeed((int) speedValue.getValue());
+        object.setPath(new Rectangle((int) deltaX.getValue(), (int) deltaY.getValue()));
         compoundEdit.end();
 
         return compoundEdit;
