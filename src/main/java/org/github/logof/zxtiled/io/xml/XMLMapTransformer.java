@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
@@ -208,33 +209,33 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
-    private Object unmarshalClass(Class reflector, Node node)
-            throws InstantiationException, IllegalAccessException,
-            InvocationTargetException {
-        Constructor cons = null;
+    private Object unmarshalClass(Class reflector, Node node) throws InstantiationException,
+                                                                     IllegalAccessException,
+                                                                     InvocationTargetException {
+        Constructor<?> constructor = null;
         try {
-            cons = reflector.getConstructor(null);
+            constructor = reflector.getConstructor(null);
         } catch (SecurityException e1) {
             e1.printStackTrace();
         } catch (NoSuchMethodException e1) {
             e1.printStackTrace();
             return null;
         }
-        Object o = cons.newInstance(null);
+        Object object = constructor.newInstance(null);
         Node n;
 
         Method[] methods = reflector.getMethods();
-        NamedNodeMap nnm = node.getAttributes();
+        NamedNodeMap attributes = node.getAttributes();
 
-        if (nnm != null) {
-            for (int i = 0; i < nnm.getLength(); i++) {
-                n = nnm.item(i);
+        if (attributes != null) {
+            for (int i = 0; i < attributes.getLength(); i++) {
+                n = attributes.item(i);
 
                 try {
                     int j = reflectFindMethodByName(reflector,
                             "set" + n.getNodeName());
                     if (j >= 0) {
-                        reflectInvokeMethod(o, methods[j],
+                        reflectInvokeMethod(object, methods[j],
                                 new String[]{n.getNodeValue()});
                     } else {
                         logger.warn("Unsupported attribute '" +
@@ -246,7 +247,7 @@ public class XMLMapTransformer implements MapReader {
                 }
             }
         }
-        return o;
+        return object;
     }
 
     private Image unmarshalImage(Node t, String baseDir) throws IOException {
@@ -534,6 +535,10 @@ public class XMLMapTransformer implements MapReader {
         } catch (Exception e) {
             e.printStackTrace();
             return objectLayer;
+        }
+
+        if (Objects.isNull(objectLayer)) {
+            return new ObjectLayer(new Rectangle(1, 1));
         }
 
         final int offsetX = getAttribute(node, "x", 0);

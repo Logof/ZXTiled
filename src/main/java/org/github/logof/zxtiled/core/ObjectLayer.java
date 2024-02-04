@@ -1,5 +1,6 @@
 package org.github.logof.zxtiled.core;
 
+import lombok.NoArgsConstructor;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import java.awt.*;
 import java.awt.geom.Area;
@@ -12,6 +13,8 @@ import java.util.Vector;
 /**
  * A layer containing {@link MapObject map objects}.
  */
+
+@NoArgsConstructor
 public class ObjectLayer extends MapLayer {
     private LinkedList<MapObject> objects = new LinkedList<>();
 
