@@ -15,7 +15,6 @@ public class ToolBar extends JToolBar {
     private static final Icon iconPaint = Resources.getIcon("icon/gimp-tool-pencil-22.png");
     private static final Icon iconErase = Resources.getIcon("icon/gimp-tool-eraser-22.png");
     private static final Icon iconPour = Resources.getIcon("icon/gimp-tool-bucket-fill-22.png");
-    private static final Icon iconEyed = Resources.getIcon("icon/gimp-tool-color-picker-22.png");
     private static final Icon iconMarquee = Resources.getIcon("icon/gimp-tool-rect-select-22.png");
     private static final Icon iconAddObject = Resources.getIcon("icon/gnome-list-add-22.png");
     private static final Icon iconRemoveObject = Resources.getIcon("icon/gnome-list-remove-22.png");
@@ -26,7 +25,6 @@ public class ToolBar extends JToolBar {
     private final AbstractButton paintButton;
     private final AbstractButton eraseButton;
     private final AbstractButton pourButton;
-    private final AbstractButton eyedButton;
     private final AbstractButton marqueeButton;
     private final AbstractButton moveButton;
     private final AbstractButton objectMoveButton;
@@ -44,7 +42,6 @@ public class ToolBar extends JToolBar {
         paintButton = createToggleButton(iconPaint, "paint", Constants.TOOL_PAINT);
         eraseButton = createToggleButton(iconErase, "erase", Constants.TOOL_ERASE);
         pourButton = createToggleButton(iconPour, "pour", Constants.TOOL_FILL);
-        eyedButton = createToggleButton(iconEyed, "eyed", Constants.TOOL_EYE_DROPPER);
         marqueeButton = createToggleButton(iconMarquee, "marquee", Constants.TOOL_SELECT);
         moveButton = createToggleButton(iconMove, "move", Constants.TOOL_MOVE_LAYER);
         objectAddButton = createToggleButton(iconAddObject, "addobject", Constants.TOOL_ADD_OBJECT);
@@ -57,7 +54,6 @@ public class ToolBar extends JToolBar {
         MapEventAdapter.addListener(paintButton);
         MapEventAdapter.addListener(eraseButton);
         MapEventAdapter.addListener(pourButton);
-        MapEventAdapter.addListener(eyedButton);
         MapEventAdapter.addListener(marqueeButton);
         MapEventAdapter.addListener(objectMoveButton);
         MapEventAdapter.addListener(startPointButton);
@@ -68,7 +64,6 @@ public class ToolBar extends JToolBar {
         this.add(paintButton);
         this.add(eraseButton);
         this.add(pourButton);
-        this.add(eyedButton);
         this.add(marqueeButton);
         this.add(Box.createRigidArea(new Dimension(5, 5)));
         this.add(startPointButton);
@@ -104,7 +99,6 @@ public class ToolBar extends JToolBar {
         paintButton.setSelected(state == PointerStateEnum.PS_PAINT);
         eraseButton.setSelected(state == PointerStateEnum.PS_ERASE);
         pourButton.setSelected(state == PointerStateEnum.PS_POUR);
-        eyedButton.setSelected(state == PointerStateEnum.PS_EYED);
         marqueeButton.setSelected(state == PointerStateEnum.PS_MARQUEE);
         moveButton.setSelected(state == PointerStateEnum.PS_MOVE);
         objectAddButton.setSelected(state == PointerStateEnum.PS_ADD_OBJ);
@@ -118,7 +112,6 @@ public class ToolBar extends JToolBar {
         paintButton.setEnabled(isEnable);
         eraseButton.setEnabled(isEnable);
         pourButton.setEnabled(isEnable);
-        eyedButton.setEnabled(isEnable);
     }
 
     public void updateValidSelectionOperations(boolean isEnable) {

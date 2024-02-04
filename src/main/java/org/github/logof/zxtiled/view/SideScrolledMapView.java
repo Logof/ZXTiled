@@ -245,7 +245,7 @@ public class SideScrolledMapView extends MapView {
         }
     }
 
-    public void repaintRegion(MapLayer layer, Rectangle region) {
+    public void repaintRegion(MapLayer mapLayer, Rectangle region) {
         Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
@@ -259,6 +259,23 @@ public class SideScrolledMapView extends MapView {
         start.x -= maxExtraHeight;
 
         Rectangle dirty = new Rectangle(start.x, start.y, end.x - start.x, end.y - start.y);
+        repaint(dirty);
+    }
+
+    public void repaintMapObject(Rectangle region) {
+        Dimension tileSize = getTileSizeWithZoom();
+        if (tileSize.width <= 0 || tileSize.height <= 0) {
+            return;
+        }
+        int maxExtraHeight = (int) (tileMap.getTileHeightMax() * zoom - tileSize.height);
+
+        // Calculate the visible corners of the region
+        Point start = tileToScreenCoords(region.x, region.y);
+        Point end = tileToScreenCoords((region.x + region.width), (region.y + region.height));
+
+        start.x -= maxExtraHeight;
+
+        Rectangle dirty = new Rectangle(start.x, start.y, (end.x - start.x) / 2, (end.y - start.y) / 2);
         repaint(dirty);
     }
 

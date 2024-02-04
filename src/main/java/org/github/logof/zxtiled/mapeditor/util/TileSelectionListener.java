@@ -19,6 +19,4 @@ import java.util.EventListener;
  */
 public interface TileSelectionListener extends EventListener {
     void tileSelected(TileSelectionEvent e);
-
-    void tileRegionSelected(TileRegionSelectionEvent e);
 }

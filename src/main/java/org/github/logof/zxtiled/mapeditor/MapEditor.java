@@ -26,7 +26,6 @@ import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
-import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.gui.ApplicationFrame;
@@ -73,7 +72,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -173,13 +171,16 @@ public class MapEditor {
     private final ComponentListener componentListener;
     public MapEditor() {
         MapEditorAction.init(this);
+        pointerStateManager = new PointerStateManager(this);
+
         mouseListener = new MapEditorMouseListener(this);
-        actionListener = new MapEditorActionListener(this);
+
+        actionListener = new MapEditorActionListener(this, pointerStateManager);
         listSelectionListener = new MapEditorListSelectionListener(this);
 
         toolBar = new ToolBar();
 
-        pointerStateManager = new PointerStateManager(this);
+
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
@@ -456,16 +457,6 @@ public class MapEditor {
         brushRedraw.y = tile.y - brushRedraw.height / 2;
 
         if (!redraw.equals(brushRedraw)) {
-            if (currentBrush instanceof CustomBrush) {
-                CustomBrush customBrush = (CustomBrush) currentBrush;
-                ListIterator<MapLayer> layers = customBrush.getLayers();
-                while (layers.hasNext()) {
-                    MapLayer layer = layers.next();
-                    layer.setOffset(brushRedraw.x, brushRedraw.y);
-                }
-                redraw.width = currentBrush.getBounds().width;
-                redraw.height = currentBrush.getBounds().height;
-            }
             mapView.repaintRegion(cursorHighlight, redraw);
             cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
             //cursorHighlight.selectRegion(currentBrush.getShape());
@@ -650,12 +641,12 @@ public class MapEditor {
     public void resetBrush() {
         //FIXME: this is an in-elegant hack, but it gets the user out of custom brush mode
         //(reset the brush if necessary)
-        if (currentBrush instanceof CustomBrush) {
+        /*if (currentBrush instanceof CustomBrush) {
             ShapeBrush sb = new ShapeBrush();
             sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
             sb.setTile(currentTile);
             setBrush(sb);
-        }
+        }*/
     }
 
     public void setBrush(AbstractBrush brush) {

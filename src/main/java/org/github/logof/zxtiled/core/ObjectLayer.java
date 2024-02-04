@@ -3,7 +3,6 @@ package org.github.logof.zxtiled.core;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
@@ -16,11 +15,6 @@ import java.util.Vector;
 public class ObjectLayer extends MapLayer {
     private LinkedList<MapObject> objects = new LinkedList<>();
 
-    /**
-     * Default constructor.
-     */
-    public ObjectLayer() {
-    }
 
     /**
      * @param tileMap the map this object group is part of
@@ -150,8 +144,8 @@ public class ObjectLayer extends MapLayer {
      */
     public MapObject[] findObjectsByOutline(Rectangle rect) {
         // FIXME: iterating over all objects is potentially very slow
-        // there's room for optimization here by using some sort of space
-        // partitioning for object storage
+        //  there's room for optimization here by using some sort of space
+        //  partitioning for object storage
         Vector<MapObject> result = new Vector<>();
         Line2D l0 = new Line2D.Float();
         Line2D l1 = new Line2D.Float();
@@ -193,23 +187,17 @@ public class ObjectLayer extends MapLayer {
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
         Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
-        Shape shape;
 
-        for (MapObject obj : objects) {
-            if (obj.getWidth() == 0 && obj.getHeight() == 0) {
-                shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
-            } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * Constants.TILE_WIDTH,
-                        obj.getY() + bounds.y * Constants.TILE_HEIGHT,
-                        obj.getWidth() > 0 ? obj.getWidth() : zoom,
-                        obj.getHeight() > 0 ? obj.getHeight() : zoom);
-            }
+        for (MapObject object : objects) {
+            Rectangle2D shape = new Rectangle2D.Double(object.getX() + bounds.x * Constants.TILE_WIDTH,
+                    object.getY() + bounds.y * Constants.TILE_HEIGHT,
+                    object.getWidth() > 0 ? object.getWidth() : zoom,
+                    object.getHeight() > 0 ? object.getHeight() : zoom);
 
             if (shape.intersects(mouse)) {
-                return obj;
+                return object;
             }
         }
-
         return null;
     }
 }

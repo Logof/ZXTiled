@@ -65,7 +65,6 @@ public class ObjectDialog extends PropertiesDialog {
         objectType = new JComboBox<>(EnemyEnum.getValuesByMapType(MapTypeEnum.MAP_SIDE_SCROLLED));
         objectType.addActionListener(e -> object.setType((EnemyEnum) ((JComboBox<?>) e.getSource()).getSelectedItem()));
         objectImageSource = new JTextField();
-
         mainPanel.add(createMiscPropPanel(), 0);
     }
 

@@ -11,7 +11,6 @@ import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.BrushException;
-import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.LayerInvisibleBrushException;
 import org.github.logof.zxtiled.mapeditor.brush.LayerLockedBrushException;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
@@ -239,13 +238,6 @@ public class MapEditorMouseListener implements MouseListener,
                         mapEditor.getMapView().repaint();
                     }
                     break;
-                case PS_EYED:
-                    if (layer instanceof TileLayer) {
-                        TileLayer tileLayer = (TileLayer) layer;
-                        Tile newTile = tileLayer.getTileAt(tile.x, tile.y);
-                        mapEditor.setCurrentTile(newTile);
-                    }
-                    break;
                 case PS_MOVE: {
                     Point translation = new Point(
                             tile.x - mousePressLocation.x,
@@ -296,8 +288,7 @@ public class MapEditorMouseListener implements MouseListener,
                         }
 
                         Point limp = mouseInitialPressLocation;
-                        Rectangle oldArea =
-                                mapEditor.getMarqueeSelection().getSelectedAreaBounds();
+                        Rectangle oldArea = mapEditor.getMarqueeSelection().getSelectedAreaBounds();
                         int minx = Math.min(limp.x, tile.x);
                         int miny = Math.min(limp.y, tile.y);
 
@@ -309,7 +300,7 @@ public class MapEditorMouseListener implements MouseListener,
                         mapEditor.getMarqueeSelection().selectRegion(selRect);
                         if (oldArea != null) {
                             oldArea.add(mapEditor.getMarqueeSelection().getSelectedAreaBounds());
-                            mapEditor.getMapView().repaintRegion(layer, oldArea);
+                            mapEditor.getMapView().repaintMapObject(oldArea);
                         }
                     }
                     break;
@@ -329,8 +320,9 @@ public class MapEditorMouseListener implements MouseListener,
                     break;
                 case PS_MOVE_OBJ:
                     if (layer instanceof ObjectLayer) {
-                        Point point = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), mapEditor.getMapView()
-                                                                                                                         .getZoom());
+                        Point point = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(),
+                                mapEditor.getMapView().getZoom());
+
                         if (mapEditor.getCurrentObject() == null) {
                             ObjectLayer group = (ObjectLayer) layer;
                             mapEditor.setCurrentObject(group.getObjectNear(point.x, point.y, mapEditor.getMapView()
@@ -364,7 +356,7 @@ public class MapEditorMouseListener implements MouseListener,
                         int miny = Math.min(limp.y, tile.y);
 
                         Rectangle selRect = new Rectangle(
-                                minx, miny, 16, 16);
+                                minx, miny, Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
 
                         mapEditor.getMarqueeSelection().selectRegion(selRect);
                         if (oldArea != null) {
@@ -420,7 +412,6 @@ public class MapEditorMouseListener implements MouseListener,
             // STAMP
             if (mouseButton == MouseEvent.BUTTON3 && layer instanceof TileLayer) {
                 // Right mouse button dragged: create and set custom brush
-                MapLayer mapLayer = mapEditor.getCurrentLayer();
                 TileLayer brushLayer = new TileLayer(bounds);
                 brushLayer.copyFrom(mapEditor.getCurrentLayer());
                 brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
@@ -432,11 +423,6 @@ public class MapEditorMouseListener implements MouseListener,
                             Resources.getString("dialog.selection.empty"),
                             Resources.getString("dialog.selection.empty"),
                             JOptionPane.WARNING_MESSAGE);
-                } else {
-                    mapEditor.setBrush(new CustomBrush(brushLayer));
-                    mapEditor.getCursorHighlight().setOffset(
-                            tile.x - (int) bounds.getWidth() / 2,
-                            tile.y - (int) bounds.getHeight() / 2);
                 }
             } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
                 ObjectLayer objectLayer = (ObjectLayer) layer;
@@ -448,7 +434,6 @@ public class MapEditorMouseListener implements MouseListener,
                     ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
                     objectDialog.getProps();
                 }
-                mapEditor.getMapView().repaint();
             }
 
             //get rid of any visible marquee
@@ -485,12 +470,7 @@ public class MapEditorMouseListener implements MouseListener,
                                                                                                        .getZoom()),
                 mapEditor.getMapView().getZoom());
 
-        MapObject object = new MapObject(
-                bounds.x * Constants.TILE_WIDTH,
-                bounds.y * Constants.TILE_HEIGHT,
-                mapNumber
-        );
-        return object;
+        return new MapObject(bounds.x, bounds.y, mapNumber);
     }
 
     @Override

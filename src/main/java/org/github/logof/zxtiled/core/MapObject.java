@@ -48,9 +48,9 @@ public class MapObject implements Cloneable {
     @Getter
     private final int screenNumber;
     @Getter
-    private final int coordinateXAt;
+    private int coordinateXAt;
     @Getter
-    private final int coordinateYAt;
+    private int coordinateYAt;
 
     @Getter
     @Setter
@@ -122,7 +122,8 @@ public class MapObject implements Cloneable {
     }
 
     public void setX(int x) {
-        bounds.x = x;
+        bounds.x = x * Constants.TILE_WIDTH;
+        coordinateXAt = x;
     }
 
     public int getY() {
@@ -130,7 +131,8 @@ public class MapObject implements Cloneable {
     }
 
     public void setY(int y) {
-        bounds.y = y;
+        bounds.y = y * Constants.TILE_HEIGHT;
+        coordinateYAt = y;
     }
 
     public void translate(int dx, int dy) {

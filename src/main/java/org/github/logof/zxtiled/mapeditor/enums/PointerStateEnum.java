@@ -5,7 +5,7 @@ public enum PointerStateEnum {
     PS_PAINT,
     PS_ERASE,
     PS_POUR,
-    PS_EYED,
+
     PS_MARQUEE,
     PS_MOVE,
     PS_ADD_OBJ,

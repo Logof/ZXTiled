@@ -22,8 +22,6 @@ import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
-import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
-import org.github.logof.zxtiled.mapeditor.util.TileRegionSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionListener;
 import javax.swing.*;
@@ -127,13 +125,6 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      */
     public void tileSelected(TileSelectionEvent event) {
         mapEditor.setCurrentTile(event.getTile());
-    }
-
-    /**
-     * Creates a stamp brush from the region contents and sets this as the current brush.
-     */
-    public void tileRegionSelected(TileRegionSelectionEvent e) {
-        mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
     private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener {

@@ -84,11 +84,11 @@ public abstract class MapLayer implements Cloneable {
      * Creates a new MapLayer instance for the given map.
      *
      * @param tileMap the map this layer is part of
-     * @param w   width in tiles
-     * @param h   height in tiles
+     * @param width   width in tiles
+     * @param height  height in tiles
      */
-    public MapLayer(TileMap tileMap, int w, int h) {
-        this(w, h);
+    public MapLayer(TileMap tileMap, int width, int height) {
+        this(width, height);
         setMap(tileMap);
     }
 
@@ -252,7 +252,7 @@ public abstract class MapLayer implements Cloneable {
         other.setName(name);
         other.setVisible(isVisible);
         other.setLocked(bLocked);
-        other.setViewPlaneDistance(getViewPlaneDistance());
+        other.setViewPlaneDistance(viewPlaneDistance);
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.tileMap = tileMap;
         other.bounds.setBounds(bounds);
