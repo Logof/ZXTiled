@@ -72,6 +72,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -179,8 +180,6 @@ public class MapEditor {
         listSelectionListener = new MapEditorListSelectionListener(this);
 
         toolBar = new ToolBar();
-
-
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
@@ -637,17 +636,6 @@ public class MapEditor {
         undoSupport.postEdit(mle);
     }
 
-    public void resetBrush() {
-        //FIXME: this is an in-elegant hack, but it gets the user out of custom brush mode
-        //(reset the brush if necessary)
-        /*if (currentBrush instanceof CustomBrush) {
-            ShapeBrush sb = new ShapeBrush();
-            sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-            sb.setTile(currentTile);
-            setBrush(sb);
-        }*/
-    }
-
     public void setBrush(AbstractBrush brush) {
         // Make sure a possible current highlight gets erased from screen
         if (mapView != null && preferences.getBoolean("cursorhighlight", true)) {
@@ -791,7 +779,7 @@ public class MapEditor {
             MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_ACTIVE);
             mapView = MapView.createViewforMap(currentTileMap);
 
-            mapView.addMouseListener(mouseListener);
+            Objects.requireNonNull(mapView).addMouseListener(mouseListener);
             mapView.addMouseMotionListener(mouseListener);
             mapView.addMouseWheelListener(mouseListener);
 
@@ -848,8 +836,6 @@ public class MapEditor {
      * @param tile the new tile to be selected
      */
     public void setCurrentTile(Tile tile) {
-        resetBrush();
-
         if (currentTile != tile) {
             currentTile = tile;
             if (currentBrush instanceof ShapeBrush) {

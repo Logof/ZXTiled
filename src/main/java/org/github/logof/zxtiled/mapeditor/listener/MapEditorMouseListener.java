@@ -40,8 +40,8 @@ public class MapEditorMouseListener implements MouseListener,
                                                MouseWheelListener {
 
     private int mouseButton;
-    private boolean bMouseIsDown;
-    private boolean bMouseIsDragging;
+    private boolean mouseIsDown;
+    private boolean mouseIsDragging;
     private Point moveDist;
     private Point mousePressLocation;
     private Point mouseInitialPressLocation;
@@ -64,10 +64,10 @@ public class MapEditorMouseListener implements MouseListener,
     public void mousePressed(MouseEvent mouseEvent) {
         MapLayer mapLayer = mapEditor.getCurrentLayer();
 
-        Point tile = mapEditor.getMapView().screenToTileCoordinates(mapLayer, mouseEvent.getX(), mouseEvent.getY());
+        Point point = mapEditor.getMapView().screenToTileCoordinates(mapLayer, mouseEvent.getX(), mouseEvent.getY());
         mouseButton = mouseEvent.getButton();
-        bMouseIsDown = true;
-        bMouseIsDragging = false;
+        mouseIsDown = true;
+        mouseIsDragging = false;
         mousePressLocation = mapEditor.getMapView()
                                       .screenToTileCoordinates(mapLayer, mouseEvent.getX(), mouseEvent.getY());
         mouseInitialPressLocation = mousePressLocation;
@@ -81,7 +81,7 @@ public class MapEditorMouseListener implements MouseListener,
             switch (PointerStateManager.getCurrentPointerState()) {
                 case PS_PAINT:
                     if (mapLayer instanceof TileLayer) {
-                        mapEditor.getCurrentBrush().startPaint(mapEditor.getCurrentTileMap(), tile.x, tile.y,
+                        mapEditor.getCurrentBrush().startPaint(mapEditor.getCurrentTileMap(), point.x, point.y,
                                 mouseButton, mapEditor.getCurrentLayerIndex());
                     }
                 case PS_ERASE:
@@ -96,7 +96,7 @@ public class MapEditorMouseListener implements MouseListener,
         if (PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_MARQUEE) {
             boolean contains = mapEditor.getMarqueeSelection() != null && mapEditor.getMarqueeSelection()
                                                                                    .getSelectedArea()
-                                                                                   .contains(tile.x, tile.y);
+                                                                                   .contains(point.x, point.y);
 
             if (mapEditor.getMarqueeSelection() == null && !contains) {
                 mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
@@ -128,18 +128,16 @@ public class MapEditorMouseListener implements MouseListener,
             return;
         }
 
-        Point tile = mapEditor.getMapView().screenToTileCoordinates(layer, event.getX(), event.getY());
+        Point coordinates = mapEditor.getMapView().screenToTileCoordinates(layer, event.getX(), event.getY());
 
         if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
-                if (!bMouseIsDragging) {
-                    // Click event is sent before the drag event
-                    // so this one always happens
-                    Tile newTile = ((TileLayer) layer).getTileAt(tile.x, tile.y);
+                if (!mouseIsDragging) {
+                    // Событие щелчка отправляется перед событием перетаскивания, поэтому оно происходит всегда.
+                    Tile newTile = ((TileLayer) layer).getTileAt(coordinates.x, coordinates.y);
                     mapEditor.setCurrentTile(newTile);
                 } else if (PointerStateManager.getCurrentPointerState() == PS_PAINT) {
-                    // In case we are dragging to create a custom brush, let
-                    // the user know where we are creating it from
+                    // Если мы перетаскиваем, чтобы создать собственную кисть, сообщите пользователю, откуда мы ее создаем.
                     if (mapEditor.getMarqueeSelection() == null) {
                         mapEditor.setMarqueeSelection(new SelectionLayer(layer));
                         mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
@@ -148,13 +146,13 @@ public class MapEditorMouseListener implements MouseListener,
                     Point limp = mouseInitialPressLocation;
                     Rectangle oldArea =
                             mapEditor.getMarqueeSelection().getSelectedAreaBounds();
-                    int minx = Math.min(limp.x, tile.x);
-                    int miny = Math.min(limp.y, tile.y);
+                    int minx = Math.min(limp.x, coordinates.x);
+                    int miny = Math.min(limp.y, coordinates.y);
 
                     Rectangle selRect = new Rectangle(
                             minx, miny,
-                            (Math.max(limp.x, tile.x) - minx) + 1,
-                            (Math.max(limp.y, tile.y) - miny) + 1);
+                            (Math.max(limp.x, coordinates.x) - minx) + 1,
+                            (Math.max(limp.y, coordinates.y) - miny) + 1);
 
                     mapEditor.getMarqueeSelection().selectRegion(selRect);
                     if (oldArea != null) {
@@ -162,8 +160,8 @@ public class MapEditorMouseListener implements MouseListener,
                         mapEditor.getMapView().repaintRegion(layer, oldArea);
                     }
                 }
-            } else if (layer instanceof ObjectLayer && !bMouseIsDragging) {
-                // Get the object on this location and display the relative options dialog
+            } else if (layer instanceof ObjectLayer && !mouseIsDragging) {
+                // Получите объект в этом месте и отобразите диалоговое окно относительных параметров.
                 ObjectLayer objectLayer = (ObjectLayer) layer;
 
                 double zoom = mapEditor.getMapView().getZoom();
@@ -205,7 +203,8 @@ public class MapEditorMouseListener implements MouseListener,
                     if (layer instanceof TileLayer) {
                         try {
                             mapEditor.getMapView()
-                                     .repaintRegion(layer, mapEditor.getCurrentBrush().doPaint(tile.x, tile.y));
+                                     .repaintRegion(layer, mapEditor.getCurrentBrush()
+                                                                    .doPaint(coordinates.x, coordinates.y));
                             mapEditor.getStatusBar().getStatusLabel().clearText();
                         } catch (LayerLockedBrushException llx) {
                             mapEditor.getStatusBar().getStatusLabel()
@@ -224,24 +223,24 @@ public class MapEditorMouseListener implements MouseListener,
                 case PS_ERASE:
                     mapEditor.getPaintEdit().setPresentationName(Constants.TOOL_ERASE);
                     if (layer instanceof TileLayer) {
-                        ((TileLayer) layer).setTileAt(tile.x, tile.y, null);
+                        ((TileLayer) layer).setTileAt(coordinates.x, coordinates.y, null);
                         mapEditor.getMapView().repaintRegion(layer, new Rectangle(
-                                tile.x, tile.y, 1, 1));
+                                coordinates.x, coordinates.y, 1, 1));
                     }
                     break;
                 case PS_POUR:
                     mapEditor.setPaintEdit(null);
                     if (layer instanceof TileLayer) {
                         TileLayer tileLayer = (TileLayer) layer;
-                        Tile oldTile = tileLayer.getTileAt(tile.x, tile.y);
-                        mapEditor.pour(tileLayer, tile.x, tile.y, mapEditor.getCurrentTile(), oldTile);
+                        Tile oldTile = tileLayer.getTileAt(coordinates.x, coordinates.y);
+                        mapEditor.pour(tileLayer, coordinates.x, coordinates.y, mapEditor.getCurrentTile(), oldTile);
                         mapEditor.getMapView().repaint();
                     }
                     break;
                 case PS_MOVE: {
                     Point translation = new Point(
-                            tile.x - mousePressLocation.x,
-                            tile.y - mousePressLocation.y);
+                            coordinates.x - mousePressLocation.x,
+                            coordinates.y - mousePressLocation.y);
 
                     layer.translate(translation.x, translation.y);
                     moveDist.translate(translation.x, translation.y);
@@ -258,13 +257,13 @@ public class MapEditorMouseListener implements MouseListener,
                         Point limp = mouseInitialPressLocation;
                         Rectangle oldArea =
                                 mapEditor.getMarqueeSelection().getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
+                        int minx = Math.min(limp.x, coordinates.x);
+                        int miny = Math.min(limp.y, coordinates.y);
 
                         Rectangle selRect = new Rectangle(
                                 minx, miny,
-                                (Math.max(limp.x, tile.x) - minx) + 1,
-                                (Math.max(limp.y, tile.y) - miny) + 1);
+                                (Math.max(limp.x, coordinates.x) - minx) + 1,
+                                (Math.max(limp.y, coordinates.y) - miny) + 1);
 
                         if (event.isShiftDown()) {
                             mapEditor.getMarqueeSelection().add(new Area(selRect));
@@ -289,13 +288,13 @@ public class MapEditorMouseListener implements MouseListener,
 
                         Point limp = mouseInitialPressLocation;
                         Rectangle oldArea = mapEditor.getMarqueeSelection().getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
+                        int minx = Math.min(limp.x, coordinates.x);
+                        int miny = Math.min(limp.y, coordinates.y);
 
                         Rectangle selRect = new Rectangle(
                                 minx, miny,
-                                (Math.max(limp.x, tile.x) - minx) + 1,
-                                (Math.max(limp.y, tile.y) - miny) + 1);
+                                (Math.max(limp.x, coordinates.x) - minx) + 1,
+                                (Math.max(limp.y, coordinates.y) - miny) + 1);
 
                         mapEditor.getMarqueeSelection().selectRegion(selRect);
                         if (oldArea != null) {
@@ -352,8 +351,8 @@ public class MapEditorMouseListener implements MouseListener,
 
                         Point limp = mouseInitialPressLocation;
                         Rectangle oldArea = mapEditor.getMarqueeSelection().getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
+                        int minx = Math.min(limp.x, coordinates.x);
+                        int miny = Math.min(limp.y, coordinates.y);
 
                         Rectangle selRect = new Rectangle(
                                 minx, miny, Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
@@ -399,23 +398,23 @@ public class MapEditorMouseListener implements MouseListener,
 
         if (PointerStateManager.getCurrentPointerState() == PS_PAINT ||
                 PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ) {
-            Point tile = mapEditor.getMapView().screenToTileCoordinates(
+            Point point = mapEditor.getMapView().screenToTileCoordinates(
                     layer, mouseEvent.getX(), mouseEvent.getY());
-            int minx = Math.min(limp.x, tile.x);
-            int miny = Math.min(limp.y, tile.y);
+            int minx = Math.min(limp.x, point.x);
+            int miny = Math.min(limp.y, point.y);
 
             Rectangle bounds = new Rectangle(
                     minx, miny,
-                    (Math.max(limp.x, tile.x) - minx) + 1,
-                    (Math.max(limp.y, tile.y) - miny) + 1);
+                    (Math.max(limp.x, point.x) - minx) + 1,
+                    (Math.max(limp.y, point.y) - miny) + 1);
 
             // STAMP
             if (mouseButton == MouseEvent.BUTTON3 && layer instanceof TileLayer) {
                 // Right mouse button dragged: create and set custom brush
                 TileLayer brushLayer = new TileLayer(bounds);
                 brushLayer.copyFrom(mapEditor.getCurrentLayer());
-                brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
-                        tile.y - (int) bounds.getHeight() / 2);
+                brushLayer.setOffset(point.x - (int) bounds.getWidth() / 2,
+                        point.y - (int) bounds.getHeight() / 2);
 
                 // Do a quick check to make sure the selection is not empty
                 if (brushLayer.isEmpty()) {
@@ -427,7 +426,7 @@ public class MapEditorMouseListener implements MouseListener,
             } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
                 ObjectLayer objectLayer = (ObjectLayer) layer;
 
-                MapObject object = createMapObject(mouseEvent, bounds);
+                MapObject object = createMapObject(mouseEvent);
                 mapEditor.getUndoSupport().postEdit(new AddObjectEdit(objectLayer, object));
 
                 if (objectLayer.addObject(object)) {
@@ -459,18 +458,18 @@ public class MapEditorMouseListener implements MouseListener,
         mapEditor.setCurrentObject(null);
 
         mouseButton = MouseEvent.NOBUTTON;
-        bMouseIsDown = false;
-        bMouseIsDragging = false;
+        mouseIsDown = false;
+        mouseIsDragging = false;
     }
 
-    private MapObject createMapObject(MouseEvent mouseEvent, Rectangle bounds) {
+    private MapObject createMapObject(MouseEvent mouseEvent) {
         int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(),
                 mapEditor.getMapView()
                          .getWidth() / (int) (Constants.SCREEN_WIDTH * Constants.TILE_WIDTH * mapEditor.getMapView()
                                                                                                        .getZoom()),
                 mapEditor.getMapView().getZoom());
 
-        return new MapObject(bounds.x, bounds.y, mapNumber);
+        return new MapObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
     }
 
     @Override
@@ -486,7 +485,7 @@ public class MapEditorMouseListener implements MouseListener,
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        bMouseIsDragging = true;
+        mouseIsDragging = true;
 
         doMouse(mouseEvent);
 
@@ -502,8 +501,8 @@ public class MapEditorMouseListener implements MouseListener,
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
         // Update state of mouse buttons
-        bMouseIsDown = mouseEvent.getButton() != MouseEvent.NOBUTTON;
-        if (bMouseIsDown) {
+        mouseIsDown = mouseEvent.getButton() != MouseEvent.NOBUTTON;
+        if (mouseIsDown) {
             doMouse(mouseEvent);
         }
 

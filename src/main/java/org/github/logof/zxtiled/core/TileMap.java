@@ -404,16 +404,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Returns the maximum tile height. This is the height of the highest tile
-     * in all tilesets or the tile height used by this map if it's smaller.
-     *
-     * @return int The maximum tile height
-     */
-    public int getTileHeightMax() {
-        return Constants.TILE_HEIGHT;
-    }
-
-    /**
      * Swaps the tile sets at the given indices.
      */
     public void swapTileSets(int index0, int index1) {

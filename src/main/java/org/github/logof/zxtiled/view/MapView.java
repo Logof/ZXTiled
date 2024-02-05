@@ -82,7 +82,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         if (MapView.propertyFlagImage == null) {
             try {
                 MapView.propertyFlagImage =
-                        Resources.getImage("propertyflag-12.png").orElse(null);
+                        Resources.getImage("icon/propertyflag-12.png").orElse(null);
             } catch (Exception ignored) {
             }
         }

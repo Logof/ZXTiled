@@ -26,6 +26,7 @@ import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * A dialog for editing the name, type, size and properties of an object.
@@ -166,8 +167,8 @@ public class ObjectDialog extends PropertiesDialog {
         objectType.setSelectedItem(object.getType());
         objectImageSource.setText(object.getImageSource());
         speedValue.setValue(object.getSpeed());
-        deltaX.setValue(object.getPath().width);
-        deltaY.setValue(object.getPath().height);
+        deltaX.setValue(Objects.nonNull(object.getPath()) ? object.getPath().width : object.getCoordinateXAt());
+        deltaY.setValue(Objects.nonNull(object.getPath()) ? object.getPath().height : object.getCoordinateYAt());
 
     }
 
