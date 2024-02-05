@@ -26,7 +26,6 @@ import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.brush.AbstractBrush;
-import org.github.logof.zxtiled.mapeditor.brush.CustomBrush;
 import org.github.logof.zxtiled.mapeditor.brush.ShapeBrush;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.gui.ApplicationFrame;
@@ -73,7 +72,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -173,13 +172,14 @@ public class MapEditor {
     private final ComponentListener componentListener;
     public MapEditor() {
         MapEditorAction.init(this);
+        pointerStateManager = new PointerStateManager(this);
+
         mouseListener = new MapEditorMouseListener(this);
-        actionListener = new MapEditorActionListener(this);
+
+        actionListener = new MapEditorActionListener(this, pointerStateManager);
         listSelectionListener = new MapEditorListSelectionListener(this);
 
         toolBar = new ToolBar();
-
-        pointerStateManager = new PointerStateManager(this);
 
         objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
 
@@ -435,7 +435,7 @@ public class MapEditor {
         pointerStateManager.updateToolSemantics();
     }
 
-    public void updateTileCoordsLabel(Point tile) {
+    public void updateTileCoordinatesLabel(Point tile) {
         if (tile != null && currentTileMap.inBounds(tile.x, tile.y)) {
             statusBar.getTilePositionLabel().setText(tile.x + ", " + tile.y);
         } else {
@@ -456,16 +456,6 @@ public class MapEditor {
         brushRedraw.y = tile.y - brushRedraw.height / 2;
 
         if (!redraw.equals(brushRedraw)) {
-            if (currentBrush instanceof CustomBrush) {
-                CustomBrush customBrush = (CustomBrush) currentBrush;
-                ListIterator<MapLayer> layers = customBrush.getLayers();
-                while (layers.hasNext()) {
-                    MapLayer layer = layers.next();
-                    layer.setOffset(brushRedraw.x, brushRedraw.y);
-                }
-                redraw.width = currentBrush.getBounds().width;
-                redraw.height = currentBrush.getBounds().height;
-            }
             mapView.repaintRegion(cursorHighlight, redraw);
             cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
             //cursorHighlight.selectRegion(currentBrush.getShape());
@@ -474,7 +464,7 @@ public class MapEditor {
     }
 
 
-    // TODO: Most if not all of the below should be moved into action objects
+    // TODO: Вынести в отдельный класс
     public void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
@@ -503,6 +493,12 @@ public class MapEditor {
                     }
                 }
             }
+        } else if (command.equals(Resources.getString("menu.sprites.new"))) {
+            NewTilesetDialog dialog = new NewTilesetDialog(appFrame, getCurrentLayer(), undoSupport);
+            Tileset newSet = dialog.create();
+            if (newSet != null) {
+                //spriteMap.addTileset(newSet);
+            }
         } else if (command.equals(Resources.getString("menu.tilesets.refresh"))) {
             if (currentTileMap != null) {
                 Vector<Tileset> tilesets = currentTileMap.getTilesets();
@@ -516,7 +512,6 @@ public class MapEditor {
                     }
                 }
                 mapView.repaint();
-                ToolBar.getBrushPreview().setBrush(currentBrush);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentTileMap != null) {
@@ -524,8 +519,7 @@ public class MapEditor {
                 manager.setVisible(true);
             }
         } else if (command.equals(Resources.getString("menu.map.properties"))) {
-            PropertiesDialog pd = new MapPropertiesDialog(appFrame,
-                    currentTileMap, undoSupport);
+            PropertiesDialog pd = new MapPropertiesDialog(appFrame, currentTileMap, undoSupport);
             pd.setTitle(Resources.getString("dialog.properties.map.title"));
             pd.getProps();
         } else if (command.equals(Resources.getString("menu.view.boundaries")) ||
@@ -555,7 +549,6 @@ public class MapEditor {
         }
     }
 
-
     /**
      * Called when the editor is exiting.
      */
@@ -582,9 +575,10 @@ public class MapEditor {
     }
 
 
-    public void pour(TileLayer layer, int x, int y,
-                      Tile newTile, Tile oldTile) {
-        if (newTile == oldTile || layer.cannotEdit()) return;
+    public void pour(TileLayer layer, int x, int y, Tile newTile, Tile oldTile) {
+        if (newTile == oldTile || layer.cannotEdit()) {
+            return;
+        }
 
         Rectangle area;
         TileLayer before = (TileLayer) createLayerCopy(layer);
@@ -640,18 +634,6 @@ public class MapEditor {
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);
         mle.setPresentationName(Constants.TOOL_FILL);
         undoSupport.postEdit(mle);
-    }
-
-    public void resetBrush() {
-        //FIXME: this is an in-elegant hack, but it gets the user out
-        //       of custom brush mode
-        //(reset the brush if necessary)
-        if (currentBrush instanceof CustomBrush) {
-            ShapeBrush sb = new ShapeBrush();
-            sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-            sb.setTile(currentTile);
-            setBrush(sb);
-        }
     }
 
     public void setBrush(AbstractBrush brush) {
@@ -797,7 +779,7 @@ public class MapEditor {
             MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_ACTIVE);
             mapView = MapView.createViewforMap(currentTileMap);
 
-            mapView.addMouseListener(mouseListener);
+            Objects.requireNonNull(mapView).addMouseListener(mouseListener);
             mapView.addMouseMotionListener(mouseListener);
             mapView.addMouseWheelListener(mouseListener);
 
@@ -854,14 +836,11 @@ public class MapEditor {
      * @param tile the new tile to be selected
      */
     public void setCurrentTile(Tile tile) {
-        resetBrush();
-
         if (currentTile != tile) {
             currentTile = tile;
             if (currentBrush instanceof ShapeBrush) {
                 ((ShapeBrush) currentBrush).setTile(tile);
             }
-            ToolBar.getBrushPreview().setBrush(currentBrush);
         }
     }
 }

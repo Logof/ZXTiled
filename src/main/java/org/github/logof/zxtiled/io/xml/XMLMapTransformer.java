@@ -27,6 +27,7 @@ import org.github.logof.zxtiled.io.PluginLogger;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.cutter.BasicTileCutter;
+import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
 import org.github.logof.zxtiled.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,6 +52,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
@@ -207,33 +209,33 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
-    private Object unmarshalClass(Class reflector, Node node)
-            throws InstantiationException, IllegalAccessException,
-            InvocationTargetException {
-        Constructor cons = null;
+    private Object unmarshalClass(Class reflector, Node node) throws InstantiationException,
+                                                                     IllegalAccessException,
+                                                                     InvocationTargetException {
+        Constructor<?> constructor = null;
         try {
-            cons = reflector.getConstructor(null);
+            constructor = reflector.getConstructor(null);
         } catch (SecurityException e1) {
             e1.printStackTrace();
         } catch (NoSuchMethodException e1) {
             e1.printStackTrace();
             return null;
         }
-        Object o = cons.newInstance(null);
+        Object object = constructor.newInstance(null);
         Node n;
 
         Method[] methods = reflector.getMethods();
-        NamedNodeMap nnm = node.getAttributes();
+        NamedNodeMap attributes = node.getAttributes();
 
-        if (nnm != null) {
-            for (int i = 0; i < nnm.getLength(); i++) {
-                n = nnm.item(i);
+        if (attributes != null) {
+            for (int i = 0; i < attributes.getLength(); i++) {
+                n = attributes.item(i);
 
                 try {
                     int j = reflectFindMethodByName(reflector,
                             "set" + n.getNodeName());
                     if (j >= 0) {
-                        reflectInvokeMethod(o, methods[j],
+                        reflectInvokeMethod(object, methods[j],
                                 new String[]{n.getNodeValue()});
                     } else {
                         logger.warn("Unsupported attribute '" +
@@ -245,7 +247,7 @@ public class XMLMapTransformer implements MapReader {
                 }
             }
         }
-        return o;
+        return object;
     }
 
     private Image unmarshalImage(Node t, String baseDir) throws IOException {
@@ -458,22 +460,26 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
-    private MapObject readMapObject(Node t) throws Exception {
-        final String name = getAttributeValue(t, "name");
-        final String type = getAttributeValue(t, "type");
-        final int x = getAttribute(t, "x", 0);
-        final int y = getAttribute(t, "y", 0);
-        final int screenNumber = getAttribute(t, "screen", 0);
+    private MapObject readMapObject(Node node) throws Exception {
+        final String name = getAttributeValue(node, "name");
+        final String typeString = getAttributeValue(node, "type");
+        final int x = getAttribute(node, "x", 0);
+        final int y = getAttribute(node, "y", 0);
+        final int screenNumber = getAttribute(node, "screen", 0);
+
+        final int speed = getAttribute(node, "speed", 1);
+        final int moveByX = getAttribute(node, "moveByX", x);
+        final int moveByY = getAttribute(node, "moveByY", y);
 
         MapObject obj = new MapObject(x, y, screenNumber);
+        obj.setSpeed(speed);
+        obj.setFinalPoint(new Point(moveByX, moveByY));
         if (name != null) {
             obj.setName(name);
         }
-        if (type != null) {
-            obj.setType(type);
-        }
+        obj.setType(EnemyEnum.valueOf(typeString));
 
-        NodeList children = t.getChildNodes();
+        NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("image".equalsIgnoreCase(child.getNodeName())) {
@@ -535,6 +541,10 @@ public class XMLMapTransformer implements MapReader {
         } catch (Exception e) {
             e.printStackTrace();
             return objectLayer;
+        }
+
+        if (Objects.isNull(objectLayer)) {
+            return new ObjectLayer(new Rectangle(1, 1));
         }
 
         final int offsetX = getAttribute(node, "x", 0);

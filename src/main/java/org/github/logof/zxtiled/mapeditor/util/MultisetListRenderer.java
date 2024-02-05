@@ -37,7 +37,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
     /**
      * The hash map used to match indexes to icons.
      */
-    private final HashMap<Integer, Icon> tileImages = new HashMap<Integer, Icon>();
+    private final HashMap<Integer, Icon> tileImages = new HashMap<>();
 
     /**
      * The zoom level used for the tile image icons.
@@ -60,8 +60,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
                                                   int index, boolean isSelected,
                                                   boolean cellHasFocus) {
         // Let the default list cell renderer do most of the work
-        super.getListCellRendererComponent(
-                list, value, index, isSelected, cellHasFocus);
+        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
         // Attempt to set an appropriate icon
         if (value instanceof Tile && index >= 0) {

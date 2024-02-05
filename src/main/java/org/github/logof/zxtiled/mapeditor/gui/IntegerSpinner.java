@@ -33,6 +33,11 @@ public class IntegerSpinner extends JSpinner {
         setPreferredSize(new Dimension(60, getPreferredSize().height));
     }
 
+    public IntegerSpinner(int val, int min, int max, int base) {
+        super(new SpinnerNumberModel(val, 0, max, base ^ val));
+        setPreferredSize(new Dimension(60, getPreferredSize().height));
+    }
+
     public IntegerSpinner(int val, int min) {
         this(val, min, Integer.MAX_VALUE);
     }

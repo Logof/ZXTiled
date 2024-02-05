@@ -186,8 +186,7 @@ public class TileLayer extends MapLayer {
      */
     public void removeTile(Tile tile) throws LayerLockedException {
         if (getLocked()) {
-            throw new LayerLockedException(
-                    "Attempted to remove tile when this layer is locked.");
+            throw new LayerLockedException("Attempted to remove tile when this layer is locked.");
         }
 
         for (int y = 0; y < bounds.height; y++) {
@@ -222,8 +221,9 @@ public class TileLayer extends MapLayer {
      * outside this layer
      */
     public Tile getTileAt(int tileX, int tileY) {
-        return (bounds.contains(tileX, tileY)) ?
-                map[tileY - bounds.y][tileX - bounds.x] : null;
+        return (bounds.contains(tileX, tileY))
+                ? map[tileY - bounds.y][tileX - bounds.x]
+                : null;
     }
 
     /**

@@ -75,8 +75,7 @@ public class MultilayerPlane implements Iterable<MapLayer> {
     }
 
     /**
-     * Returns a <code>Rectangle</code> representing the maximum bounds in
-     * tiles.
+     * Returns a <code>Rectangle</code> representing the maximum bounds in tiles.
      *
      * @return a new rectangle containing the maximum bounds of this plane
      */
@@ -171,8 +170,7 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      */
     public void swapLayerDown(int index) {
         if (index - 1 < 0) {
-            throw new RuntimeException(
-                    "Can't swap down when already at the bottom.");
+            throw new RuntimeException("Can't swap down when already at the bottom.");
         }
 
         MapLayer hold = layers.get(index - 1);

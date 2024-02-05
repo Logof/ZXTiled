@@ -25,21 +25,9 @@ public class PointerStateManager {
 
         // Set the matching cursor
         if (mapEditor.getMapView() != null) {
-            switch (currentPointerState) {
-                case PS_PAINT:
-                case PS_ERASE:
-                case PS_POINT:
-                case PS_POUR:
-                case PS_MARQUEE:
-                case PS_START_OBJECT:
-                case PS_FINISH_OBJECT:
-                    mapEditor.getMapView().setCursor(Constants.CURSOR_DEFAULT);
-                    break;
-                case PS_EYED:
-                    mapEditor.getMapView().setCursor(Constants.CURSOR_EYED);
-                    break;
-            }
+            mapEditor.getMapView().setCursor(Constants.CURSOR_DEFAULT);
         }
+
         updateToolSemantics();
     }
 

@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -25,9 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 
-/**
- * @version $Id$
- */
 public class PropertiesDialog extends JDialog {
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
@@ -102,13 +87,12 @@ public class PropertiesDialog extends JDialog {
         getRootPane().setDefaultButton(okButton);
 
         //create actionlisteners
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                UndoableEdit ue = commit();
-                if (ue != null)
-                    undoSupport.postEdit(ue);
-                dispose();
+        okButton.addActionListener(actionEvent -> {
+            UndoableEdit ue = commit();
+            if (ue != null) {
+                undoSupport.postEdit(ue);
             }
+            dispose();
         });
 
         cancelButton.addActionListener(new ActionListener() {

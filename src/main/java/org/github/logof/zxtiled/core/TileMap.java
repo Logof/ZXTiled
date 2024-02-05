@@ -90,38 +90,39 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         // that add or removes listeners
         Iterable<MapChangeListener> mapChangeListenersClone = new Vector<>(mapChangeListeners);
 
-        for (MapChangeListener l : mapChangeListenersClone) {
-            if (event == null)
+        for (MapChangeListener mapChangeListener : mapChangeListenersClone) {
+            if (event == null) {
                 event = new MapChangedEvent(this);
-            l.mapChanged(event);
+            }
+            mapChangeListener.mapChanged(event);
         }
     }
 
     protected void fireLayerRemoved(int layerIndex) {
-        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
-        for (MapChangeListener l : mapChangeListeners) {
-            l.layerRemoved(e);
+        MapChangedEvent event = new MapChangedEvent(this, layerIndex);
+        for (MapChangeListener listener : mapChangeListeners) {
+            listener.layerRemoved(event);
         }
     }
 
     protected void fireLayerAdded(int layerIndex) {
-        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
-        for (MapChangeListener l : mapChangeListeners) {
-            l.layerAdded(e);
+        MapChangedEvent event = new MapChangedEvent(this, layerIndex);
+        for (MapChangeListener listener : mapChangeListeners) {
+            listener.layerAdded(event);
         }
     }
 
     protected void fireLayerMoved(int oldLayerIndex, int newLayerIndex) {
-        MapChangedEvent e = new MapChangedEvent(this, newLayerIndex, oldLayerIndex);
-        for (MapChangeListener l : mapChangeListeners) {
-            l.layerMoved(e);
+        MapChangedEvent event = new MapChangedEvent(this, newLayerIndex, oldLayerIndex);
+        for (MapChangeListener listener : mapChangeListeners) {
+            listener.layerMoved(event);
         }
     }
 
     protected void fireLayerChanged(int layerIndex, MapLayerChangeEvent mlce) {
-        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
-        for (MapChangeListener l : mapChangeListeners)
-            l.layerChanged(e, mlce);
+        MapChangedEvent event = new MapChangedEvent(this, layerIndex);
+        for (MapChangeListener listener : mapChangeListeners)
+            listener.layerChanged(event, mlce);
     }
 
     /**
@@ -135,7 +136,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
-            if (event == null) event = new MapChangedEvent(this);
+            if (event == null) {
+                event = new MapChangedEvent(this);
+            }
             iterator.next().tilesetRemoved(event, index);
         }
     }
@@ -167,7 +170,9 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
-            if (event == null) event = new MapChangedEvent(this);
+            if (event == null) {
+                event = new MapChangedEvent(this);
+            }
             iterator.next().tilesetsSwapped(event, index0, index1);
         }
     }
@@ -396,16 +401,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      */
     public boolean contains(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
-    }
-
-    /**
-     * Returns the maximum tile height. This is the height of the highest tile
-     * in all tilesets or the tile height used by this map if it's smaller.
-     *
-     * @return int The maximum tile height
-     */
-    public int getTileHeightMax() {
-        return Constants.TILE_HEIGHT;
     }
 
     /**

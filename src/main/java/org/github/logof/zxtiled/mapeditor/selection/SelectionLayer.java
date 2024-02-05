@@ -73,19 +73,21 @@ public class SelectionLayer extends TileLayer {
     }
 
     public float getViewPlaneDistance() {
-        if (parentLayer == null)
+        if (parentLayer == null) {
             return super.getViewPlaneDistance();
-        else
+        } else {
             return parentLayer.getViewPlaneDistance();
+        }
     }
 
 
     @Override
     public int getWidth() {
-        if (parentLayer == null)
+        if (parentLayer == null) {
             return super.getWidth();
-        else
+        } else {
             return parentLayer.getWidth();
+        }
     }
 
     /**

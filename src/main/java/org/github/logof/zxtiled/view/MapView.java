@@ -82,7 +82,7 @@ public abstract class MapView extends JPanel implements Scrollable {
         if (MapView.propertyFlagImage == null) {
             try {
                 MapView.propertyFlagImage =
-                        Resources.getImage("propertyflag-12.png").orElse(null);
+                        Resources.getImage("icon/propertyflag-12.png").orElse(null);
             } catch (Exception ignored) {
             }
         }
@@ -102,9 +102,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     public static MapView createViewforMap(TileMap tileMap) {
         switch (tileMap.getMapType()) {
             case MAP_SIDE_SCROLLED:
-                return new SideScrelledMapView(tileMap);
+                return new SideScrolledMapView(tileMap);
             case MAP_TOP_DOWN:
-                return new SideScrelledMapView(tileMap);
+                return new SideScrolledMapView(tileMap);
             default:
                 return null;
         }
@@ -448,6 +448,10 @@ public abstract class MapView extends JPanel implements Scrollable {
         repaint();
     }
 
+    public void repaintMapObject(Rectangle region) {
+        repaint();
+    }
+
     /**
      * Draws the grid for the given layer.
      *
@@ -520,8 +524,9 @@ public abstract class MapView extends JPanel implements Scrollable {
     }
 
     public void setCurrentLayer(MapLayer layer) {
-        if (this.currentLayer == layer)
+        if (this.currentLayer == layer) {
             return;
+        }
         this.currentLayer = layer;
         // because of different tile sizes and/or parallax positions between
         // the old and the new current layer, a redraw might be required.

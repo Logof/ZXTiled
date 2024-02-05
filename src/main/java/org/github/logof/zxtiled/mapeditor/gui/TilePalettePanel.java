@@ -14,11 +14,9 @@ package org.github.logof.zxtiled.mapeditor.gui;
 
 import lombok.Getter;
 import org.github.logof.zxtiled.core.Tile;
-import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
 import org.github.logof.zxtiled.core.event.TilesetChangedEvent;
-import org.github.logof.zxtiled.mapeditor.util.TileRegionSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionEvent;
 import org.github.logof.zxtiled.mapeditor.util.TileSelectionListener;
 import javax.swing.*;
@@ -71,8 +69,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                     setSelection(select);
                     scrollTileToVisible(point);
                 }
-                if (selection.getWidth() > 0 || selection.getHeight() > 0)
-                    fireTileRegionSelectionEvent(selection);
             }
         };
         addMouseListener(mouseInputAdapter);
@@ -132,32 +128,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         for (TileSelectionListener listener : tileSelectionListeners) {
             listener.tileSelected(event);
         }
-    }
-
-    private void fireTileRegionSelectionEvent(Rectangle selection) {
-        TileLayer region = createTileLayerFromRegion(selection);
-        TileRegionSelectionEvent event = new TileRegionSelectionEvent(this, region);
-        for (TileSelectionListener listener : tileSelectionListeners) {
-            listener.tileRegionSelected(event);
-        }
-    }
-
-    /**
-     * Creates a tile layer from a certain region of the tile palette.
-     *
-     * @param rect the rectangular region from which a tile layer is created
-     * @return the created tile layer
-     */
-    private TileLayer createTileLayerFromRegion(Rectangle rect) {
-        TileLayer layer = new TileLayer(rect.width + 1, rect.height + 1);
-
-        // Copy the tiles in the region to the tile layer
-        for (int y = rect.y; y <= rect.y + rect.height; y++) {
-            for (int x = rect.x; x <= rect.x + rect.width; x++) {
-                layer.setTileAt(x - rect.x, y - rect.y, getTileAt(x, y));
-            }
-        }
-        return layer;
     }
 
     /**

@@ -49,7 +49,7 @@ import java.util.zip.GZIPOutputStream;
 public class XMLMapWriter implements MapWriter {
     private static final int LAST_BYTE = 0x000000FF;
 
-    private Preferences prefs = TiledConfiguration.node("saving");
+    private Preferences preferences = TiledConfiguration.node("saving");
 
     private static void writeProperties(Properties props, XMLWriter w) throws
             IOException {
@@ -84,13 +84,13 @@ public class XMLMapWriter implements MapWriter {
     private static void writeMapObject(MapObject mapObject, XMLWriter writer, String wp) throws IOException {
         writer.startElement("object");
         writer.writeAttribute("name", mapObject.getName());
-
-        if (!mapObject.getType().isEmpty()) {
-            writer.writeAttribute("type", mapObject.getType());
-        }
-        writer.writeAttribute("x", mapObject.getX());
-        writer.writeAttribute("y", mapObject.getY());
+        writer.writeAttribute("type", mapObject.getType().name());
+        writer.writeAttribute("x", mapObject.getCoordinateXAt());
+        writer.writeAttribute("y", mapObject.getCoordinateYAt());
         writer.writeAttribute("screen", mapObject.getScreenNumber());
+        writer.writeAttribute("speed", mapObject.getSpeed());
+        writer.writeAttribute("moveByX", mapObject.getFinalPoint().x);
+        writer.writeAttribute("moveByY", mapObject.getFinalPoint().y);
         writeProperties(mapObject.getProperties(), writer);
 
         if (!mapObject.getImageSource().isEmpty()) {
@@ -175,11 +175,11 @@ public class XMLMapWriter implements MapWriter {
     }
 
     public Preferences getPreferences() {
-        return prefs;
+        return preferences;
     }
 
     public void setPreferences(Preferences prefs) {
-        this.prefs = prefs;
+        this.preferences = prefs;
     }
 
     /**
@@ -266,8 +266,8 @@ public class XMLMapWriter implements MapWriter {
             firstgid += tileset.getMaxTileId() + 1;
         }
 
-        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false)) {
-            writer.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
+        if (preferences.getBoolean("encodeLayerData", true) && preferences.getBoolean("usefulComments", false)) {
+            writer.writeComment("Layer data is " + (preferences.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         }
         Iterator<MapLayer> mapLayers = tileMap.getLayers();
         while (mapLayers.hasNext()) {
@@ -307,9 +307,9 @@ public class XMLMapWriter implements MapWriter {
     }
 
     private void writeEmbeddedImage(int id, Image image, XMLWriter w, String imageSource) throws IOException {
-        String imageFormatName = prefs.get("imageFormat", "PNG");
-        String pixelFormatName = prefs.get("pixelFormat", "A8R8G8B8");
-        boolean imageIsBigEndian = prefs.getBoolean("imageIsBigEndian", true);
+        String imageFormatName = preferences.get("imageFormat", "PNG");
+        String pixelFormatName = preferences.get("pixelFormat", "A8R8G8B8");
+        boolean imageIsBigEndian = preferences.getBoolean("imageIsBigEndian", true);
 
         ImageHelper.ImageFormat imageFormat = ImageHelper.ImageFormat.valueOf(imageFormatName, ImageHelper.ImageFormat.PNG);
         ImageHelper.PixelFormat pixelFormat = ImageHelper.PixelFormat.valueOf(pixelFormatName, ImageHelper.PixelFormat.A8R8G8B8);
@@ -386,10 +386,10 @@ public class XMLMapWriter implements MapWriter {
             // Embedded tileset
 
             // this determines whether or not to encode the image data in base64 and write it directly into the <image> tag (under <data>
-            boolean embedImageData = prefs.getBoolean("embedImages", true);
+            boolean embedImageData = preferences.getBoolean("embedImages", true);
 
             // determines if the tile tileset has a separate image list (true), or if each <image> appears inside the <tile> it belongs to
-            boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
+            boolean tileSetImages = preferences.getBoolean("tileSetImages", false);
 
             if (tileSetImages) {
 
@@ -457,8 +457,8 @@ public class XMLMapWriter implements MapWriter {
      * gids to be written to the layer data.
      */
     private void writeMapLayer(MapLayer mapLayer, XMLWriter xmlWriter, String wp) throws IOException {
-        boolean encodeLayerData = prefs.getBoolean("encodeLayerData", true);
-        boolean compressLayerData = prefs.getBoolean("layerCompression", true) && encodeLayerData;
+        boolean encodeLayerData = preferences.getBoolean("encodeLayerData", true);
+        boolean compressLayerData = preferences.getBoolean("layerCompression", true) && encodeLayerData;
 
         Rectangle bounds = mapLayer.getBounds();
 
@@ -587,8 +587,8 @@ public class XMLMapWriter implements MapWriter {
 
         writeProperties(tile.getProperties(), w);
 
-        boolean embedImages = prefs.getBoolean("embedImages", true);
-        boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
+        boolean embedImages = preferences.getBoolean("embedImages", true);
+        boolean tileSetImages = preferences.getBoolean("tileSetImages", false);
         Image tileImage = tile.getImage();
 
         // Write encoded data
@@ -607,9 +607,9 @@ public class XMLMapWriter implements MapWriter {
                 } else {
                     // if we have no source location given, write the images
                     // to where the map is
-                    String prefix = prefs.get("tileImagePrefix", "tile");
+                    String prefix = preferences.get("tileImagePrefix", "tile");
                     String filename = prefix + tile.getId() + ".png";
-                    String path = prefs.get("maplocation", "") + filename;
+                    String path = preferences.get("maplocation", "") + filename;
                     w.writeAttribute("source", filename);
                     FileOutputStream fw = new FileOutputStream(path);
                     byte[] data = ImageHelper.imageToPNG(tileImage);
