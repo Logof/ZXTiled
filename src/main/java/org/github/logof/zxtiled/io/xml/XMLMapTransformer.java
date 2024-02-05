@@ -473,7 +473,7 @@ public class XMLMapTransformer implements MapReader {
 
         MapObject obj = new MapObject(x, y, screenNumber);
         obj.setSpeed(speed);
-        obj.setPath(new Rectangle(moveByX, moveByY));
+        obj.setFinalPoint(new Point(moveByX, moveByY));
         if (name != null) {
             obj.setName(name);
         }

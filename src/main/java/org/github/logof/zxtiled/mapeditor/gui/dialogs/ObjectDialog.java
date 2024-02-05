@@ -167,8 +167,8 @@ public class ObjectDialog extends PropertiesDialog {
         objectType.setSelectedItem(object.getType());
         objectImageSource.setText(object.getImageSource());
         speedValue.setValue(object.getSpeed());
-        deltaX.setValue(Objects.nonNull(object.getPath()) ? object.getPath().width : object.getCoordinateXAt());
-        deltaY.setValue(Objects.nonNull(object.getPath()) ? object.getPath().height : object.getCoordinateYAt());
+        deltaX.setValue(Objects.nonNull(object.getFinalPoint()) ? object.getFinalPoint().x : object.getCoordinateXAt());
+        deltaY.setValue(Objects.nonNull(object.getFinalPoint()) ? object.getFinalPoint().y : object.getCoordinateYAt());
 
     }
 
@@ -186,7 +186,7 @@ public class ObjectDialog extends PropertiesDialog {
         objectType.setSelectedItem(object.getType());
         object.setImageSource(objectImageSource.getText());
         object.setSpeed((int) speedValue.getValue());
-        object.setPath(new Rectangle((int) deltaX.getValue(), (int) deltaY.getValue()));
+        object.setFinalPoint(new Point((int) deltaX.getValue(), (int) deltaY.getValue()));
         compoundEdit.end();
 
         return compoundEdit;

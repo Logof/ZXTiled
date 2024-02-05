@@ -57,7 +57,7 @@ public class MapObject implements Cloneable {
 
     @Getter
     @Setter
-    private Rectangle path;
+    private Point finalPoint;
 
     public MapObject(int x, int y, int screenNumber) {
         this.bounds = new Rectangle(
@@ -160,5 +160,9 @@ public class MapObject implements Cloneable {
 
     public String toString() {
         return type + " (" + getX() + "," + getY() + ")";
+    }
+
+    public void drawMaoObject() {
+
     }
 }

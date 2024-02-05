@@ -89,8 +89,8 @@ public class XMLMapWriter implements MapWriter {
         writer.writeAttribute("y", mapObject.getCoordinateYAt());
         writer.writeAttribute("screen", mapObject.getScreenNumber());
         writer.writeAttribute("speed", mapObject.getSpeed());
-        writer.writeAttribute("moveByX", mapObject.getPath().width);
-        writer.writeAttribute("moveByY", mapObject.getPath().height);
+        writer.writeAttribute("moveByX", mapObject.getFinalPoint().x);
+        writer.writeAttribute("moveByY", mapObject.getFinalPoint().y);
         writeProperties(mapObject.getProperties(), writer);
 
         if (!mapObject.getImageSource().isEmpty()) {
