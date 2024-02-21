@@ -1,20 +1,26 @@
 package org.github.logof.zxtiled.mapeditor.listener;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
+import org.github.logof.zxtiled.core.Tileset;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
+import org.github.logof.zxtiled.core.objects.PlayerFinishObject;
+import org.github.logof.zxtiled.core.objects.PlayerStartObject;
+import org.github.logof.zxtiled.exception.BrushException;
+import org.github.logof.zxtiled.exception.LayerInvisibleBrushException;
+import org.github.logof.zxtiled.exception.LayerLockedBrushException;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
+import org.github.logof.zxtiled.mapeditor.enums.MapObjectGlobalTypeEnum;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
-import org.github.logof.zxtiled.mapeditor.exception.BrushException;
-import org.github.logof.zxtiled.mapeditor.exception.LayerInvisibleBrushException;
-import org.github.logof.zxtiled.mapeditor.exception.LayerLockedBrushException;
-import org.github.logof.zxtiled.mapeditor.gui.dialogs.ObjectDialog;
+import org.github.logof.zxtiled.mapeditor.gui.dialogs_new.OpenDialogs;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.undo.AddObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
@@ -31,6 +37,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
+import java.util.Objects;
+import java.util.Vector;
 
 import static org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum.PS_PAINT;
 import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
@@ -167,10 +175,14 @@ public class MapEditorMouseListener implements MouseListener,
                 double zoom = mapEditor.getMapView().getZoom();
                 Point position = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), zoom);
 
-                MapObject obj = objectLayer.getObjectNear(position.x, position.y, mapEditor.getMapView().getZoom());
-                if (obj != null) {
-                    ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), obj, mapEditor.getUndoSupport());
-                    objectDialog.getProps();
+                MapObject object = objectLayer.getObjectNear(position.x, position.y, mapEditor.getMapView().getZoom());
+                if (object != null) {
+                    Vector<Tileset> tileset = Objects.nonNull(mapEditor.getCurrentTileMap().getTilesets())
+                            ? mapEditor.getCurrentTileMap().getTilesets() : null;
+                    OpenDialogs.openObjectDialog(mapEditor.getAppFrame(), object, tileset);
+
+                    //ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
+                    //objectDialog.getProps();
                 }
             }
         } else if (mouseButton == MouseEvent.BUTTON2 ||
@@ -280,6 +292,7 @@ public class MapEditorMouseListener implements MouseListener,
                     }
                     break;
                 case PS_ADD_OBJ:
+                case PS_ADD_HOTSPOT:
                     if (layer instanceof ObjectLayer) {
                         if (mapEditor.getMarqueeSelection() == null) {
                             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
@@ -397,7 +410,8 @@ public class MapEditorMouseListener implements MouseListener,
         }
 
         if (PointerStateManager.getCurrentPointerState() == PS_PAINT ||
-                PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ) {
+                PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ ||
+                PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_HOTSPOT) {
             Point point = mapEditor.getMapView().screenToTileCoordinates(
                     layer, mouseEvent.getX(), mouseEvent.getY());
             int minx = Math.min(limp.x, point.x);
@@ -426,12 +440,18 @@ public class MapEditorMouseListener implements MouseListener,
             } else if (mouseButton == MouseEvent.BUTTON1 && layer instanceof ObjectLayer) {
                 ObjectLayer objectLayer = (ObjectLayer) layer;
 
-                MapObject object = createMapObject(mouseEvent);
+                MapObject object = createMapObject(mouseEvent,
+                        PointerStateManager.getCurrentPointerState() == PointerStateEnum.PS_ADD_OBJ ?
+                                MapObjectGlobalTypeEnum.ENEMY :
+                                MapObjectGlobalTypeEnum.HOTSPOT);
                 mapEditor.getUndoSupport().postEdit(new AddObjectEdit(objectLayer, object));
 
                 if (objectLayer.addObject(object)) {
-                    ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
-                    objectDialog.getProps();
+                    //ObjectDialog objectDialog = new ObjectDialog(mapEditor.getAppFrame(), object, mapEditor.getUndoSupport());
+                    Vector<Tileset> tileset = Objects.nonNull(mapEditor.getCurrentTileMap().getTilesets())
+                            ? mapEditor.getCurrentTileMap().getTilesets() : null;
+                    OpenDialogs.openObjectDialog(mapEditor.getAppFrame(), object, tileset);
+                    //objectDialog.getProps();
                 }
             }
 
@@ -462,14 +482,24 @@ public class MapEditorMouseListener implements MouseListener,
         mouseIsDragging = false;
     }
 
-    private MapObject createMapObject(MouseEvent mouseEvent) {
+    private MapObject createMapObject(MouseEvent mouseEvent, MapObjectGlobalTypeEnum objectType) {
         int mapNumber = CoordinateUtil.mouseToScreenNumber(mouseEvent.getX(), mouseEvent.getY(),
                 mapEditor.getMapView()
                          .getWidth() / (int) (Constants.SCREEN_WIDTH * Constants.TILE_WIDTH * mapEditor.getMapView()
                                                                                                        .getZoom()),
                 mapEditor.getMapView().getZoom());
-
-        return new MapObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
+        switch (objectType) {
+            case ENEMY:
+                return new MovingObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
+            case HOTSPOT:
+                return new HotspotObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
+            case PLAYER_START:
+                return new PlayerStartObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
+            case PLAYER_FINISH:
+                return new PlayerFinishObject(mouseInitialPressLocation.x, mouseInitialPressLocation.y, mapNumber);
+            default:
+                return null;
+        }
     }
 
     @Override

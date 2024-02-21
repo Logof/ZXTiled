@@ -6,8 +6,8 @@
 package org.github.logof.zxtiled.mapeditor.selection;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectLayer;
+import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import org.github.logof.zxtiled.util.CoordinateUtil;

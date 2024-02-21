@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.github.logof.zxtiled.core.event.MapChangedEvent;
 import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
+import org.github.logof.zxtiled.exception.LayerLockedException;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import java.util.Iterator;

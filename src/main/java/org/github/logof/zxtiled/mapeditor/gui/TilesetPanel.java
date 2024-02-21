@@ -4,8 +4,8 @@ import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 
+@Getter
 public class TilesetPanel {
-    @Getter
     private final JPanel contentPane = new JPanel();
 
     /**

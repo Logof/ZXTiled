@@ -6,8 +6,8 @@
 package org.github.logof.zxtiled.mapeditor.selection;
 
 import lombok.Getter;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectLayer;
+import org.github.logof.zxtiled.core.objects.MapObject;
 
 /**
  * @author upachler

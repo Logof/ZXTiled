@@ -16,6 +16,7 @@ public class ToolBar extends JToolBar {
     private static final Icon iconPour = Resources.getIcon("icon/gimp-tool-bucket-fill-22.png");
     private static final Icon iconMarquee = Resources.getIcon("icon/gimp-tool-rect-select-22.png");
     private static final Icon iconAddObject = Resources.getIcon("icon/gnome-list-add-22.png");
+    private static final Icon ICON_ADD_HOTSPOT = Resources.getIcon("icon/hotspot_add.png");
     private static final Icon iconRemoveObject = Resources.getIcon("icon/gnome-list-remove-22.png");
     private static final Icon iconMoveObject = Resources.getIcon("icon/gimp-tool-object-move-22.png");
     private static final Icon ICON_PLAYER_START = Resources.getIcon("icon/start.png");
@@ -28,6 +29,7 @@ public class ToolBar extends JToolBar {
     private final AbstractButton moveButton;
     private final AbstractButton objectMoveButton;
     private final AbstractButton objectAddButton;
+    private final AbstractButton hotspotAddButton;
     private final AbstractButton objectRemoveButton;
     private final AbstractButton startPointButton;
     private final AbstractButton finishPointButton;
@@ -41,6 +43,7 @@ public class ToolBar extends JToolBar {
         marqueeButton = createToggleButton(iconMarquee, "marquee", Constants.TOOL_SELECT);
         moveButton = createToggleButton(iconMove, "move", Constants.TOOL_MOVE_LAYER);
         objectAddButton = createToggleButton(iconAddObject, "addobject", Constants.TOOL_ADD_OBJECT);
+        hotspotAddButton = createToggleButton(ICON_ADD_HOTSPOT, "addhotspot", Constants.TOOL_ADD_OBJECT);
         objectRemoveButton = createToggleButton(iconRemoveObject, "removeobject", Constants.TOOL_REMOVE_OBJECT);
         objectMoveButton = createToggleButton(iconMoveObject, "moveobject", Constants.TOOL_MOVE_OBJECT);
         startPointButton = createToggleButton(ICON_PLAYER_START, "startPointObject", "startPointObject");
@@ -66,6 +69,7 @@ public class ToolBar extends JToolBar {
         this.add(finishPointButton);
         this.add(Box.createRigidArea(new Dimension(5, 5)));
         this.add(objectAddButton);
+        this.add(hotspotAddButton);
         this.add(objectRemoveButton);
         this.add(objectMoveButton);
         this.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -94,6 +98,7 @@ public class ToolBar extends JToolBar {
         marqueeButton.setSelected(state == PointerStateEnum.PS_MARQUEE);
         moveButton.setSelected(state == PointerStateEnum.PS_MOVE);
         objectAddButton.setSelected(state == PointerStateEnum.PS_ADD_OBJ);
+        hotspotAddButton.setSelected(state == PointerStateEnum.PS_ADD_HOTSPOT);
         objectRemoveButton.setSelected(state == PointerStateEnum.PS_REMOVE_OBJ);
         objectMoveButton.setSelected(state == PointerStateEnum.PS_MOVE_OBJ);
         startPointButton.setSelected(state == PointerStateEnum.PS_START_OBJECT);
@@ -112,6 +117,7 @@ public class ToolBar extends JToolBar {
 
     public void updateObjectGroupOperations(boolean isEnable) {
         objectAddButton.setEnabled(isEnable);
+        hotspotAddButton.setEnabled(isEnable);
         objectRemoveButton.setEnabled(isEnable);
         objectMoveButton.setEnabled(isEnable);
         startPointButton.setEnabled(isEnable);

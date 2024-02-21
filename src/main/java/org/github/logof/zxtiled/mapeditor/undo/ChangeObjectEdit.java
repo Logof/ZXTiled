@@ -12,9 +12,9 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
-import org.github.logof.zxtiled.core.MapObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
+import org.github.logof.zxtiled.mapeditor.enums.MovingObjectTypeEnum;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -63,13 +63,13 @@ public class ChangeObjectEdit extends AbstractUndoableEdit {
     class State {
         private final Properties properties = new Properties();
         private String name;
-        private EnemyEnum type;
+        private MovingObjectTypeEnum type;
         private String imageSource;
         private Rectangle bounds;
 
         public void retreive(MapObject o) {
             name = mapObject.getName();
-            type = mapObject.getType();
+            //type = mapObject.getType();
             imageSource = mapObject.getImageSource();
             bounds = new Rectangle(mapObject.getBounds());
             properties.clear();
@@ -78,7 +78,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit {
 
         public void apply(MapObject mapObject) {
             mapObject.setName(name);
-            mapObject.setType(type);
+            //mapObject.setType(type);
             mapObject.setImageSource(imageSource);
             mapObject.setBounds(new Rectangle(bounds));
             mapObject.getProperties().clear();

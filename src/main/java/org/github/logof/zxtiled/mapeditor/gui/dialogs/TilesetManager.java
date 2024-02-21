@@ -13,12 +13,12 @@
 
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
-import org.github.logof.zxtiled.core.LayerLockedException;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
+import org.github.logof.zxtiled.exception.LayerLockedException;
 import org.github.logof.zxtiled.io.MapHelper;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;

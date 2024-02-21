@@ -1,5 +1,6 @@
 package org.github.logof.zxtiled.core;
 
+import org.github.logof.zxtiled.exception.LayerLockedException;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.HashMap;

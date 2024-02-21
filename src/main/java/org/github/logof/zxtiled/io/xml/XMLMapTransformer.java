@@ -14,20 +14,26 @@ package org.github.logof.zxtiled.io.xml;
 
 import lombok.Setter;
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
+import org.github.logof.zxtiled.core.objects.PlayerFinishObject;
+import org.github.logof.zxtiled.core.objects.PlayerStartObject;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapReader;
 import org.github.logof.zxtiled.io.PluginLogger;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.cutter.BasicTileCutter;
-import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
+import org.github.logof.zxtiled.mapeditor.enums.HotspotEnum;
+import org.github.logof.zxtiled.mapeditor.enums.MapObjectGlobalTypeEnum;
+import org.github.logof.zxtiled.mapeditor.enums.MovingObjectTypeEnum;
 import org.github.logof.zxtiled.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -460,6 +466,32 @@ public class XMLMapTransformer implements MapReader {
         }
     }
 
+    private MapObject readMapHotspot(Node node) {
+        final String typeString = getAttributeValue(node, "type");
+        final int x = getAttribute(node, "x", 0);
+        final int y = getAttribute(node, "y", 0);
+        final int screenNumber = getAttribute(node, "screen", 0);
+
+        HotspotObject obj = new HotspotObject(x, y, screenNumber);
+        obj.setType(HotspotEnum.valueOf(typeString));
+        return obj;
+    }
+
+    private MapObject readMapPoint(Node node) {
+        final String typeString = getAttributeValue(node, "type");
+        final int x = getAttribute(node, "x", 0);
+        final int y = getAttribute(node, "y", 0);
+        final int screenNumber = getAttribute(node, "screen", 0);
+
+        switch (MapObjectGlobalTypeEnum.valueOf(typeString)) {
+            case PLAYER_START:
+                return new PlayerStartObject(x, y, screenNumber);
+            case PLAYER_FINISH:
+                return new PlayerFinishObject(x, y, screenNumber);
+        }
+        return null;
+    }
+
     private MapObject readMapObject(Node node) throws Exception {
         final String name = getAttributeValue(node, "name");
         final String typeString = getAttributeValue(node, "type");
@@ -471,13 +503,13 @@ public class XMLMapTransformer implements MapReader {
         final int moveByX = getAttribute(node, "moveByX", x);
         final int moveByY = getAttribute(node, "moveByY", y);
 
-        MapObject obj = new MapObject(x, y, screenNumber);
-        obj.setSpeed(speed);
+        MovingObject obj = new MovingObject(x, y, screenNumber);
+        obj.setObjectSpeed(speed);
         obj.setFinalPoint(new Point(moveByX, moveByY));
         if (name != null) {
             obj.setName(name);
         }
-        obj.setType(EnemyEnum.valueOf(typeString));
+        obj.setType(MovingObjectTypeEnum.valueOf(typeString));
 
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -556,6 +588,15 @@ public class XMLMapTransformer implements MapReader {
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
+
+            if ("point".equalsIgnoreCase(child.getNodeName())) {
+                objectLayer.addObject(readMapPoint(child));
+            }
+
+            if ("hotspot".equalsIgnoreCase(child.getNodeName())) {
+                objectLayer.addObject(readMapHotspot(child));
+            }
+
             if ("object".equalsIgnoreCase(child.getNodeName())) {
                 objectLayer.addObject(readMapObject(child));
             }

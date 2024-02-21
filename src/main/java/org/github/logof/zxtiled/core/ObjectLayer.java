@@ -1,22 +1,32 @@
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
+import org.github.logof.zxtiled.core.objects.PlayerFinishObject;
+import org.github.logof.zxtiled.core.objects.PlayerStartObject;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
  * A layer containing {@link MapObject map objects}.
  */
 
+@Getter
 @NoArgsConstructor
 public class ObjectLayer extends MapLayer {
-    private LinkedList<MapObject> objects = new LinkedList<>();
+    private final LinkedList<MovingObject> enemyList = new LinkedList<>();
+    private final LinkedList<HotspotObject> hotspotList = new LinkedList<>();
+    private PlayerStartObject playerStartObject = null;
+    private PlayerFinishObject playerFinishObject = null;
 
 
     /**
@@ -73,6 +83,11 @@ public class ObjectLayer extends MapLayer {
     }
 
     @Override
+    public MapLayer createDiff(MapLayer ml) {
+        return null;
+    }
+
+    @Override
     public void copyTo(MapLayer other) {
         super.copyTo(other);
         // TODO: Implement copying to another object group (same as merging)
@@ -86,10 +101,13 @@ public class ObjectLayer extends MapLayer {
     }
 
     public boolean isEmpty() {
-        return objects.isEmpty();
+        return true;
     }
 
-    public Object clone() throws CloneNotSupportedException {
+    ;
+
+    // TODO сдклать abstract
+    /*public Object clone() throws CloneNotSupportedException {
         ObjectLayer clone = (ObjectLayer) super.clone();
         clone.objects = new LinkedList<>();
         for (MapObject object : objects) {
@@ -98,18 +116,22 @@ public class ObjectLayer extends MapLayer {
             objectClone.setObjectLayer(clone);
         }
         return clone;
-    }
-
-    /**
-     * @deprecated
-     */
-    public MapLayer createDiff(MapLayer ml) {
-        return null;
-    }
+    }*/
 
     public boolean addObject(MapObject mapObject) {
         if (checkAbilityCreateObject(mapObject)) {
-            objects.add(mapObject);
+            if (mapObject instanceof MovingObject) {
+                enemyList.add((MovingObject) mapObject);
+            }
+            if (mapObject instanceof HotspotObject) {
+                hotspotList.add((HotspotObject) mapObject);
+            }
+            if (mapObject instanceof PlayerStartObject) {
+                playerStartObject = (PlayerStartObject) mapObject;
+            }
+            if (mapObject instanceof PlayerFinishObject) {
+                playerFinishObject = (PlayerFinishObject) mapObject;
+            }
             mapObject.setObjectLayer(this);
             return true;
         }
@@ -117,25 +139,31 @@ public class ObjectLayer extends MapLayer {
     }
 
     public void removeObject(MapObject mapObject) {
-        objects.remove(mapObject);
         mapObject.setObjectLayer(null);
     }
 
-    public Iterator<MapObject> getObjects() {
-        return objects.iterator();
-    }
 
     // There can be 3 objects on one screen
     private boolean checkAbilityCreateObject(MapObject mapObject) {
-        /*if (mapObject.getType().equals("playerStart")) {
-            return objects.stream().noneMatch(object -> object.getType().equals("playerStart"));
+        if (mapObject instanceof MovingObject) {
+            return enemyList.stream().filter(object ->
+                    object.getScreenNumber() == mapObject.getScreenNumber()).count() < 3;
         }
 
-        if (mapObject.getType().equals("playerFinish")) {
-            return objects.stream().noneMatch(object -> object.getType().equals("playerFinish"));
-        }*/
+        if (mapObject instanceof HotspotObject) {
+            return hotspotList.stream().noneMatch(object ->
+                    object.getScreenNumber() == mapObject.getScreenNumber());
+        }
 
-        return objects.stream().filter(object -> object.getScreenNumber() == mapObject.getScreenNumber()).count() < 3;
+        if (mapObject instanceof PlayerStartObject) {
+            return Objects.isNull(playerStartObject);
+        }
+
+        if (mapObject instanceof PlayerFinishObject) {
+            return Objects.isNull(playerFinishObject);
+        }
+
+        return false;
     }
 
     /**
@@ -154,7 +182,7 @@ public class ObjectLayer extends MapLayer {
         Line2D l1 = new Line2D.Float();
         Line2D l2 = new Line2D.Float();
         Line2D l3 = new Line2D.Float();
-        for (MapObject obj : objects) {
+        /*for (MapObject obj : objects) {
             Rectangle b = obj.getBounds();
             float x0 = b.x;
             float y0 = b.y;
@@ -166,7 +194,7 @@ public class ObjectLayer extends MapLayer {
             l3.setLine(x0, y1, x0, y0);
             if (l0.intersects(rect) || l1.intersects(rect) || l2.intersects(rect) || l3.intersects(rect))
                 result.add(obj);
-        }
+        }*/
         return result.toArray(new MapObject[result.size()]);
     }
 
@@ -180,10 +208,10 @@ public class ObjectLayer extends MapLayer {
      */
     public MapObject[] findObjects(Rectangle rect) {
         Vector<MapObject> result = new Vector<>();
-        for (MapObject o : objects) {
+        /*for (MapObject o : objects) {
             if (rect.contains(o.getBounds()))
                 result.add(o);
-        }
+        }*/
         return result.toArray(new MapObject[result.size()]);
     }
 
@@ -191,7 +219,7 @@ public class ObjectLayer extends MapLayer {
     public MapObject getObjectNear(int x, int y, double zoom) {
         Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
 
-        for (MapObject object : objects) {
+        for (MovingObject object : enemyList) {
             Rectangle2D shape = new Rectangle2D.Double(object.getX() + bounds.x * Constants.TILE_WIDTH,
                     object.getY() + bounds.y * Constants.TILE_HEIGHT,
                     object.getWidth() > 0 ? object.getWidth() : zoom,
@@ -201,6 +229,18 @@ public class ObjectLayer extends MapLayer {
                 return object;
             }
         }
+
+        for (HotspotObject object : hotspotList) {
+            Rectangle2D shape = new Rectangle2D.Double(object.getX() + bounds.x * Constants.TILE_WIDTH,
+                    object.getY() + bounds.y * Constants.TILE_HEIGHT,
+                    object.getWidth() > 0 ? object.getWidth() : zoom,
+                    object.getHeight() > 0 ? object.getHeight() : zoom);
+
+            if (shape.intersects(mouse)) {
+                return object;
+            }
+        }
+
         return null;
     }
 }

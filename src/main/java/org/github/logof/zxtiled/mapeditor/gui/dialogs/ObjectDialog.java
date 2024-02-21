@@ -12,21 +12,20 @@
 
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MapTypeEnum;
-import org.github.logof.zxtiled.mapeditor.Constants;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
-import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
-import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
+import org.github.logof.zxtiled.mapeditor.enums.HotspotEnum;
+import org.github.logof.zxtiled.mapeditor.enums.MovingObjectTypeEnum;
 import org.github.logof.zxtiled.mapeditor.gui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
-import org.github.logof.zxtiled.util.TiledConfiguration;
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
-import java.util.Objects;
 
 /**
  * A dialog for editing the name, type, size and properties of an object.
@@ -35,6 +34,7 @@ import java.util.Objects;
  */
 public class ObjectDialog extends PropertiesDialog {
     /* LANGUAGE PACK */
+    /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.object.title");
     private static final String NAME_LABEL = Resources.getString("dialog.object.name.label");
     private static final String TYPE_LABEL = Resources.getString("dialog.object.type.label");
@@ -42,153 +42,138 @@ public class ObjectDialog extends PropertiesDialog {
     private static final String OBJECT_SPEED = Resources.getString("dialog.object.speed.label");
     private static final String UNTITLED_OBJECT = Resources.getString("general.object.object");
     private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
-    private static String path;
-    private final MapObject object;
+    private final MapObject mapObject;
     private JTextField objectName;
-    private JComboBox<EnemyEnum> objectType;
+    private JComboBox<?> objectType;
     private JTextField objectImageSource;
 
-    private IntegerSpinner speedValue;
-    private IntegerSpinner deltaX;
-    private IntegerSpinner deltaY;
-
-
-    public ObjectDialog(JFrame parent, MapObject object, UndoableEditSupport undoSupport) {
-        super(parent, object.getProperties(), undoSupport, false);
-        this.object = object;
-        init();
+    public ObjectDialog(JFrame parent, MapObject mapObject, UndoableEditSupport undoSupport) {
+        super(parent, mapObject.getProperties(), undoSupport, false);
+        this.mapObject = mapObject;
         setTitle(DIALOG_TITLE);
+        init();
         pack();
         setLocationRelativeTo(parent);
     }
 
     public void init() {
         super.init();
+
+        // Label's
+        JLabel nameLabel = new JLabel(NAME_LABEL);
+        JLabel typeLabel = new JLabel(TYPE_LABEL);
+        JLabel xLabel = new JLabel("X");
+        JLabel yLabel = new JLabel("Y");
+        JLabel speedLabel = new JLabel(OBJECT_SPEED);
+
+        JLabel imageLabel = new JLabel(IMAGE_LABEL);
+
+        // Input field's
         objectName = new JTextField(UNTITLED_OBJECT);
-        objectType = new JComboBox<>(EnemyEnum.getValuesByMapType(MapTypeEnum.MAP_SIDE_SCROLLED));
-        objectType.addActionListener(e -> object.setType((EnemyEnum) ((JComboBox<?>) e.getSource()).getSelectedItem()));
+
+        if (mapObject instanceof MovingObject) {
+            objectType = new JComboBox<>(MovingObjectTypeEnum.getValuesByMapType(MapTypeEnum.MAP_SIDE_SCROLLED));
+            objectType.addActionListener(e -> ((MovingObject) mapObject)
+                    .setType((MovingObjectTypeEnum) ((JComboBox<?>) e.getSource()).getSelectedItem()));
+        }
+
+        if (mapObject instanceof HotspotObject) {
+            objectType = new JComboBox<>(HotspotEnum.getValuesByMapType(MapTypeEnum.MAP_SIDE_SCROLLED));
+            objectType.addActionListener(e -> ((HotspotObject) mapObject)
+                    .setType((HotspotEnum) ((JComboBox<?>) e.getSource()).getSelectedItem()));
+        }
+
         objectImageSource = new JTextField();
-        mainPanel.add(createMiscPropPanel(), 0);
-    }
 
-    private JPanel createImageSourcePanel() {
+        // Combine browse button and image source text field
         JPanel imageSourcePanel = new JPanel(new GridBagLayout());
-        GridBagConstraints imageConstraints = new GridBagConstraints();
-        imageConstraints.gridx = 0;
-        imageConstraints.gridy = 0;
-        imageConstraints.fill = GridBagConstraints.HORIZONTAL;
-        imageSourcePanel.add(objectImageSource, imageConstraints);
-        imageConstraints.gridx = 1;
-        imageConstraints.weightx = 0;
-        imageConstraints.fill = GridBagConstraints.NONE;
-        imageConstraints.insets = new Insets(0, 5, 0, 0);
-        imageSourcePanel.add(getBrowseButton(), imageConstraints);
+        GridBagConstraints bagConstraints = new GridBagConstraints();
+        bagConstraints.gridx = 0;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 1;
+        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        imageSourcePanel.add(objectImageSource, bagConstraints);
+        bagConstraints.gridx = 1;
+        bagConstraints.weightx = 0;
+        bagConstraints.fill = GridBagConstraints.NONE;
+        bagConstraints.insets = new Insets(0, 5, 0, 0);
 
-        return imageSourcePanel;
-    }
-
-    private JPanel createMiscPropPanel() {
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        bagConstraints = new GridBagConstraints();
+        bagConstraints.anchor = GridBagConstraints.LINE_END;
+        bagConstraints.gridx = 0;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 0;
+        bagConstraints.fill = GridBagConstraints.NONE;
+        bagConstraints.insets = new Insets(5, 0, 0, 5);
+        miscPropPanel.add(nameLabel, bagConstraints);
+        bagConstraints.gridy = 1;
+        bagConstraints.weighty = 4;
+        miscPropPanel.add(typeLabel, bagConstraints);
+        bagConstraints.gridy = 2;
+        bagConstraints.weighty = 4;
+        miscPropPanel.add(speedLabel, bagConstraints);
 
-        GridBagConstraints miscConstraints = new GridBagConstraints();
-        miscConstraints.anchor = GridBagConstraints.LINE_END;
-        miscConstraints.gridx = 0;
-        miscConstraints.gridy = 0;
-        miscConstraints.weightx = 0;
-        miscConstraints.fill = GridBagConstraints.NONE;
-        miscConstraints.insets = new Insets(5, 0, 0, 5);
-        miscPropPanel.add(new JLabel(NAME_LABEL), miscConstraints);
-        miscConstraints.gridy = 1;
-        miscConstraints.weighty = 4;
-        miscPropPanel.add(new JLabel(TYPE_LABEL), miscConstraints);
-        miscConstraints.gridy = 2;
-        miscConstraints.weighty = 4;
-        miscPropPanel.add(new JLabel(OBJECT_SPEED), miscConstraints);
-        miscConstraints.gridy = 3;
-        miscPropPanel.add(new JLabel("Смещение:"), miscConstraints);
-        miscConstraints.gridy = 4;
-        miscPropPanel.add(new JLabel("x"), miscConstraints);
-        miscConstraints.gridy = 5;
-        miscPropPanel.add(new JLabel("y"), miscConstraints);
-        miscConstraints.gridy = 6;
-        miscConstraints.gridx = 0;
-        miscPropPanel.add(new JLabel(IMAGE_LABEL), miscConstraints);
-        miscConstraints.insets = new Insets(5, 0, 0, 0);
-        miscConstraints.fill = GridBagConstraints.HORIZONTAL;
-        miscConstraints.gridx = 1;
-        miscConstraints.gridy = 0;
-        miscConstraints.weightx = 1;
-        miscPropPanel.add(objectName, miscConstraints);
-        miscConstraints.gridy = 1;
-        miscPropPanel.add(objectType, miscConstraints);
-        miscConstraints.gridy = 2;
+        JPanel movingCoordinates = new JPanel();
+        movingCoordinates.setLayout(new GridBagLayout());
+        GridBagConstraints movingBagConstraints = new GridBagConstraints();
+        movingBagConstraints.gridx = 0;
+        movingBagConstraints.gridy = 0;
+        movingCoordinates.add(xLabel, movingBagConstraints);
+        movingBagConstraints.gridx = 0;
+        movingBagConstraints.gridy = 1;
+        movingCoordinates.add(yLabel, movingBagConstraints);
+        movingBagConstraints.gridx = 1;
+        movingBagConstraints.gridy = 0;
+        movingBagConstraints.weightx = 1;
+        movingCoordinates.add(new JTextField(), movingBagConstraints);
+        movingBagConstraints.gridy = 1;
+        movingBagConstraints.gridx = 1;
+        movingBagConstraints.weightx = 1;
+        movingCoordinates.add(new JTextField(), movingBagConstraints);
 
-        //TODO fixme: 1, 2, 4 2^0, 2^1, 2^2
-        speedValue = new IntegerSpinner(0, 0, 4);
-        miscPropPanel.add(speedValue, miscConstraints);
+        bagConstraints.gridy = 3;
+        miscPropPanel.add(movingCoordinates, bagConstraints);
 
-        miscConstraints.gridy = 4;
-        deltaX = new IntegerSpinner(object.getCoordinateXAt(), 0, Constants.SCREEN_WIDTH);
-        miscPropPanel.add(deltaX, miscConstraints);
+        bagConstraints.insets = new Insets(5, 0, 0, 0);
+        bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        bagConstraints.gridx = 1;
+        bagConstraints.gridy = 0;
+        bagConstraints.weightx = 1;
+        miscPropPanel.add(objectName, bagConstraints);
+        bagConstraints.gridy = 1;
+        miscPropPanel.add(objectType, bagConstraints);
+        bagConstraints.gridx = 4;
+        miscPropPanel.add(new JTextField(), bagConstraints);
 
-        miscConstraints.gridy = 5;
-        deltaY = new IntegerSpinner(object.getCoordinateYAt(), 0, Constants.SCREEN_HEIGHT);
-        miscPropPanel.add(deltaY, miscConstraints);
-
-        miscConstraints.gridy = 6;
-        miscPropPanel.add(new JTextField(), miscConstraints);
-
-        return miscPropPanel;
-    }
-
-    private JButton getBrowseButton() {
-        final JButton browseButton = new JButton(BROWSE_BUTTON);
-        browseButton.addActionListener(actionEvent -> {
-            String startLocation = path;
-            if (startLocation == null) {
-                startLocation = TiledConfiguration.fileDialogStartLocation();
-            }
-            JFileChooser ch = new JFileChooser(startLocation);
-
-            int ret = ch.showOpenDialog(ObjectDialog.this);
-            if (ret == JFileChooser.APPROVE_OPTION) {
-                path = ch.getSelectedFile().getAbsolutePath();
-                objectImageSource.setText(path);
-            }
-        });
-        return browseButton;
+        mainPanel.add(miscPropPanel, 0);
     }
 
     public void updateInfo() {
         super.updateInfo();
-        objectName.setText(object.getName());
-        objectType.setSelectedItem(object.getType());
-        objectImageSource.setText(object.getImageSource());
-        speedValue.setValue(object.getSpeed());
-        deltaX.setValue(Objects.nonNull(object.getFinalPoint()) ? object.getFinalPoint().x : object.getCoordinateXAt());
-        deltaY.setValue(Objects.nonNull(object.getFinalPoint()) ? object.getFinalPoint().y : object.getCoordinateYAt());
-
+        objectName.setText(mapObject.getName());
+        //objectType.setSelectedItem(object.getType());
+        objectImageSource.setText(mapObject.getImageSource());
     }
 
     protected UndoableEdit commit() {
-        CompoundEdit compoundEdit = new CompoundEdit();
+        CompoundEdit ce = new CompoundEdit();
         UndoableEdit propertyEdit = super.commit();
         if (propertyEdit != null) {
-            compoundEdit.addEdit(propertyEdit);
+            ce.addEdit(propertyEdit);
         }
 
         // Make sure the changes to the object can be undone
-        compoundEdit.addEdit(new ChangeObjectEdit(object));
+        ce.addEdit(new ChangeObjectEdit(mapObject));
 
-        object.setName(objectName.getText());
-        objectType.setSelectedItem(object.getType());
-        object.setImageSource(objectImageSource.getText());
-        object.setSpeed((int) speedValue.getValue());
-        object.setFinalPoint(new Point((int) deltaX.getValue(), (int) deltaY.getValue()));
-        compoundEdit.end();
+        mapObject.setName(objectName.getText());
+        //objectType.setSelectedItem(object.getType());
+        mapObject.setImageSource(objectImageSource.getText());
 
-        return compoundEdit;
+        ce.end();
+
+        return ce;
     }
 }

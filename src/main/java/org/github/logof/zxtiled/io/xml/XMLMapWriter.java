@@ -13,12 +13,15 @@
 package org.github.logof.zxtiled.io.xml;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
+import org.github.logof.zxtiled.core.objects.PlayerStartObject;
 import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
@@ -36,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -75,30 +79,56 @@ public class XMLMapWriter implements MapWriter {
     }
 
     private static void writeObjectLayer(ObjectLayer objectLayer, XMLWriter writer, String wp) throws IOException {
-        Iterator<MapObject> iterator = objectLayer.getObjects();
-        while (iterator.hasNext()) {
-            writeMapObject(iterator.next(), writer, wp);
+        for (MovingObject movingObject : objectLayer.getEnemyList()) {
+            writeMapObject(movingObject, writer, wp);
         }
+
+        for (HotspotObject hotspotObject : objectLayer.getHotspotList()) {
+            writeMapObject(hotspotObject, writer, wp);
+        }
+
+        writeMapObject(objectLayer.getPlayerStartObject(), writer, wp);
+        writeMapObject(objectLayer.getPlayerFinishObject(), writer, wp);
+
     }
 
     private static void writeMapObject(MapObject mapObject, XMLWriter writer, String wp) throws IOException {
-        writer.startElement("object");
-        writer.writeAttribute("name", mapObject.getName());
-        writer.writeAttribute("type", mapObject.getType().name());
-        writer.writeAttribute("x", mapObject.getCoordinateXAt());
-        writer.writeAttribute("y", mapObject.getCoordinateYAt());
-        writer.writeAttribute("screen", mapObject.getScreenNumber());
-        writer.writeAttribute("speed", mapObject.getSpeed());
-        writer.writeAttribute("moveByX", mapObject.getFinalPoint().x);
-        writer.writeAttribute("moveByY", mapObject.getFinalPoint().y);
-        writeProperties(mapObject.getProperties(), writer);
-
-        if (!mapObject.getImageSource().isEmpty()) {
-            writer.startElement("image");
-            writer.writeAttribute("source", getRelativePath(wp, mapObject.getImageSource()));
-            writer.endElement();
+        if (Objects.isNull(mapObject)) {
+            return;
         }
 
+        if (mapObject instanceof MovingObject) {
+            MovingObject movingObject = (MovingObject) mapObject;
+            writer.startElement("object");
+            writer.writeAttribute("name", movingObject.getName());
+            writer.writeAttribute("type", movingObject.getType().name());
+            writer.writeAttribute("x", movingObject.getCoordinateXAt());
+            writer.writeAttribute("y", movingObject.getCoordinateYAt());
+            writer.writeAttribute("screen", movingObject.getScreenNumber());
+            writer.writeAttribute("speed", movingObject.getObjectSpeed());
+            writer.writeAttribute("moveByX", movingObject.getFinalPoint().x);
+            writer.writeAttribute("moveByY", movingObject.getFinalPoint().y);
+            writeProperties(movingObject.getProperties(), writer);
+
+            if (!movingObject.getImageSource().isEmpty()) {
+                writer.startElement("image");
+                writer.writeAttribute("source", getRelativePath(wp, movingObject.getImageSource()));
+                writer.endElement();
+            }
+        } else if (mapObject instanceof HotspotObject) {
+            HotspotObject hotspotObject = (HotspotObject) mapObject;
+            writer.startElement("hotspot");
+            writer.writeAttribute("type", hotspotObject.getType().name());
+            writer.writeAttribute("x", hotspotObject.getCoordinateXAt());
+            writer.writeAttribute("y", hotspotObject.getCoordinateYAt());
+            writer.writeAttribute("screen", hotspotObject.getScreenNumber());
+        } else {
+            writer.startElement("point");
+            writer.writeAttribute("type", (mapObject instanceof PlayerStartObject) ? "PLAYER_START" : "PLAYER_FINISH");
+            writer.writeAttribute("x", mapObject.getCoordinateXAt());
+            writer.writeAttribute("y", mapObject.getCoordinateYAt());
+            writer.writeAttribute("screen", mapObject.getScreenNumber());
+        }
         writer.endElement();
     }
 

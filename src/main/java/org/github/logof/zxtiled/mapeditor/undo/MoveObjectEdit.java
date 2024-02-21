@@ -12,7 +12,7 @@
 
 package org.github.logof.zxtiled.mapeditor.undo;
 
-import org.github.logof.zxtiled.core.MapObject;
+import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

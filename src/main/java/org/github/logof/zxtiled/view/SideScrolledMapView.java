@@ -13,19 +13,18 @@
 package org.github.logof.zxtiled.view;
 
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.core.objects.HotspotObject;
+import org.github.logof.zxtiled.core.objects.MovingObject;
 import org.github.logof.zxtiled.mapeditor.Constants;
-import org.github.logof.zxtiled.mapeditor.gui.graphics.LineArrow;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 /**
  * An orthographic map view.
@@ -115,81 +114,22 @@ public class SideScrolledMapView extends MapView {
 
         final Rectangle bounds = objectLayer.getBounds();
 
-        Iterator<MapObject> itr = objectLayer.getObjects();
         graphics2D.translate(bounds.x * tileSize.width, bounds.y * tileSize.height);
 
-        while (itr.hasNext()) {
-            MapObject mapObject = itr.next();
-            int coordinateX = (int) (mapObject.getCoordinateXAt() * Constants.TILE_WIDTH * zoom);
-            int coordinateY = (int) (mapObject.getCoordinateYAt() * Constants.TILE_HEIGHT * zoom);
+        for (MovingObject movingObject : objectLayer.getEnemyList()) {
+            movingObject.repaint(graphics2D, zoom);
+        }
 
-            Image objectImage = mapObject.getImage(zoom);
-            if (objectImage != null) {
-                graphics2D.drawImage(objectImage, coordinateX, coordinateY, null);
-            }
+        for (HotspotObject hotspotObject : objectLayer.getHotspotList()) {
+            hotspotObject.repaint(graphics2D, zoom);
+        }
 
-            graphics2D.setColor(Color.ORANGE);
-            graphics2D.drawRect(
-                    coordinateX,
-                    coordinateY,
-                    (int) (Constants.TILE_WIDTH * zoom),
-                    (int) (Constants.TILE_HEIGHT * zoom));
+        if (objectLayer.getPlayerStartObject() != null) {
+            objectLayer.getPlayerStartObject().repaint(graphics2D, zoom);
+        }
 
-            int finalCoordinatesXAt = mapObject.getFinalPoint().x;
-            int finalCoordinatesYAt = mapObject.getFinalPoint().y;
-            int coordinateStartLineX = coordinateX;
-            int coordinateStartLineY = coordinateY;
-            int coordinateFinalLineX = (int) (finalCoordinatesXAt * Constants.TILE_WIDTH * zoom);
-            int coordinateFinalLineY = (int) (finalCoordinatesYAt * Constants.TILE_HEIGHT * zoom);
-
-            // При рисовании может быть 3 случая
-            // 1. Начало и конец лежат на одной оси Х (меняется Y)
-            if (finalCoordinatesXAt == mapObject.getCoordinateXAt() && finalCoordinatesYAt != mapObject.getCoordinateYAt()) {
-                coordinateStartLineX = coordinateStartLineX + (int) (Constants.TILE_WIDTH * zoom / 2);
-                coordinateStartLineY = coordinateStartLineY + (int) (Constants.TILE_WIDTH * zoom);
-                coordinateFinalLineX = coordinateFinalLineX + (int) (Constants.TILE_WIDTH * zoom / 2);
-            }
-            // 2. Начало и конец лежат на одной оси Y (меняется X)
-            if (finalCoordinatesXAt != mapObject.getCoordinateXAt() && finalCoordinatesYAt == mapObject.getCoordinateYAt()) {
-                coordinateStartLineX = coordinateStartLineX + (int) (Constants.TILE_WIDTH * zoom);
-                coordinateStartLineY = coordinateStartLineY + (int) (Constants.TILE_WIDTH * zoom / 2);
-                coordinateFinalLineY = coordinateFinalLineY + (int) (Constants.TILE_WIDTH * zoom / 2);
-            }
-            // 3. Начало и конец совпадают ни на одной оси (меняются X и Y)
-            if (finalCoordinatesXAt != mapObject.getCoordinateXAt() && finalCoordinatesYAt != mapObject.getCoordinateYAt()) {
-                if (finalCoordinatesXAt > mapObject.getCoordinateXAt()) {
-                    coordinateStartLineX = coordinateStartLineX + (int) (Constants.TILE_WIDTH * zoom);
-                } else {
-                    coordinateFinalLineX = coordinateFinalLineX + (int) (Constants.TILE_WIDTH * zoom);
-                }
-
-                if (finalCoordinatesYAt > mapObject.getCoordinateYAt()) {
-                    coordinateStartLineY = coordinateStartLineY + (int) (Constants.TILE_WIDTH * zoom);
-                } else {
-                    coordinateFinalLineY = coordinateFinalLineY + (int) (Constants.TILE_WIDTH * zoom);
-                }
-            }
-
-            // Рисуем путь объекта
-
-            LineArrow lineArrow = new LineArrow(coordinateStartLineX, coordinateStartLineY, coordinateFinalLineX, coordinateFinalLineY,
-                    Color.BLUE, (int) (zoom));
-            lineArrow.draw(graphics2D);
-
-            // Рисуем квадрат назначения
-            graphics2D.setColor(Color.BLUE);
-            graphics2D.drawRect(
-                    finalCoordinatesXAt * (int) (Constants.TILE_WIDTH * zoom),
-                    finalCoordinatesYAt * (int) (Constants.TILE_HEIGHT * zoom),
-                    (int) (Constants.TILE_WIDTH * zoom),
-                    (int) (Constants.TILE_HEIGHT * zoom));
-
-            // Имя
-            final String s = mapObject.getName() != null ? mapObject.getName() : "(null)";
-            graphics2D.setColor(Color.black);
-            graphics2D.drawString(s, (coordinateX - 5) + 1, (coordinateY - 5) + 1);
-            graphics2D.setColor(Color.white);
-            graphics2D.drawString(s, (coordinateX - 5), (coordinateY - 5));
+        if (objectLayer.getPlayerFinishObject() != null) {
+            objectLayer.getPlayerFinishObject().repaint(graphics2D, zoom);
         }
 
         graphics2D.translate(

@@ -10,12 +10,13 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.core;
+package org.github.logof.zxtiled.core.objects;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.mapeditor.Constants;
-import org.github.logof.zxtiled.mapeditor.enums.EnemyEnum;
+import org.github.logof.zxtiled.mapeditor.enums.MapObjectGlobalTypeEnum;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
@@ -25,7 +26,7 @@ import java.util.Properties;
 /**
  * An object occupying an {@link ObjectLayer}.
  */
-public class MapObject implements Cloneable {
+public abstract class MapObject implements Cloneable {
     @Setter
     @Getter
     private Properties properties = new Properties();
@@ -38,9 +39,7 @@ public class MapObject implements Cloneable {
     @Setter
     @Getter
     private String name = "Object";
-    @Setter
-    @Getter
-    private EnemyEnum type;
+
     @Getter
     private String imageSource = "";
     private Image image;
@@ -51,15 +50,8 @@ public class MapObject implements Cloneable {
     private int coordinateXAt;
     @Getter
     private int coordinateYAt;
-    @Getter
-    @Setter
-    private int speed;
 
-    @Getter
-    @Setter
-    private Point finalPoint;
-
-    public MapObject(int x, int y, int screenNumber) {
+    public MapObject(MapObjectGlobalTypeEnum mapObjectType, int x, int y, int screenNumber) {
         this.bounds = new Rectangle(
                 x * Constants.TILE_WIDTH,
                 y * Constants.TILE_HEIGHT,
@@ -78,8 +70,9 @@ public class MapObject implements Cloneable {
     }
 
     public void setImageSource(String source) {
-        if (imageSource.equals(source))
+        if (imageSource.equals(source)) {
             return;
+        }
 
         imageSource = source;
 
@@ -124,7 +117,7 @@ public class MapObject implements Cloneable {
         return bounds.x;
     }
 
-    public void setX(int x) {
+    public void setXAt(int x) {
         bounds.x = x * Constants.TILE_WIDTH;
         coordinateXAt = x;
     }
@@ -133,7 +126,7 @@ public class MapObject implements Cloneable {
         return bounds.y;
     }
 
-    public void setY(int y) {
+    public void setYAt(int y) {
         bounds.y = y * Constants.TILE_HEIGHT;
         coordinateYAt = y;
     }
@@ -158,11 +151,7 @@ public class MapObject implements Cloneable {
         bounds.height = height;
     }
 
-    public String toString() {
-        return type + " (" + getX() + "," + getY() + ")";
-    }
+    public abstract String toString();
 
-    public void drawMaoObject() {
-
-    }
+    public abstract void repaint(Graphics graphic, double zoom);
 }

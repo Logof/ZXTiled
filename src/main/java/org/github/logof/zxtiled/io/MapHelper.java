@@ -29,12 +29,7 @@ public class MapHelper {
     public static final String ERROR_LOAD_TILESET = Resources.getString("general.file.noload.tileset");
 
 
-    /**
-     * Called to tell the MapHelper which {@link PluginClassLoader} to use when
-     * finding a suitable plugin for a filename.
-     */
     public static void init() {
-
     }
 
     /**

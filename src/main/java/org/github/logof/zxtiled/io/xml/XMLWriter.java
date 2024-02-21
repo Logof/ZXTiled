@@ -16,12 +16,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
 
-/**
- * A simple helper class to write an XML file, based on
- * http://www.xmlsoft.org/html/libxml-xmlwriter.html
- *
- * @version $Id$
- */
 public class XMLWriter {
     private final Writer w;
     private final Stack<String> openElements;

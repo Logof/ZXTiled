@@ -25,24 +25,28 @@ public class PropertiesDialog extends JDialog {
     private final UndoableEditSupport undoSupport;
 
 
-    /// Creates a new PropertiesDialog instance
-    /// @param    parent    the parent frame that will become the owner of this
-    ///    dialog
-    ///    @param    p    the properties to manage
-    public PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport) {
-        this(parent, p, undoSupport, true);
+    /**
+     * Creates a new PropertiesDialog instance
+     *
+     * @param parent     the parent frame that will become the owner of this dialog
+     * @param properties the properties to manage
+     */
+    public PropertiesDialog(JFrame parent, Properties properties, UndoableEditSupport undoSupport) {
+        this(parent, properties, undoSupport, true);
     }
 
-    /// Creates a new PropertiesDialog instance
-    /// @param    parent    the parent frame that will become the owner of this
-    ///    dialog
-    ///    @param    p    the properties to manage
-    /// @param    doInit    if false, the dialog will not initialise it's UI components,
-    ///    but rely on a subclass to to do call init() and pack() eventually after
-    /// the instance has been constructed.
-    protected PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport, boolean doInit) {
+    /**
+     * Creates a new PropertiesDialog instance
+     *
+     * @param parent     the parent frame that will become the owner of this dialog
+     * @param properties the properties to manage
+     * @param doInit     if false, the dialog will not initialise it's UI components,
+     *                   but rely on a subclass to to do call init() and pack() eventually after
+     *                   the instance has been constructed.
+     */
+    protected PropertiesDialog(JFrame parent, Properties properties, UndoableEditSupport undoSupport, boolean doInit) {
         super(parent, DIALOG_TITLE, true);
-        properties = p;
+        this.properties = properties;
         this.undoSupport = undoSupport;
         if (doInit) {
             init();
@@ -58,19 +62,16 @@ public class PropertiesDialog extends JDialog {
 
         JButton okButton = new JButton(OK_BUTTON);
         JButton cancelButton = new JButton(CANCEL_BUTTON);
-        JButton deleteButton = new JButton(Resources.getIcon("icon/gnome-delete.png"));
-        deleteButton.setToolTipText(DELETE_BUTTON);
 
         JPanel user = new VerticalStaticJPanel();
         user.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-        user.setLayout(new BoxLayout(user, BoxLayout.X_AXIS));
+        user.setLayout(new BoxLayout(user, BoxLayout.LINE_AXIS));
         user.add(Box.createGlue());
         user.add(Box.createRigidArea(new Dimension(5, 0)));
-        user.add(deleteButton);
 
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.LINE_AXIS));
         buttons.add(Box.createGlue());
         buttons.add(okButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -78,8 +79,8 @@ public class PropertiesDialog extends JDialog {
 
         mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(propScrollPane);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+        //mainPanel.add(propScrollPane);
         mainPanel.add(user);
         mainPanel.add(buttons);
 
@@ -98,12 +99,6 @@ public class PropertiesDialog extends JDialog {
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 dispose();
-            }
-        });
-
-        deleteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                deleteSelected();
             }
         });
     }

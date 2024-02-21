@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package org.github.logof.zxtiled.core;
+package org.github.logof.zxtiled.exception;
 
 /**
  * This exception is thrown when an attempt is made to perform a modification

@@ -14,11 +14,11 @@ package org.github.logof.zxtiled.view;
 
 import lombok.Getter;
 import org.github.logof.zxtiled.core.MapLayer;
-import org.github.logof.zxtiled.core.MapObject;
 import org.github.logof.zxtiled.core.MultilayerPlane;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
+import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.brush.Brush;
 import org.github.logof.zxtiled.mapeditor.selection.ObjectSelection;
