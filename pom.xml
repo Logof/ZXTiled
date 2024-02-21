@@ -7,6 +7,11 @@
     <groupId>org.github.logof</groupId>
     <artifactId>ZXTiled</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>prototype</module>
+        <module>wip</module>
+    </modules>
 
     <properties>
         <java.version>11</java.version>
