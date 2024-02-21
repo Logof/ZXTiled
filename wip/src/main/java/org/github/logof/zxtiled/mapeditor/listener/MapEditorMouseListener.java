@@ -5,7 +5,6 @@ import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.PointerStateManager;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
-import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.objects.HotspotObject;
 import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.core.objects.MovingObject;
@@ -21,7 +20,6 @@ import org.github.logof.zxtiled.mapeditor.actions.MapEditorAction;
 import org.github.logof.zxtiled.mapeditor.enums.MapObjectGlobalTypeEnum;
 import org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum;
 import org.github.logof.zxtiled.mapeditor.gui.dialogs.ObjectDialog;
-import org.github.logof.zxtiled.mapeditor.gui.dialogs_new.OpenDialogs;
 import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import org.github.logof.zxtiled.mapeditor.undo.AddObjectEdit;
 import org.github.logof.zxtiled.mapeditor.undo.MapLayerEdit;
@@ -37,8 +35,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
-import java.util.Objects;
-import java.util.Vector;
 
 import static org.github.logof.zxtiled.mapeditor.enums.PointerStateEnum.PS_PAINT;
 import static org.github.logof.zxtiled.view.MapView.ZOOM_NORMAL_SIZE;
@@ -301,13 +297,13 @@ public class MapEditorMouseListener implements MouseListener,
                     break;
                 case PS_REMOVE_OBJ:
                     if (layer instanceof ObjectLayer) {
-                        ObjectLayer group = (ObjectLayer) layer;
+                        ObjectLayer objectLayer = (ObjectLayer) layer;
                         Point pos = CoordinateUtil.zoomedScreenToPixelCoordinates(event.getX(), event.getY(), mapEditor.getMapView()
                                                                                                                        .getZoom());
-                        MapObject obj = group.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
+                        MapObject obj = objectLayer.getObjectNear(pos.x, pos.y, mapEditor.getMapView().getZoom());
                         if (obj != null) {
-                            mapEditor.getUndoSupport().postEdit(new RemoveObjectEdit(group, obj));
-                            group.removeObject(obj);
+                            mapEditor.getUndoSupport().postEdit(new RemoveObjectEdit(objectLayer, obj));
+                            objectLayer.removeObject(obj);
                             // TODO: repaint only affected area
                             mapEditor.getMapView().repaint();
                         }

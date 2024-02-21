@@ -139,6 +139,19 @@ public class ObjectLayer extends MapLayer {
     }
 
     public void removeObject(MapObject mapObject) {
+        if (mapObject instanceof HotspotObject) {
+            hotspotList.remove((HotspotObject) mapObject);
+        }
+        if (mapObject instanceof MovingObject) {
+            enemyList.remove((MovingObject) mapObject);
+        }
+        if (mapObject instanceof PlayerStartObject) {
+            playerStartObject = null;
+        }
+        if (mapObject instanceof PlayerFinishObject) {
+            playerFinishObject = null;
+        }
+
         mapObject.setObjectLayer(null);
     }
 

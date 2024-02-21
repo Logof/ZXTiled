@@ -5,15 +5,18 @@ import org.github.logof.zxtiled.core.MapTypeEnum;
 import org.github.logof.zxtiled.core.objects.HotspotObject;
 import org.github.logof.zxtiled.core.objects.MapObject;
 import org.github.logof.zxtiled.core.objects.MovingObject;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.enums.HotspotEnum;
 import org.github.logof.zxtiled.mapeditor.enums.MovingObjectTypeEnum;
+import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.gui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.undo.ChangeObjectEdit;
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
+import java.awt.*;
 
 public class ObjectDialog extends PropertiesDialog {
     private static final String DIALOG_TITLE = Resources.getString("dialog.object.title");
@@ -26,6 +29,10 @@ public class ObjectDialog extends PropertiesDialog {
     private final MapObject mapObject;
     private JTextField objectName;
     private JComboBox<?> objectType;
+
+    private JSpinner xPointSpinner;
+    private JSpinner yPointSpinner;
+    private JSpinner speedSpinner;
 
     public ObjectDialog(JFrame parent, MapObject mapObject, UndoableEditSupport undoSupport) {
         super(parent, mapObject.getProperties(), undoSupport, false);
@@ -91,12 +98,16 @@ public class ObjectDialog extends PropertiesDialog {
         JLabel yLabel = new JLabel("Y");
         JLabel speedLabel = new JLabel(OBJECT_SPEED);
 
+        xPointSpinner = new IntegerSpinner(mapObject.getCoordinateXAt(), 0, Constants.SCREEN_WIDTH);
+        yPointSpinner = new IntegerSpinner(mapObject.getCoordinateYAt(), 0, Constants.SCREEN_HEIGHT);
+        speedSpinner = new JSpinner();
+
         movingPanel.add(xLabel, "gap, sg 1");
-        movingPanel.add(new JSpinner(), "gap, sg 1");
+        movingPanel.add(xPointSpinner, "gap, sg 1");
         movingPanel.add(yLabel, "gap, sg 1");
-        movingPanel.add(new JSpinner(), "gap, sg 1");
+        movingPanel.add(yPointSpinner, "gap, sg 1");
         movingPanel.add(speedLabel, "gap, sg 1");
-        movingPanel.add(new JSpinner(), "gap, sg 1");
+        movingPanel.add(speedSpinner, "gap, sg 1");
 
         return movingPanel;
     }
@@ -127,7 +138,10 @@ public class ObjectDialog extends PropertiesDialog {
         mapObject.setName(objectName.getText());
 
         if (mapObject instanceof MovingObject) {
-            ((MovingObject) mapObject).setType((MovingObjectTypeEnum) objectType.getSelectedItem());
+            MovingObject movingObject = (MovingObject) mapObject;
+            movingObject.setType((MovingObjectTypeEnum) objectType.getSelectedItem());
+            movingObject.setObjectSpeed(2);
+            movingObject.setFinalPoint(new Point((Integer) xPointSpinner.getValue(), (Integer) yPointSpinner.getValue()));
         }
 
         if (mapObject instanceof HotspotObject) {
