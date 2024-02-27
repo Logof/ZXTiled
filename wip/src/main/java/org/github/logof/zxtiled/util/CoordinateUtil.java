@@ -9,9 +9,8 @@ import static org.github.logof.zxtiled.mapeditor.Constants.TILE_WIDTH;
 
 public class CoordinateUtil {
 
-    public static void mouseToTile(int x, int y) {
-        int posX = x / 16;
-        int posY = y / 16;
+    public static int coordinatesXYToInt(int x, int y) {
+        return (x * 16) + y;
     }
 
     /**

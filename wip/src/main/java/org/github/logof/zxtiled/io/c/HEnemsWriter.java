@@ -3,6 +3,7 @@ package org.github.logof.zxtiled.io.c;
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.mapeditor.Constants;
+import org.github.logof.zxtiled.util.CoordinateUtil;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -95,7 +96,8 @@ public class HEnemsWriter {
                 enemy -> {
                     try {
                         writer.write(
-                                "\t{" + enemy.getCoordinateXAt() * Constants.TILE_WIDTH + ", " +
+                                "\t{" +
+                                        CoordinateUtil.coordinatesXYToInt(enemy.getCoordinateXAt(), enemy.getCoordinateYAt()) + ", " +
                                         enemy.getType() + ", 0}");
                         writer.write(System.lineSeparator());
                     } catch (IOException e) {
