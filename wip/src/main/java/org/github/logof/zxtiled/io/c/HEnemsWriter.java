@@ -2,7 +2,7 @@ package org.github.logof.zxtiled.io.c;
 
 import org.github.logof.zxtiled.core.ObjectLayer;
 import org.github.logof.zxtiled.core.TileMap;
-import java.awt.*;
+import org.github.logof.zxtiled.mapeditor.Constants;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -23,8 +23,37 @@ public class HEnemsWriter {
         writer.write(System.lineSeparator());
         writer.write("MALOTE malotes [] = {" + System.lineSeparator());
 
+        enemyToByte(currentTileMap, writer);
 
         writer.write("};" + System.lineSeparator());
+
+        writer.write("#define N_ENEMS_TYPE_0 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_1 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_2 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_3 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_4 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_5 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_6 0" + System.lineSeparator());
+        writer.write("#define N_ENEMS_TYPE_7 0" + System.lineSeparator());
+
+        writer.write("// This is output the way it worked originally, please modify if you need" + System.lineSeparator());
+        writer.write("// You may want to add type 5 or 6's below." + System.lineSeparator());
+        writer.write("#define BADDIES_COUNT (N_ENEMS_TYPE_1+N_ENEMS_TYPE_2+N_ENEMS_TYPE_3)" + System.lineSeparator());
+
+        writer.write(System.lineSeparator());
+        writer.write("typedef struct {" + System.lineSeparator() + "\tunsigned char xy, tipo, act;" + System.lineSeparator() + "} HOTSPOT;");
+        writer.write("HOTSPOT hotspots [] = {" + System.lineSeparator());
+        hotspotToByte(currentTileMap, writer);
+        writer.write("};" + System.lineSeparator());
+        writer.write(System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_0 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_1 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_2 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_3 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_4 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_5 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_6 7" + System.lineSeparator());
+        writer.write("#define N_HOTSPOTS_TYPE_7 7" + System.lineSeparator());
 
         writer.flush();
         writer.close();
@@ -36,43 +65,42 @@ public class HEnemsWriter {
         writer.write("// Copyleft 2024 by Logof" + System.lineSeparator());
     }
 
-    private static void enemyToByte(TileMap tileMap, FileWriter writer) throws IOException {
-        Rectangle bounds = tileMap.getLayer(0).getBounds();
-        final ObjectLayer objectLayer = (ObjectLayer) tileMap.getLayers();
+    private static void enemyToByte(TileMap tileMap, FileWriter writer) {
+        final ObjectLayer objectLayer = tileMap.getObjectLayer();
 
-        for (int screenY = 0; screenY < tileMap.getHeight() / 10; screenY++) {
-            for (int screenX = 0; screenX < tileMap.getWidth() / 15; screenX++) {
-                int result = 0;
-                boolean isHighByte = true;
-
-                for (int y = 0; y < 10; y++) {
-                    writer.write("\t");
-                    for (int x = 0; x < 15; x++) {
-                        /*Tile tile = objectLayer.getTileAt(screenX * 15 + x, screenY * 10 + y);
-
-                        if (tile.getId() == 15) {
-                            boltMapList.add("\t{ " + (screenY * 15 + screenX) + ", " + x + ", " + y + ", 0 }");
-                        }
-
-                        if (isHighByte) {
-                            result = tile.getId() * 16;
-                        } else {
-                            result += tile.getId();
-                        }*/
-                        writer.write(String.valueOf(result));
-                        isHighByte = !isHighByte;
-
-                        if (screenY < (tileMap.getHeight() / 10) - 1 ||
-                                screenX < (tileMap.getWidth() / 15) - 1 ||
-                                y < 9 || x < 14) {
-                            writer.write(",");
-                        }
+        objectLayer.getEnemyList().forEach(
+                enemy -> {
+                    try {
+                        writer.write(
+                                "\t{" + enemy.getCoordinateXAt() * Constants.TILE_WIDTH + ", " +
+                                        enemy.getCoordinateYAt() * Constants.TILE_HEIGHT + ", " +
+                                        enemy.getCoordinateXAt() * Constants.TILE_WIDTH + ", " +
+                                        enemy.getCoordinateYAt() * Constants.TILE_HEIGHT + ", " +
+                                        enemy.getFinalPoint().x * Constants.TILE_WIDTH + ", " +
+                                        enemy.getFinalPoint().y * Constants.TILE_HEIGHT + ", " +
+                                        "moveX, " +
+                                        "moveY, " +
+                                        enemy.getType().getObjectId() + "}");
+                        writer.write(System.lineSeparator());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                    writer.write(System.lineSeparator());
-                }
-                writer.write(System.lineSeparator());
-            }
-            writer.write(System.lineSeparator());
-        }
+                });
+    }
+
+    private static void hotspotToByte(TileMap tileMap, FileWriter writer) {
+        final ObjectLayer objectLayer = tileMap.getObjectLayer();
+
+        objectLayer.getHotspotList().forEach(
+                enemy -> {
+                    try {
+                        writer.write(
+                                "\t{" + enemy.getCoordinateXAt() * Constants.TILE_WIDTH + ", " +
+                                        enemy.getType() + ", 0}");
+                        writer.write(System.lineSeparator());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }

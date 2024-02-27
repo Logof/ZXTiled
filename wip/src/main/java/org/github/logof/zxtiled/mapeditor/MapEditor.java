@@ -72,6 +72,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
@@ -375,10 +376,9 @@ public class MapEditor {
         ((LayerTableModel) layerTable.getModel()).setMap(currentTileMap);
 
         if (currentTileMap != null) {
-            if (currentTileMap.getTotalLayers() > 0 && currentLayerIndex == -1) {
+            if (currentLayerIndex == -1) {
                 currentLayerIndex = 0;
             }
-
             setCurrentLayerIndex(currentLayerIndex);
         }
         updateLayerOperations();
@@ -413,7 +413,7 @@ public class MapEditor {
         }
 
         // boundary check
-        int totalLayers = currentTileMap.getTotalLayers();
+        int totalLayers = 2;
         if (index < 0 || totalLayers <= index) {
             currentLayerIndex = -1;
             return;
@@ -735,9 +735,7 @@ public class MapEditor {
         if (filename != null) {
             TiledConfiguration.addToRecentFiles(filename);
         }
-
-        java.util.List<String> files = TiledConfiguration.getRecentFiles();
-
+        List<String> files = TiledConfiguration.getRecentFiles();
 
         // НЕ УДАЛЯТЬ
         //recentMenu.removeAll();
@@ -758,9 +756,9 @@ public class MapEditor {
         boolean mapLoaded = currentTileMap != null;
 
         // Create a default brush (protect against a bug with custom brushes)
-        ShapeBrush sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(sb);
+        ShapeBrush shapeBrush = new ShapeBrush();
+        shapeBrush.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+        setBrush(shapeBrush);
 
         tabbedTilesetsPane.setMap(currentTileMap);
 
@@ -819,7 +817,7 @@ public class MapEditor {
             }
             setCurrentTile(firstTile);
 
-            currentTileMap.addLayerSpecial(cursorHighlight);
+            currentTileMap.addSelectionLayer(cursorHighlight);
         }
 
         MapEditorAction.zoomInAction.setEnabled(mapLoaded);

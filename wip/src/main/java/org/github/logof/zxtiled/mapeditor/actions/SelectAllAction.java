@@ -25,7 +25,7 @@ public class SelectAllAction extends AbstractAction {
             }
             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
             mapEditor.getMarqueeSelection().selectRegion(mapEditor.getMarqueeSelection().getBounds());
-            mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+            mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
         }
     }
 }

@@ -13,9 +13,7 @@
 
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
-import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
-import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.exception.LayerLockedException;
@@ -237,15 +235,11 @@ public class TilesetManager extends JDialog implements ActionListener,
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile) tileIterator.next();
-            Iterator layerIterator = tileMap.getLayers();
 
-            while (layerIterator.hasNext()) {
-                MapLayer ml = (MapLayer) layerIterator.next();
-                if (ml instanceof TileLayer) {
-                    if (((TileLayer) ml).isUsed(tile)) {
-                        used++;
-                        break;
-                    }
+            if (tileMap.getTileLayer() != null) {
+                if (tileMap.getTileLayer().isUsed(tile)) {
+                    used++;
+                    break;
                 }
             }
         }

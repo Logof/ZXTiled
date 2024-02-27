@@ -16,7 +16,6 @@ import org.github.logof.zxtiled.core.MultilayerPlane;
 import org.github.logof.zxtiled.view.MapView;
 import java.awt.*;
 
-
 public abstract class AbstractBrush extends MultilayerPlane implements Brush {
     protected int numLayers = 1;
     protected MultilayerPlane affectedMp;
@@ -24,25 +23,6 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush {
     protected int initLayer;
 
     public AbstractBrush() {
-    }
-
-    public AbstractBrush(AbstractBrush ab) {
-        numLayers = ab.numLayers;
-    }
-
-    public int getAffectedLayers() {
-        return numLayers;
-    }
-
-    /**
-     * This will set the number of layers to affect, the default is 1 - the
-     * layer specified in commitPaint.
-     *
-     * @param num the number of layers to affect.
-     * @see Brush#doPaint(int, int)
-     */
-    public void setAffectedLayers(int num) {
-        numLayers = num;
     }
 
     public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {

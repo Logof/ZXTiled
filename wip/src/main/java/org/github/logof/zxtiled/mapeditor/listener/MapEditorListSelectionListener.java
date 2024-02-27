@@ -18,7 +18,7 @@ public class MapEditorListSelectionListener implements ListSelectionListener {
 
         // At the moment, this can only be a new layer selection
         if (mapEditor.getCurrentTileMap() != null && selectedRow >= 0) {
-            mapEditor.setCurrentLayerIndex(mapEditor.getCurrentTileMap().getTotalLayers() - selectedRow - 1);
+            mapEditor.setCurrentLayerIndex(2 - selectedRow - 1);
         } else {
             mapEditor.setCurrentLayerIndex(-1);
         }

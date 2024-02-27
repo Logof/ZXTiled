@@ -79,7 +79,7 @@ public class LayerTableModel extends AbstractTableModel {
         if (map == null) {
             return 0;
         }
-        return map.getTotalLayers();
+        return 2;
     }
 
     public int getColumnCount() {

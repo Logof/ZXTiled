@@ -321,18 +321,14 @@ public abstract class MapView extends JPanel implements Scrollable {
         paintSubMap(tileMap, g2d);
 
         if (!getMode(PF_NO_SPECIAL)) {
-            Iterator<MapLayer> li = tileMap.getLayersSpecial();
+            Iterator<SelectionLayer> li = tileMap.getLayersSpecial();
 
             while (li.hasNext()) {
                 layer = li.next();
                 if (layer.isVisible()) {
-                    if (layer instanceof SelectionLayer) {
-                        g2d.setComposite(AlphaComposite.getInstance(
-                                AlphaComposite.SRC_ATOP, 0.3f));
-                        g2d.setColor(
-                                ((SelectionLayer) layer).getHighlightColor());
-                    }
-                    paintLayer(g2d, (TileLayer) layer);
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
+                    g2d.setColor(((SelectionLayer) layer).getHighlightColor());
+                    paintTileLayer(g2d, (TileLayer) layer);
                 }
             }
 
@@ -400,22 +396,18 @@ public abstract class MapView extends JPanel implements Scrollable {
         }
     }
 
-    public void paintSubMap(MultilayerPlane m, Graphics2D g2d) {
-        Iterator<MapLayer> li = m.getLayers();
-        MapLayer layer;
+    public void paintSubMap(MultilayerPlane multilayerPlane, Graphics2D graphics2D) {
+        if (multilayerPlane.getTileLayer() != null) {
+            if (multilayerPlane.getTileLayer().isVisible()) {
+                graphics2D.setComposite(AlphaComposite.SrcOver);
+                paintTileLayer(graphics2D, multilayerPlane.getTileLayer());
+            }
+        }
 
-        while (li.hasNext()) {
-            layer = li.next();
-            if (layer != null) {
-                if (layer.isVisible()) {
-                    g2d.setComposite(AlphaComposite.SrcOver);
-
-                    if (layer instanceof TileLayer) {
-                        paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectLayer) {
-                        paintObjectLayer(g2d, (ObjectLayer) layer);
-                    }
-                }
+        if (multilayerPlane.getObjectLayer() != null) {
+            if (multilayerPlane.getObjectLayer().isVisible()) {
+                graphics2D.setComposite(AlphaComposite.SrcOver);
+                paintObjectLayer(graphics2D, multilayerPlane.getObjectLayer());
             }
         }
     }
@@ -426,7 +418,7 @@ public abstract class MapView extends JPanel implements Scrollable {
      * @param g2d   the graphics context to draw the layer onto
      * @param layer the TileLayer to be drawn
      */
-    protected abstract void paintLayer(Graphics2D g2d, TileLayer layer);
+    protected abstract void paintTileLayer(Graphics2D g2d, TileLayer layer);
 
     /**
      * Draws an ObjectGroup. Implemented in a subclass.

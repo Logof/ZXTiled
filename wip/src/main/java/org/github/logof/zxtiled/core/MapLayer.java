@@ -37,8 +37,8 @@ public abstract class MapLayer implements Cloneable {
 
     @Getter
     protected String name;
-    protected boolean isVisible = true;
-    protected boolean bLocked = false;
+    protected boolean visible = true;
+    protected boolean locked = false;
 
     protected Rectangle bounds;
     @Getter
@@ -202,7 +202,7 @@ public abstract class MapLayer implements Cloneable {
      * otherwise.
      */
     public boolean isVisible() {
-        return isVisible;
+        return visible;
     }
 
     /**
@@ -213,8 +213,8 @@ public abstract class MapLayer implements Cloneable {
      *                <code>false</code> to make it invisible
      */
     public void setVisible(boolean visible) {
-        if (isVisible != visible) {
-            isVisible = visible;
+        if (this.visible != visible) {
+            this.visible = visible;
             if (getTileMap() != null) {
                 getTileMap().fireMapChanged();
             }
@@ -250,8 +250,8 @@ public abstract class MapLayer implements Cloneable {
 
         // undo/redo is using this, so it better be accurate...
         other.setName(name);
-        other.setVisible(isVisible);
-        other.setLocked(bLocked);
+        other.setVisible(visible);
+        other.setLocked(locked);
         other.setViewPlaneDistance(viewPlaneDistance);
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.tileMap = tileMap;
@@ -297,7 +297,7 @@ public abstract class MapLayer implements Cloneable {
      * @see MapLayer#setLocked(boolean)
      */
     public boolean getLocked() {
-        return bLocked;
+        return locked;
     }
 
     /**
@@ -307,7 +307,7 @@ public abstract class MapLayer implements Cloneable {
      *             unlock the layer
      */
     public void setLocked(boolean lock) {
-        bLocked = lock;
+        locked = lock;
     }
 
     public void setProperties(Properties p) {

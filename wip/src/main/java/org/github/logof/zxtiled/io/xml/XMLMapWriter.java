@@ -300,12 +300,14 @@ public class XMLMapWriter implements MapWriter {
         if (preferences.getBoolean("encodeLayerData", true) && preferences.getBoolean("usefulComments", false)) {
             writer.writeComment("Layer data is " + (preferences.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         }
-        Iterator<MapLayer> mapLayers = tileMap.getLayers();
-        while (mapLayers.hasNext()) {
-            MapLayer layer = mapLayers.next();
-            writeMapLayer(layer, writer, wp);
+
+        if (tileMap.getTileLayer() != null) {
+            writeMapLayer(tileMap.getTileLayer(), writer, wp);
         }
 
+        if (tileMap.getObjectLayer() != null) {
+            writeMapLayer(tileMap.getObjectLayer(), writer, wp);
+        }
         writer.endElement();
     }
 

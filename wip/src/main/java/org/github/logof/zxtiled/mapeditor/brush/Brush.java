@@ -18,12 +18,6 @@ import java.awt.*;
 
 
 public interface Brush {
-    /**
-     * Returns the number of layers affected by this brush.
-     *
-     * @return int
-     */
-    int getAffectedLayers();
 
     /**
      * Returns the bounds of this brush. This is used for determining the area
@@ -42,8 +36,7 @@ public interface Brush {
      * @param layer  the selected layer.
      * @see MultilayerPlane
      */
-    void startPaint(
-            MultilayerPlane mp, int x, int y, int button, int layer);
+    void startPaint(MultilayerPlane mp, int x, int y, int button, int layer);
 
     /**
      * This is the main processing method for a brush. This method should only

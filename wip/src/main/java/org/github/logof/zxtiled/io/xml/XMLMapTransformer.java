@@ -784,13 +784,13 @@ public class XMLMapTransformer implements MapReader {
             if ("layer".equals(sibs.getNodeName())) {
                 MapLayer layer = readLayer(sibs, mapWidth, mapHeight);
                 if (layer != null) {
-                    tileMap.addLayer(layer);
+                    //tileMap.addLayer(layer);
                     tileMap.setTileLayer((TileLayer) layer);
                 }
             } else if ("objectLayer".equals(sibs.getNodeName())) {
                 MapLayer layer = unmarshalObjectLayer(sibs);
                 if (layer != null) {
-                    tileMap.addLayer(layer);
+                    //tileMap.addLayer(layer);
                     tileMap.setObjectLayer((ObjectLayer) layer);
                 }
             }

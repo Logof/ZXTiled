@@ -68,7 +68,7 @@ public class SideScrolledMapView extends MapView {
     }
 
 
-    protected void paintLayer(Graphics2D g2d, TileLayer layer) {
+    protected void paintTileLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
         Dimension tileSize = getTileSizeWithZoom();
         if (tileSize.width <= 0 || tileSize.height <= 0) {

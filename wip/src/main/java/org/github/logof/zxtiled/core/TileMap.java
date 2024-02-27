@@ -19,6 +19,7 @@ import org.github.logof.zxtiled.core.event.MapLayerChangeEvent;
 import org.github.logof.zxtiled.exception.LayerLockedException;
 import org.github.logof.zxtiled.mapeditor.Constants;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.selection.SelectionLayer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,19 +29,13 @@ import java.util.Vector;
 
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
- * This class also handles notifing listeners if there is a change to any layer
+ * This class also handles notifying listeners if there is a change to any layer
  * or object contained by the map.
  *
  * @version $Id$
  */
 public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
-    private final Vector<MapLayer> specialLayers;
-    @Getter
-    @Setter
-    private TileLayer tileLayer;
-    @Getter
-    @Setter
-    private ObjectLayer objectLayer;
+    private final Vector<SelectionLayer> selectionLayers;
     
     @Getter
     private final Vector<Tileset> tilesets;
@@ -65,9 +60,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         super(width, height);
         properties = new Properties();
         tilesets = new Vector<>();
-        specialLayers = new Vector<>();
-        tileLayer = new TileLayer();
-        objectLayer = new ObjectLayer();
+        selectionLayers = new Vector<>();
     }
 
     /**
@@ -122,12 +115,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         }
     }
 
-    protected void fireLayerMoved(int oldLayerIndex, int newLayerIndex) {
-        MapChangedEvent event = new MapChangedEvent(this, newLayerIndex, oldLayerIndex);
-        for (MapChangeListener listener : mapChangeListeners) {
-            listener.layerMoved(event);
-        }
-    }
 
     protected void fireLayerChanged(int layerIndex, MapLayerChangeEvent mlce) {
         MapChangedEvent event = new MapChangedEvent(this, layerIndex);
@@ -188,38 +175,33 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
 
-    public void addLayerSpecial(MapLayer layer) {
+    public void addSelectionLayer(SelectionLayer layer) {
         layer.setMap(this);
-        specialLayers.add(layer);
+        selectionLayers.add(layer);
         fireMapChanged();
     }
 
     @Override
-    public MapLayer addLayer(MapLayer layer) {
+    public void addLayer(MapLayer layer) {
         layer.setMap(this);
         super.addLayer(layer);
         layer.addMapLayerChangeListener(this);
         fireMapChanged();
         fireLayerAdded(getLayerVector().indexOf(layer));
-        return layer;
+
+
     }
 
     public void addAllLayers() {
-        MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), layer);
+        TileLayer layer = new TileLayer(this, bounds.width, bounds.height);
+        layer.setName(Resources.getString("general.layer.layer"));
+        setTileLayer(layer);
 
         ObjectLayer objectLayer = new ObjectLayer(this);
-        objectLayer.setName(Resources.getString("general.object.object") + " " + super.getTotalLayers());
-        insertLayer(getTotalLayers(), objectLayer);
+        objectLayer.setName(Resources.getString("general.object.object"));
+        setObjectLayer(objectLayer);
     }
 
-    public void insertLayer(int index, MapLayer layer) {
-        super.insertLayer(index, layer);
-        layer.addMapLayerChangeListener(this);
-        fireMapChanged();
-        fireLayerAdded(index);
-    }
 
     public void setLayer(int index, MapLayer layer) {
         layer.setMap(this);
@@ -263,13 +245,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         Iterator<Tile> tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
             Tile tile = tileIterator.next();
-            Iterator<MapLayer> layerIterator = getLayers();
-            while (layerIterator.hasNext()) {
-                MapLayer mapLayer = layerIterator.next();
-                if (mapLayer instanceof TileLayer) {
-                    ((TileLayer) mapLayer).removeTile(tile);
-                }
-            }
+            getTileLayer().removeTile(tile);
         }
 
         tilesets.remove(tileset);
@@ -290,7 +266,7 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     public void removeLayerSpecial(MapLayer layer) {
-        if (specialLayers.remove(layer)) {
+        if (selectionLayers.remove(layer)) {
             fireMapChanged();
         }
     }
@@ -301,11 +277,14 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
      * @see MultilayerPlane#removeAllLayers
      */
     public void removeAllLayers() {
-        while (getTotalLayers() > 0) {
-            getLayer(0).removeMapLayerChangeListener(this);
-            removeLayer(0);
-            fireLayerRemoved(0);
-        }
+        getLayer(0).removeMapLayerChangeListener(this);
+        removeLayer(0);
+        fireLayerRemoved(0);
+
+        getLayer(1).removeMapLayerChangeListener(this);
+        removeLayer(1);
+        fireLayerRemoved(1);
+
     }
 
     /**
@@ -321,38 +300,6 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     /**
      * Calls super method, and additionally fires a {@link MapChangedEvent}.
      *
-     * @see MultilayerPlane#swapLayerUp
-     */
-    public void swapLayerUp(int index) {
-        super.swapLayerUp(index);
-        fireMapChanged();
-        fireLayerMoved(index, index + 1);
-    }
-
-    /**
-     * Calls super method, and additionally fires a {@link MapChangedEvent}.
-     *
-     * @see MultilayerPlane#swapLayerDown
-     */
-    public void swapLayerDown(int index) {
-        super.swapLayerDown(index);
-        fireMapChanged();
-        fireLayerMoved(index, index - 1);
-    }
-
-    /**
-     * Calls super method, and additionally fires a {@link MapChangedEvent}.
-     *
-     * @see MultilayerPlane#mergeLayerDown
-     */
-    public void mergeLayerDown(int index) {
-        super.mergeLayerDown(index);
-        fireMapChanged();
-    }
-
-    /**
-     * Calls super method, and additionally fires a {@link MapChangedEvent}.
-     *
      * @see MultilayerPlane#resize
      */
     public void resize(int width, int height, int dx, int dy) {
@@ -360,8 +307,8 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         fireMapChanged();
     }
 
-    public Iterator<MapLayer> getLayersSpecial() {
-        return specialLayers.iterator();
+    public Iterator<SelectionLayer> getLayersSpecial() {
+        return selectionLayers.iterator();
     }
 
     /**
@@ -432,20 +379,17 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     }
 
     /**
-     * Returns string describing the map. The form is <code>Map[width x height
-     * x layers][tileWidth x tileHeight]</code>, for example <code>
-     * Map[64x64x2][24x24]</code>.
+     * Returns string describing the map. The form is <code>Map[width x height][tileWidth x tileHeight]</code>,
+     * for example <code>Map[64x64][24x24]</code>.
      *
      * @return string describing map
      */
     public String toString() {
-        return "Map[" + bounds.width + "x" + bounds.height + "x" +
-                getTotalLayers() + "][" + Constants.TILE_WIDTH + "x" + Constants.TILE_HEIGHT + "]";
+        return "Map[" + bounds.width + "x" + bounds.height + "][" + Constants.TILE_WIDTH + "x" + Constants.TILE_HEIGHT + "]";
     }
 
 
     public void layerChanged(MapLayer layerIndex, MapLayerChangeEvent e) {
         fireLayerChanged(findLayerIndex(layerIndex), e);
     }
-
 }

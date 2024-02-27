@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.util;
 
 import java.util.Iterator;
@@ -17,12 +5,10 @@ import java.util.Vector;
 
 /**
  * A NumberedSet is a generic container of Objects where each element is
- * identified by an integer id.  Unlike with a Vector, the mapping between
- * id and element remains unaffected when elements are deleted.  This means
+ * identified by an integer id. Unlike with a Vector, the mapping between
+ * id and element remains unaffected when elements are deleted. This means
  * that the set of ids for a NumberedSet may not be contiguous. (A sparse
  * array)
- *
- * @author rainerd
  */
 public class NumberedSet {
     private final Vector<Object> data;
@@ -31,7 +17,7 @@ public class NumberedSet {
      * Constructs a new empty NumberedSet.
      */
     public NumberedSet() {
-        data = new Vector<Object>();
+        data = new Vector<>();
     }
 
     /**
@@ -134,7 +120,7 @@ public class NumberedSet {
     }
 
     /**
-     * Returns the id of the first element of the NumberedSet that is euqal to
+     * Returns the id of the first element of the NumberedSet that is equal to
      * the given object, or -1 otherwise.
      *
      * @param o

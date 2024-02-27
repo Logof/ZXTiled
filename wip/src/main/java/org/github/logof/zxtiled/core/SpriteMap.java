@@ -8,7 +8,7 @@ import java.util.Vector;
 
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
- * This class also handles notifing listeners if there is a change to any layer
+ * This class also handles notifying listeners if there is a change to any layer
  * or object contained by the map.
  *
  * @version $Id$
@@ -66,15 +66,13 @@ public class SpriteMap extends MultilayerPlane {
 
 
     /**
-     * Returns string describing the map. The form is <code>Map[width x height
-     * x layers][tileWidth x tileHeight]</code>, for example <code>
-     * Map[64x64x2][24x24]</code>.
+     * Returns string describing the map. The form is <code>Map[width x height][tileWidth x tileHeight]</code>,
+     * for example <code>Map[64x64][24x24]</code>.
      *
      * @return string describing map
      */
     public String toString() {
-        return "Sprites[" + bounds.width + "x" + bounds.height + "x" +
-                getTotalLayers() + "][" + Constants.TILE_WIDTH + "x" + Constants.TILE_HEIGHT + "]";
+        return "Sprites[" + bounds.width + "x" + bounds.height + "x][" + Constants.TILE_WIDTH + "x" + Constants.TILE_HEIGHT + "]";
     }
 
 }

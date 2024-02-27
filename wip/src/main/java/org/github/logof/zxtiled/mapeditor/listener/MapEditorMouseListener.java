@@ -104,14 +104,14 @@ public class MapEditorMouseListener implements MouseListener,
 
             if (mapEditor.getMarqueeSelection() == null && !contains) {
                 mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
-                mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
             } else if (mapEditor.getMarqueeSelection() != null && mouseEvent.getModifiers() == InputEvent.BUTTON1_MASK) {
                 mapEditor.getCurrentTileMap().removeLayerSpecial(mapEditor.getMarqueeSelection());
                 if (contains) {
                     mapEditor.setMarqueeSelection(null);
                 } else {
                     mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
-                    mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                    mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
                 }
             }
         }
@@ -140,7 +140,7 @@ public class MapEditorMouseListener implements MouseListener,
                     // Если мы перетаскиваем, чтобы создать собственную кисть, сообщите пользователю, откуда мы ее создаем.
                     if (mapEditor.getMarqueeSelection() == null) {
                         mapEditor.setMarqueeSelection(new SelectionLayer(layer));
-                        mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                        mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
                     }
 
                     Point limp = mouseInitialPressLocation;
@@ -275,7 +275,7 @@ public class MapEditorMouseListener implements MouseListener,
                     if (layer instanceof ObjectLayer) {
                         if (mapEditor.getMarqueeSelection() == null) {
                             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
-                            mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                            mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
                         }
 
                         Point limp = mouseInitialPressLocation;
@@ -338,7 +338,7 @@ public class MapEditorMouseListener implements MouseListener,
                     if (layer instanceof ObjectLayer) {
                         if (mapEditor.getMarqueeSelection() == null) {
                             mapEditor.setMarqueeSelection(new SelectionLayer(mapEditor.getCurrentLayer()));
-                            mapEditor.getCurrentTileMap().addLayerSpecial(mapEditor.getMarqueeSelection());
+                            mapEditor.getCurrentTileMap().addSelectionLayer(mapEditor.getMarqueeSelection());
                         }
 
                         Point limp = mouseInitialPressLocation;

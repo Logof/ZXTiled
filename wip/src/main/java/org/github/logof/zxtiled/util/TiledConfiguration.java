@@ -95,7 +95,7 @@ public final class TiledConfiguration {
         Preferences recentNode = prefs.node("recent");
         for (int i = 0; i < RECENT_FILE_COUNT; i++) {
             String recentFile = recentNode.get("file" + i, "");
-            if (recentFile.length() > 0) {
+            if (!recentFile.isEmpty()) {
                 recent.add(recentFile);
             }
         }

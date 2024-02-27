@@ -22,8 +22,7 @@ public class PasteAction extends AbstractAction {
         if (mapEditor.getCurrentTileMap() != null && mapEditor.getClipboardLayer() != null) {
             Vector<MapLayer> layersBefore = mapEditor.getCurrentTileMap().getLayerVector();
             MapLayer mapLayer = MapEditor.createLayerCopy(mapEditor.getClipboardLayer());
-            mapLayer.setName(Resources.getString("general.layer.layer") + " " + mapEditor.getCurrentTileMap()
-                                                                                         .getTotalLayers());
+            mapLayer.setName(Resources.getString("general.layer.layer"));
             mapEditor.getCurrentTileMap().addLayer(mapLayer);
             mapEditor.getUndoSupport().postEdit(
                     new MapLayerStateEdit(mapEditor.getCurrentTileMap(), layersBefore,

@@ -6,7 +6,6 @@ import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ListIterator;
 
 public class CopyAllAction extends AbstractAction {
     private final MapEditor mapEditor;
@@ -26,15 +25,13 @@ public class CopyAllAction extends AbstractAction {
             MapLayer mapLayer = mapEditor.getCurrentLayer();
             mapEditor.setClipboardLayer(new TileLayer(mapEditor.getMarqueeSelection().getSelectedAreaBounds()
             ));
-            ListIterator<MapLayer> itr = mapEditor.getCurrentTileMap().getLayers();
-            while (itr.hasNext()) {
-                MapLayer layer = itr.next();
-                if (layer instanceof TileLayer) {
-                    mapEditor.getClipboardLayer().maskedMergeOnto(
-                            layer,
-                            mapEditor.getMarqueeSelection().getSelectedArea());
-                }
+
+            if (mapEditor.getCurrentTileMap().getTileLayer() != null) {
+                mapEditor.getClipboardLayer()
+                         .maskedMergeOnto(mapEditor.getCurrentTileMap().getTileLayer(),
+                                 mapEditor.getMarqueeSelection().getSelectedArea());
             }
+
         }
     }
 }

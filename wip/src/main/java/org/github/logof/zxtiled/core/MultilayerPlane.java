@@ -12,25 +12,28 @@
 
 package org.github.logof.zxtiled.core;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Vector;
 
 /**
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
  */
-public class MultilayerPlane implements Iterable<MapLayer> {
-    protected Rectangle bounds;          //in tiles
-    private Vector<MapLayer> layers;
+@Getter
+@Setter
+public class MultilayerPlane {
+    protected Rectangle bounds;
+    private TileLayer tileLayer;
+    private ObjectLayer objectLayer;
 
     /**
      * Default constructor.
      */
     public MultilayerPlane() {
-        layers = new Vector<>();
+        tileLayer = new TileLayer();
+        objectLayer = new ObjectLayer();
         bounds = new Rectangle();
     }
 
@@ -42,34 +45,6 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      */
     public MultilayerPlane(int width, int height) {
         this();
-        bounds.width = width;
-        bounds.height = height;
-    }
-
-    /**
-     * Returns the total number of layers.
-     *
-     * @return the size of the layer vector
-     */
-    public int getTotalLayers() {
-        return layers.size();
-    }
-
-    /**
-     * Changes the bounds of this plane to include all layers completely.
-     */
-    public void fitBoundsToLayers() {
-        int width = 0;
-        int height = 0;
-
-        Rectangle layerBounds = new Rectangle();
-
-        for (int i = 0; i < layers.size(); i++) {
-            getLayer(i).getBounds(layerBounds);
-            if (width < layerBounds.width) width = layerBounds.width;
-            if (height < layerBounds.height) height = layerBounds.height;
-        }
-
         bounds.width = width;
         bounds.height = height;
     }
@@ -87,28 +62,15 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * Adds a layer to the map.
      *
      * @param layer The {@link MapLayer} to add
-     * @return the layer passed to the function
      */
-    public MapLayer addLayer(MapLayer layer) {
-        insertLayer(layers.size(), layer);
-        return layer;
-    }
-
-    void insertLayer(int index, MapLayer layer) {
-        layers.add(index, layer);
+    public void addLayer(MapLayer layer) {
+        //layers.add(layers.size(), layer);
+        System.out.println("Добавление слоев не поддерживается");
     }
 
     public void setLayer(int index, MapLayer layer) {
-        layers.set(index, layer);
-    }
-
-    /**
-     * Adds all the layers in a given java.util.Collection.
-     *
-     * @param layers a collection of layers to add
-     */
-    public void addAllLayers(Collection<MapLayer> layers) {
-        this.layers.addAll(layers);
+        //layers.set(index, layer);
+        System.out.println("Изменение слоев не поддерживается");
     }
 
     /**
@@ -119,14 +81,17 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @return the layer that was removed from the list
      */
     public MapLayer removeLayer(int index) {
-        return layers.remove(index);
+        //return layers.remove(index);
+        System.out.println("Удаление слоев не поддерживается");
+        return null;
     }
 
     /**
      * Removes all layers from the plane.
      */
     public void removeAllLayers() {
-        layers.removeAllElements();
+        // layers.removeAllElements();
+        System.out.println("Удаление всех слоев не поддерживается");
     }
 
     /**
@@ -135,7 +100,9 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @return Vector the layer vector
      */
     public Vector<MapLayer> getLayerVector() {
-        return layers;
+        //return layers;
+        System.out.println("Получение списка слоев не поддерживается");
+        return new Vector<>();
     }
 
     /**
@@ -144,74 +111,21 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @param layers the new set of layers
      */
     public void setLayerVector(Vector<MapLayer> layers) {
-        this.layers = layers;
-    }
-
-    /**
-     * Moves the layer at <code>index</code> up one in the vector.
-     *
-     * @param index the index of the layer to swap up
-     */
-    public void swapLayerUp(int index) {
-        if (index + 1 == layers.size()) {
-            throw new RuntimeException(
-                    "Can't swap up when already at the top.");
-        }
-
-        MapLayer hold = layers.get(index + 1);
-        layers.set(index + 1, getLayer(index));
-        layers.set(index, hold);
-    }
-
-    /**
-     * Moves the layer at <code>index</code> down one in the vector.
-     *
-     * @param index the index of the layer to swap down
-     */
-    public void swapLayerDown(int index) {
-        if (index - 1 < 0) {
-            throw new RuntimeException("Can't swap down when already at the bottom.");
-        }
-
-        MapLayer hold = layers.get(index - 1);
-        layers.set(index - 1, getLayer(index));
-        layers.set(index, hold);
-    }
-
-    /**
-     * Merges the layer at <code>index</code> with the layer below it
-     *
-     * @param index the index of the layer to merge down
-     * @see MapLayer#mergeOnto
-     */
-    public void mergeLayerDown(int index) {
-        if (index - 1 < 0) {
-            throw new RuntimeException("Can't merge down bottom layer.");
-        }
-
-        // TODO: We're not accounting for different types of layers!!!
-        TileLayer ntl;
-        try {
-            ntl = (TileLayer) getLayer(index - 1).clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        getLayer(index).mergeOnto(ntl);
-        setLayer(index - 1, ntl);
-        removeLayer(index);
+        //this.layers = layers;
+        System.out.println("Изменение списка слоев не поддерживается");
     }
 
     /**
      * Finds the index of the given MapLayer instance. If the given layer is
      * not part of this Map, the function returns -1;
      *
-     * @param ml the layer to request the index of.
+     * @param mapLayer the layer to request the index of.
      * @return the layer index or -1 if the layer could not be found
      */
-    protected int findLayerIndex(MapLayer ml) {
-        return layers.indexOf(ml);
+    protected int findLayerIndex(MapLayer mapLayer) {
+        //return layers.indexOf(mapLayer);
+        System.out.println("Поиск в списке слоев не поддерживается");
+        return -1;
     }
 
     /**
@@ -221,21 +135,13 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @return the layer at the specified index, or null if the index is out of
      * bounds
      */
+    //TODO требует рефакторинга, чтобы обращаться нужно не по Id, а, например, по типу слоя
     public MapLayer getLayer(int i) {
-        try {
-            return layers.get(i);
-        } catch (ArrayIndexOutOfBoundsException ignored) {
+        if (i == 1) {
+            return objectLayer;
         }
-        return null;
-    }
-
-    /**
-     * Gets a listIterator of all layers.
-     *
-     * @return a listIterator
-     */
-    public ListIterator<MapLayer> getLayers() {
-        return layers.listIterator();
+        return tileLayer;
+        //return layers.get(i);
     }
 
     /**
@@ -253,16 +159,8 @@ public class MultilayerPlane implements Iterable<MapLayer> {
      * @see MapLayer#resize
      */
     public void resize(int width, int height, int dx, int dy) {
-        ListIterator<MapLayer> itr = getLayers();
-        while (itr.hasNext()) {
-            MapLayer layer = itr.next();
-            if (layer.bounds.equals(bounds)) {
-                layer.resize(width, height, dx, dy);
-            } else {
-                layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
-            }
-        }
-
+        tileLayer.resize(width, height, dx, dy);
+        objectLayer.resize(width, height, dx, dy);
         resize(width, height);
     }
 
@@ -279,18 +177,14 @@ public class MultilayerPlane implements Iterable<MapLayer> {
     }
 
     /**
-     * Determines wether the point (x,y) falls within the plane.
+     * Determines whether the point (x,y) falls within the plane.
      *
-     * @param x
-     * @param y
+     * @param x coordinate by X
+     * @param y coordinate by Y
      * @return <code>true</code> if the point is within the plane,
      * <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
-    }
-
-    public Iterator<MapLayer> iterator() {
-        return layers.iterator();
     }
 }

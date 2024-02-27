@@ -13,9 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.util;
 
 import org.github.logof.zxtiled.core.MapChangeListener;
-import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
-import org.github.logof.zxtiled.core.TileLayer;
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
 import org.github.logof.zxtiled.core.TilesetChangeListener;
@@ -101,16 +99,11 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile) tileIterator.next();
-            Iterator itr = tileMap.getLayers();
 
-            while (itr.hasNext()) {
-                MapLayer ml = (MapLayer) itr.next();
-
-                if (ml instanceof TileLayer) {
-                    if (((TileLayer) ml).isUsed(tile)) {
-                        used++;
-                        break;
-                    }
+            if (tileMap.getTileLayer() != null) {
+                if (tileMap.getTileLayer().isUsed(tile)) {
+                    used++;
+                    break;
                 }
             }
         }
