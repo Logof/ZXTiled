@@ -14,7 +14,6 @@ package org.github.logof.zxtiled.io;
 
 import org.github.logof.zxtiled.core.TileMap;
 import org.github.logof.zxtiled.core.Tileset;
-import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.xml.XMLMapTransformer;
 import org.github.logof.zxtiled.io.xml.XMLMapWriter;
 import org.github.logof.zxtiled.mapeditor.Resources;
@@ -48,8 +47,6 @@ public class MapHelper {
         if (filename.endsWith(".tmx") || filename.endsWith(".tmx.gz")) {
             // Override, so people can't overtake our format
             mapWriter = new XMLMapWriter();
-        } else if (filename.endsWith(".h")) {
-            mapWriter = new HMapWriter();
         } else {
             throw new RuntimeException("Not save map");
         }

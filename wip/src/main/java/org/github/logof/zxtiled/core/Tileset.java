@@ -169,7 +169,7 @@ public class Tileset {
         int id = 0;
         Image tile = tileCutter.getNextTile();
         while (tile != null) {
-            int imgId = getTile(id).tileImageId;
+            int imgId = getTile(id).getTileImageId();
             overlayImage(imgId, tile);
             tile = tileCutter.getNextTile();
             id++;

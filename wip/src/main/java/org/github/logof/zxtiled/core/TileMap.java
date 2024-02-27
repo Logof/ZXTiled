@@ -36,6 +36,13 @@ import java.util.Vector;
 public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
     private final Vector<MapLayer> specialLayers;
     @Getter
+    @Setter
+    private TileLayer tileLayer;
+    @Getter
+    @Setter
+    private ObjectLayer objectLayer;
+    
+    @Getter
     private final Vector<Tileset> tilesets;
     private final List<MapChangeListener> mapChangeListeners = new LinkedList<>();
 
@@ -59,6 +66,8 @@ public class TileMap extends MultilayerPlane implements MapLayerChangeListener {
         properties = new Properties();
         tilesets = new Vector<>();
         specialLayers = new Vector<>();
+        tileLayer = new TileLayer();
+        objectLayer = new ObjectLayer();
     }
 
     /**

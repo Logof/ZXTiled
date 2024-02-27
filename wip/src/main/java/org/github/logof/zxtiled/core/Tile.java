@@ -23,19 +23,19 @@ import java.util.Properties;
  *
  * @version $Id$
  */
+@Getter
 public class Tile {
-    protected int tileImageId = -1;
+    private Tileset tileset;
     private Image internalImage;
     private Image scaledImage;
-    @Getter
+    // TODO есть подозрение, что это одно и то же
     private int id = -1;
-    private int groundHeight;          // Height above/below "ground"
-    private int tileOrientation;
+    private int tileImageId = -1;
+
     private double myZoom = 1.0;
     @Setter
-    @Getter
     private Properties properties;
-    private Tileset tileset;
+
 
     public Tile() {
         properties = new Properties();
@@ -127,8 +127,7 @@ public class Tile {
      */
     public void draw(Graphics graphics, int x, int y, double zoom) {
         // Invoke raw draw function
-        int gnd_h = (int) (groundHeight * zoom);
-        drawRaw(graphics, x, y - gnd_h, zoom);
+        drawRaw(graphics, x, y, zoom);
     }
 
     public int getWidth() {
@@ -153,22 +152,6 @@ public class Tile {
 
     public int getImageId() {
         return tileImageId;
-    }
-
-    /**
-     * @return int
-     * @deprecated
-     */
-    public int getImageOrientation() {
-        return tileOrientation;
-    }
-
-    /**
-     * @param orientation
-     * @deprecated
-     */
-    public void setImageOrientation(int orientation) {
-        tileOrientation = orientation;
     }
 
     /**
