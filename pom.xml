@@ -113,32 +113,8 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
+        <!--plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/resources</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/resources/external</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>3.1.0</version>
@@ -152,13 +128,13 @@
                 </executions>
                 <configuration>
                     <sources>
-                        <source>${basedir}/src/main/resources/xsd/project.xsd</source>
+                        <source>${basedir}/wip/src/main/resources/xsd/project.xsd</source>
                     </sources>
-                    <outputDirectory>${basedir}/src/main/java/</outputDirectory>
+                    <outputDirectory>${basedir}/wip/src/main/java/</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                     <packageName>org.github.logof.zxtiled.generated</packageName>
                 </configuration>
-            </plugin -->
-        </plugins>
+            </plugin>
+        </plugins-->
     </build>
 </project>
