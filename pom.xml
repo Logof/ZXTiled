@@ -7,6 +7,11 @@
     <groupId>org.github.logof</groupId>
     <artifactId>ZXTiled</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>prototype</module>
+        <module>wip</module>
+    </modules>
 
     <properties>
         <java.version>11</java.version>
@@ -26,7 +31,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
+            <version>1.18.30</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -34,15 +39,28 @@
             <version>2.0.9</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.7</version>
-        </dependency>
-        <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
+            <version>2.4.0-b180830.0359</version>
         </dependency>
+        <dependency>
+            <groupId>com.madgag</groupId>
+            <artifactId>util-compress</artifactId>
+            <version>1.35</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout</artifactId>
+            <version>3.7.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
             <groupId>javax.activation</groupId>
@@ -54,7 +72,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -65,13 +83,16 @@
     </dependencies>
 
     <build>
-        <finalName>jaxb</finalName>
+        <finalName>ZXTiled</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
+                <excludes>
+                    <exclude>project/*</exclude>
+                </excludes>
             </resource>
         </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -90,15 +111,9 @@
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
-
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-            </plugin>
+        <!--plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
@@ -113,13 +128,13 @@
                 </executions>
                 <configuration>
                     <sources>
-                        <source>${basedir}/src/main/resources/xsd/project.xsd</source>
+                        <source>${basedir}/wip/src/main/resources/xsd/project.xsd</source>
                     </sources>
-                    <outputDirectory>${basedir}/src/main/java/</outputDirectory>
+                    <outputDirectory>${basedir}/wip/src/main/java/</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                     <packageName>org.github.logof.zxtiled.generated</packageName>
                 </configuration>
             </plugin>
-        </plugins>
+        </plugins-->
     </build>
 </project>

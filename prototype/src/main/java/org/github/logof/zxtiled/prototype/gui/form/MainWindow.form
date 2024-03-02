@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.github.logof.zxtiled.prototype.gui.MainWindow">
+  <grid id="27dc6" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="434"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="6f2a3" binding="toolbarPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="West"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <toolbar id="37f6a">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <orientation value="1"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="6209f" class="javax.swing.JButton" binding="paintButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/gimp-tool-pencil-22.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="1bd4a" class="javax.swing.JButton" binding="eraseButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/gimp-tool-eraser-22.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="cadec" class="javax.swing.JButton" binding="fillButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/gimp-tool-bucket-fill-22.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="c5c57" class="javax.swing.JToolBar$Separator">
+                <constraints/>
+                <properties/>
+              </component>
+              <component id="a9950" class="javax.swing.JButton" binding="startPositionButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/start.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="89970" class="javax.swing.JButton" binding="finishPositionButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/finish.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="a57bb" class="javax.swing.JToolBar$Separator">
+                <constraints/>
+                <properties/>
+              </component>
+              <component id="ddfec" class="javax.swing.JButton" binding="addHotspotObjectButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/hotspot_add.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="d18e3" class="javax.swing.JButton" binding="addMovingObjectButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/insert-object.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="b477" class="javax.swing.JButton" binding="deleteObjectButton">
+                <constraints/>
+                <properties>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="3ad74" class="javax.swing.JButton" binding="moveObjectButton">
+                <constraints/>
+                <properties>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="5f4b8" class="javax.swing.JToolBar$Separator">
+                <constraints/>
+                <properties/>
+              </component>
+              <component id="78800" class="javax.swing.JButton" binding="zoomOutButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/gnome-zoom-out.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="f1217" class="javax.swing.JButton" binding="zoomInButton">
+                <constraints/>
+                <properties>
+                  <icon value="icon/gnome-zoom-in.png"/>
+                  <maximumSize width="32" height="32"/>
+                  <minimumSize width="32" height="32"/>
+                  <text value=""/>
+                </properties>
+              </component>
+            </children>
+          </toolbar>
+        </children>
+      </grid>
+      <grid id="7a1a6" binding="additionalPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="East"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="91000" binding="mainMenuPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="d6787" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="9b161" binding="graphicsPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
+          <scrollpane id="7f0bb" binding="mapViewerPanel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </scrollpane>
+        </children>
+      </grid>
+      <grid id="79cf0" binding="statusPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+    </children>
+  </grid>
+</form>
