@@ -19,7 +19,7 @@ import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.gui.AbstractDialog;
 import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.gui.VerticalStaticJPanel;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,7 +37,7 @@ public class NewMapDialog extends AbstractDialog implements ActionListener {
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String MAP_TYPE_SIDE_SCROLLED = Resources.getString("general.map.type.side-scrolled");
     private static final String MAP_TYPE_TOP_DOWN = Resources.getString("general.map.type.topdown");
-    private final Preferences preferences = TiledConfiguration.node("dialog/newmap");
+    private final Preferences preferences = ZXTiledConfiguration.node("dialog/newmap");
     private TileMap tileMap;
 
     private IntegerSpinner mapWidth;

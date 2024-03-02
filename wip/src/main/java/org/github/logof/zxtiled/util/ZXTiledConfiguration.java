@@ -23,13 +23,12 @@ import java.util.prefs.Preferences;
  *
  * @version $Id$
  */
-public final class TiledConfiguration {
+public final class ZXTiledConfiguration {
     public static final int RECENT_FILE_COUNT = 8;
 
-    private static final Preferences prefs = Preferences.userRoot().node("tiled");
+    private static final Preferences PREFERENCES = Preferences.userRoot().node("ZXTiled");
 
-    // Prevent instanciation
-    private TiledConfiguration() {
+    private ZXTiledConfiguration() {
     }
 
     /**
@@ -40,7 +39,7 @@ public final class TiledConfiguration {
      * @return the requested preferences node
      */
     public static Preferences node(String pathName) {
-        return prefs.node(pathName);
+        return PREFERENCES.node(pathName);
     }
 
     /**
@@ -49,7 +48,7 @@ public final class TiledConfiguration {
      * @return the root node for Tiled configuration
      */
     public static Preferences root() {
-        return prefs;
+        return PREFERENCES;
     }
 
     /**
@@ -78,7 +77,7 @@ public final class TiledConfiguration {
         recent.add(0, mapFile);
 
         // Store the new recent file listing
-        Preferences recentNode = prefs.node("recent");
+        Preferences recentNode = PREFERENCES.node("recent");
         for (int i = 0; i < RECENT_FILE_COUNT && i < recent.size(); i++) {
             String recentFile = recent.get(i);
             recentNode.put("file" + i, recentFile);
@@ -92,7 +91,7 @@ public final class TiledConfiguration {
      */
     public static List<String> getRecentFiles() {
         List<String> recent = new ArrayList<String>(RECENT_FILE_COUNT);
-        Preferences recentNode = prefs.node("recent");
+        Preferences recentNode = PREFERENCES.node("recent");
         for (int i = 0; i < RECENT_FILE_COUNT; i++) {
             String recentFile = recentNode.get("file" + i, "");
             if (!recentFile.isEmpty()) {

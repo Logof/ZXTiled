@@ -26,7 +26,7 @@ import org.github.logof.zxtiled.io.ImageHelper;
 import org.github.logof.zxtiled.io.MapWriter;
 import org.github.logof.zxtiled.io.PluginLogger;
 import org.github.logof.zxtiled.mapeditor.Constants;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,7 +53,7 @@ import java.util.zip.GZIPOutputStream;
 public class XMLMapWriter implements MapWriter {
     private static final int LAST_BYTE = 0x000000FF;
 
-    private Preferences preferences = TiledConfiguration.node("saving");
+    private Preferences preferences = ZXTiledConfiguration.node("saving");
 
     private static void writeProperties(Properties props, XMLWriter w) throws
                                                                        IOException {

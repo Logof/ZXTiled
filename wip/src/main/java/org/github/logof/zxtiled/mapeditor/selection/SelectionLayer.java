@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.github.logof.zxtiled.core.MapLayer;
 import org.github.logof.zxtiled.core.Tile;
 import org.github.logof.zxtiled.core.TileLayer;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
@@ -53,7 +53,7 @@ public class SelectionLayer extends TileLayer {
     }
 
     private void init() {
-        Preferences prefs = TiledConfiguration.root();
+        Preferences prefs = ZXTiledConfiguration.root();
         try {
             highlightColor = Color.decode(prefs.get("selectionColor", "#0000FF"));
         } catch (NumberFormatException e) {

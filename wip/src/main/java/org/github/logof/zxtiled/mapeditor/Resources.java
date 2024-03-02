@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.mapeditor;
 
 import javax.imageio.ImageIO;
@@ -33,7 +21,6 @@ public final class Resources {
 
     public static final InputStream resourceResolver = Resources.class.getResourceAsStream("/map.dtd");
 
-    // Prevent instanciation
     private Resources() {
     }
 
@@ -67,16 +54,24 @@ public final class Resources {
         }
     }
 
+    public static Optional<InputStream> getInputStream(String filename) {
+        InputStream inputStream = Resources.class.getResourceAsStream("/" + filename);
+        if (Objects.isNull(inputStream)) {
+            return Optional.empty();
+        }
+        return Optional.of(inputStream);
+    }
+
     /**
      * Loads the image using {@link #getImage(String)} and uses it to create
      * a new {@link ImageIcon} instance.
      *
      * @param filename the filename of the image relative from the
      *                 <code>resources</code> directory
-     * @return the loaded icon, or <code>null</code> when an error occured
+     * @return the loaded icon, or <code>null</code> when an error occurred
      * while loading the image
      */
     public static Icon getIcon(String filename) {
-        return new ImageIcon(getImage(filename).orElse(null));
+        return new ImageIcon(Objects.requireNonNull(getImage(filename).orElse(null)));
     }
 }

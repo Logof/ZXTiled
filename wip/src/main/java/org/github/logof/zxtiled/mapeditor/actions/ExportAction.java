@@ -7,6 +7,7 @@ import org.github.logof.zxtiled.io.c.HMapWriter;
 import org.github.logof.zxtiled.io.c.HTilesetWriter;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
+import org.github.logof.zxtiled.mapeditor.util.UnzipUtility;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Objects;
@@ -32,23 +33,18 @@ public class ExportAction extends SaveAsAction {
         if (Objects.nonNull(filePath)) {
             int dotIndex = filePath.lastIndexOf('.');
             String extension = (dotIndex == -1) ? "" : filePath.substring(dotIndex);
+            String projectFolder = filePath.replace(extension, "");
 
-            /*try {
-                InputStream stream = new FileInputStream("/home/user/mojontwins/ZXTiled/wip/target/classes/external" + File.separator + "project.zip");
-                assert stream != null;
-                com.madgag.compress.CompressUtil.unzip(stream, new File("/home/user/demo"));
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }*/
+            UnzipUtility.extractFiles(projectFolder);
 
             // Export
             // tilemap to file mapa.h
-            HMapWriter.writeMap(editor.getCurrentTileMap(), "/home/user/demo/dev/assets/mapa.h");
+            HMapWriter.writeMap(editor.getCurrentTileMap(), projectFolder + "/dev/assets/mapa.h");
             // objects map to file enems.h
-            HEnemsWriter.writeEnems(editor.getCurrentTileMap(), "/home/user/demo/dev/assets/enems.h");
+            HEnemsWriter.writeEnems(editor.getCurrentTileMap(), projectFolder + "/dev/assets/enems.h");
             // tileset to file tileset.h
             HTilesetWriter.writeTileset(editor.getCurrentTileMap()
-                                              .getTilesets(), "/home/user/demo/dev/assets/tileset.h");
+                                              .getTilesets(), projectFolder + "/dev/assets/tileset.h");
         } else {
             super.actionPerformed(e);
         }

@@ -20,16 +20,15 @@ public class ApplicationFrame extends JFrame {
     public ApplicationFrame() {
         super(Resources.getString("dialog.main.title"));
         init();
-        //this.setJMenuBar(new MainMenuBar());
     }
 
     private void init() {
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        final Preferences mainDialogPrefs = MapEditor.preferences.node("dialog/main");
-        final int width = mainDialogPrefs.getInt("width", APP_WIDTH);
-        final int height = mainDialogPrefs.getInt("height", APP_HEIGHT);
+        final Preferences mainDialogPreferences = MapEditor.PREFERENCES.node("dialog/main");
+        final int width = mainDialogPreferences.getInt("width", APP_WIDTH);
+        final int height = mainDialogPreferences.getInt("height", APP_HEIGHT);
         this.setSize(width, height);
-        this.state = mainDialogPrefs.getInt("state", Frame.NORMAL);
+        this.state = mainDialogPreferences.getInt("state", Frame.NORMAL);
     }
 
     public void updateExtendedState() {

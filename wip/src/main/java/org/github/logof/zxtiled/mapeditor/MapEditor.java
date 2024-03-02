@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2008
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.mapeditor;
 
 import lombok.Getter;
@@ -57,10 +45,12 @@ import org.github.logof.zxtiled.mapeditor.undo.UndoHandler;
 import org.github.logof.zxtiled.mapeditor.util.LayerTableModel;
 import org.github.logof.zxtiled.mapeditor.util.MapEventAdapter;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import org.github.logof.zxtiled.view.MapView;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -89,7 +79,7 @@ public class MapEditor {
      */
     public static final String version = "0.0.1";
 
-    public static final Preferences preferences = TiledConfiguration.root();
+    public static final Preferences PREFERENCES = ZXTiledConfiguration.root();
 
     @Getter
     private final UndoHandler undoHandler;
@@ -156,6 +146,7 @@ public class MapEditor {
     private MapLayersPanel mapLayersPanel;
     private TilesetPanel tilesetPanel;
 
+    private JTree projectTree;
 
     private final MapEditorMouseListener mouseListener;
 
@@ -174,10 +165,9 @@ public class MapEditor {
 
     public MapEditor() {
         MapEditorAction.init(this);
+
         pointerStateManager = new PointerStateManager(this);
-
         mouseListener = new MapEditorMouseListener(this);
-
         actionListener = new MapEditorActionListener(this, pointerStateManager);
         listSelectionListener = new MapEditorListSelectionListener(this);
 
@@ -194,7 +184,7 @@ public class MapEditor {
 
         cursorHighlight = new SelectionLayer(1, 1, 1, 1);
         cursorHighlight.select(0, 0);
-        cursorHighlight.setVisible(preferences.getBoolean("cursorhighlight", true));
+        cursorHighlight.setVisible(PREFERENCES.getBoolean("cursorhighlight", true));
 
         // Create our frame
         appFrame = new ApplicationFrame();
@@ -229,15 +219,15 @@ public class MapEditor {
 
         // Make sure the map view is redrawn when grid preferences change.
         // todo: move this functionality out of here somehow, but not back into MapView
-        final Preferences display = preferences.node("display");
+        final Preferences display = PREFERENCES.node("display");
         display.addPreferenceChangeListener(event -> {
             if (mapView == null) return;
 
             String key = event.getKey();
             if ("gridOpacity".equals(key)) {
                 mapView.setGridOpacity(display.getInt("gridOpacity", 255));
-            } else if ("gridAntialias".equals(key)) {
-                mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
+            } else if ("gridAntialiasing".equals(key)) {
+                mapView.setAntialiasGrid(display.getBoolean("gridAntialiasing", true));
             } else if ("gridColor".equals(key)) {
                 mapView.setGridColor(new Color(display.getInt("gridColor",
                         MapView.DEFAULT_GRID_COLOR.getRGB())));
@@ -257,10 +247,11 @@ public class MapEditor {
     }
 
     private JPanel createContentPane() {
-        mapScrollPane = new JScrollPane(
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        mapScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         mapScrollPane.setBorder(null);
+
+        DefaultTreeModel treeModel = getDefaultTreeModel();
+        projectTree = new JTree(treeModel);
 
         createData();
         statusBar = new StatusBar();
@@ -288,17 +279,44 @@ public class MapEditor {
 
         // GUI components
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(toolBar, BorderLayout.LINE_START);
-        mainPanel.add(paletteSplit, BorderLayout.CENTER);
+
+
+        mainPanel.add(projectTree, BorderLayout.LINE_START);
+
+        JPanel mapEditorPanel = new JPanel(new BorderLayout());
+        mapEditorPanel.add(toolBar, BorderLayout.LINE_START);
+        mapEditorPanel.add(paletteSplit, BorderLayout.CENTER);
+
+        mainPanel.add(mapEditorPanel, BorderLayout.CENTER);
         mainPanel.add(statusBar, BorderLayout.PAGE_END);
 
         return mainPanel;
     }
 
+    private static DefaultTreeModel getDefaultTreeModel() {
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Project");
+        DefaultMutableTreeNode graphicNode = new DefaultMutableTreeNode("gfx");
+
+        DefaultMutableTreeNode fontNode = new DefaultMutableTreeNode("font");
+        DefaultMutableTreeNode tileNode = new DefaultMutableTreeNode("tiles");
+        DefaultMutableTreeNode spriteNode = new DefaultMutableTreeNode("sprites");
+        graphicNode.add(fontNode);
+        graphicNode.add(tileNode);
+        graphicNode.add(spriteNode);
+
+        DefaultMutableTreeNode scriptNode = new DefaultMutableTreeNode("script");
+        DefaultMutableTreeNode textNode = new DefaultMutableTreeNode("texts");
+
+        rootNode.add(graphicNode);
+        rootNode.add(scriptNode);
+        rootNode.add(textNode);
+
+        return new DefaultTreeModel(rootNode, true);
+    }
+
     /**
      * Creates the tool bar.
      */
-
     private void createData() {
         dataPanel = new JPanel(new BorderLayout());
 
@@ -325,10 +343,9 @@ public class MapEditor {
         });
 
         JPanel sliderPanel = new JPanel();
-        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
+        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.LINE_AXIS));
         sliderPanel.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
-        sliderPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                sliderPanel.getPreferredSize().height));
+        sliderPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, sliderPanel.getPreferredSize().height));
 
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.BOTH;
@@ -444,7 +461,7 @@ public class MapEditor {
     }
 
     public void updateCursorHighlight(Point tile) {
-        boolean highlightActive = tile != null && preferences.getBoolean("cursorhighlight", true);
+        boolean highlightActive = tile != null && PREFERENCES.getBoolean("cursorhighlight", true);
         cursorHighlight.setVisible(highlightActive);
 
         if (!highlightActive) {
@@ -528,14 +545,14 @@ public class MapEditor {
             mapView.toggleMode(MapView.PF_BOUNDARY_MODE);
         } else if (command.equals(Resources.getString("menu.view.grid"))) {
             // Toggle grid
-            Preferences displayPrefs = preferences.node("display");
+            Preferences displayPrefs = PREFERENCES.node("display");
             boolean showGrid = displayPrefs.getBoolean("showGrid", false);
             displayPrefs.putBoolean("showGrid", !showGrid);
         } else if (command.equals(Resources.getString("menu.view.coordinates"))) {
             // Toggle coordinates
             mapView.toggleMode(MapView.PF_COORDINATES);
         } else if (command.equals(Resources.getString("menu.view.cursor"))) {
-            preferences.putBoolean("cursorhighlight", cursorMenuItem.isSelected());
+            PREFERENCES.putBoolean("cursorhighlight", cursorMenuItem.isSelected());
             cursorHighlight.setVisible(cursorMenuItem.isSelected());
         } else if (command.equals(Resources.getString("menu.map.resize"))) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
@@ -556,7 +573,7 @@ public class MapEditor {
     public void shutdown() {
         // Save the extended window state if the window isn't minimized
         final int extendedState = appFrame.getExtendedState();
-        final Preferences mainDialogPrefs = preferences.node("dialog/main");
+        final Preferences mainDialogPrefs = PREFERENCES.node("dialog/main");
         mainDialogPrefs.putInt("state", extendedState);
         if (extendedState == Frame.NORMAL) {
             mainDialogPrefs.putInt("width", appFrame.getWidth());
@@ -639,7 +656,7 @@ public class MapEditor {
 
     public void setBrush(AbstractBrush brush) {
         // Make sure a possible current highlight gets erased from screen
-        if (mapView != null && preferences.getBoolean("cursorhighlight", true)) {
+        if (mapView != null && PREFERENCES.getBoolean("cursorhighlight", true)) {
             Rectangle redraw = cursorHighlight.getBounds();
             mapView.repaintRegion(cursorHighlight, redraw);
         }
@@ -733,9 +750,9 @@ public class MapEditor {
     public void updateRecent(String filename) {
         // If a filename is given, add it to the recent files
         if (filename != null) {
-            TiledConfiguration.addToRecentFiles(filename);
+            ZXTiledConfiguration.addToRecentFiles(filename);
         }
-        List<String> files = TiledConfiguration.getRecentFiles();
+        List<String> files = ZXTiledConfiguration.getRecentFiles();
 
         // НЕ УДАЛЯТЬ
         //recentMenu.removeAll();
@@ -774,7 +791,7 @@ public class MapEditor {
             statusBar.getZoomLabel().setText(" ");
             setCurrentTile(null);
         } else {
-            final Preferences display = preferences.node("display");
+            final Preferences display = PREFERENCES.node("display");
             MapEventAdapter.fireEvent(MapEventAdapter.MAP_EVENT_MAP_ACTIVE);
             mapView = MapView.createViewforMap(currentTileMap);
 
@@ -785,7 +802,7 @@ public class MapEditor {
             mapView.addComponentListener(componentListener);
             mapView.setSelectionSet(getSelectionSet());
             mapView.setGridOpacity(display.getInt("gridOpacity", 255));
-            mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
+            mapView.setAntialiasGrid(display.getBoolean("gridAntialiasing", true));
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
             mapView.setShowGrid(display.getBoolean("showGrid", true));

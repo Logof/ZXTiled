@@ -1,15 +1,3 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package org.github.logof.zxtiled.mapeditor.gui.dialogs;
 
 import org.github.logof.zxtiled.io.ImageHelper;
@@ -18,7 +6,7 @@ import org.github.logof.zxtiled.mapeditor.gui.IntegerSpinner;
 import org.github.logof.zxtiled.mapeditor.gui.VerticalStaticJPanel;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmableFileFilter;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,10 +24,10 @@ import java.util.prefs.Preferences;
  * @version $Id$
  */
 public class ConfigurationDialog extends JDialog {
-    private static final Preferences prefs = TiledConfiguration.root();
-    private static final Preferences savingPrefs = prefs.node("saving");
-    private static final Preferences ioPrefs = prefs.node("io");
-    private static final Preferences displayPrefs = prefs.node("display");
+    private static final Preferences PREFERENCES = ZXTiledConfiguration.root();
+    private static final Preferences SAVONG_PREFERENCES = PREFERENCES.node("saving");
+    private static final Preferences IO_PREFERENCES = PREFERENCES.node("io");
+    private static final Preferences DISPLAY_PREFERENCES = PREFERENCES.node("display");
     private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
     private static final String OPACITY_LABEL = Resources.getString("dialog.preferences.opacity.label");
@@ -301,7 +289,6 @@ public class ConfigurationDialog extends JDialog {
 
 
         // Put together the tabs
-
         JTabbedPane perfs = new JTabbedPane();
         perfs.addTab(GENERAL_TAB, general);
         perfs.addTab(SAVING_TAB, saving);
@@ -319,24 +306,22 @@ public class ConfigurationDialog extends JDialog {
 
         // Associate listeners with the configuration widgets
 
-        cbBinaryEncode.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                final boolean selected = cbBinaryEncode.isSelected();
-                savingPrefs.putBoolean("encodeLayerData", selected);
-                cbCompressLayerData.setEnabled(selected);
-            }
+        cbBinaryEncode.addItemListener(itemEvent -> {
+            final boolean selected = cbBinaryEncode.isSelected();
+            SAVONG_PREFERENCES.putBoolean("encodeLayerData", selected);
+            cbCompressLayerData.setEnabled(selected);
         });
 
         cbCompressLayerData.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                savingPrefs.putBoolean("layerCompression",
+                SAVONG_PREFERENCES.putBoolean("layerCompression",
                         cbCompressLayerData.isSelected());
             }
         });
 
         cbUsefulComments.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                savingPrefs.putBoolean("usefulComments",
+                SAVONG_PREFERENCES.putBoolean("usefulComments",
                         cbUsefulComments.isSelected());
             }
         });
@@ -344,60 +329,60 @@ public class ConfigurationDialog extends JDialog {
         cbEmbedImages.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 final boolean embed = cbEmbedImages.isSelected();
-                savingPrefs.putBoolean("embedImages", embed);
+                SAVONG_PREFERENCES.putBoolean("embedImages", embed);
                 updateUI();
             }
         });
 
         coImageFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                savingPrefs.put("imageFormat", coImageFormat.getSelectedItem().toString());
+                SAVONG_PREFERENCES.put("imageFormat", coImageFormat.getSelectedItem().toString());
                 updateUI();
             }
         });
 
         coPixelFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                savingPrefs.put("pixelFormat", coPixelFormat.getSelectedItem().toString());
+                SAVONG_PREFERENCES.put("pixelFormat", coPixelFormat.getSelectedItem().toString());
             }
         });
 
         coByteOrder.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 int index = coByteOrder.getSelectedIndex();
-                savingPrefs.putBoolean("imageIsBigEndian", index == 0);
+                SAVONG_PREFERENCES.putBoolean("imageIsBigEndian", index == 0);
             }
         });
 
         cbReportIOWarnings.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                ioPrefs.putBoolean("reportWarnings",
+                IO_PREFERENCES.putBoolean("reportWarnings",
                         cbReportIOWarnings.isSelected());
             }
         });
 
         cbAutoOpenLastFile.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                ioPrefs.putBoolean("autoOpenLast",
+                IO_PREFERENCES.putBoolean("autoOpenLast",
                         cbAutoOpenLastFile.isSelected());
             }
         });
 
         cbGridAA.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                displayPrefs.putBoolean("gridAntialias", cbGridAA.isSelected());
+                DISPLAY_PREFERENCES.putBoolean("gridAntialiasing", cbGridAA.isSelected());
             }
         });
 
         undoDepth.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                prefs.putInt("undoDepth", undoDepth.intValue());
+                PREFERENCES.putInt("undoDepth", undoDepth.intValue());
             }
         });
 
         gridOpacitySlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                displayPrefs.putInt("gridOpacity", gridOpacitySlider.getValue());
+                DISPLAY_PREFERENCES.putInt("gridOpacity", gridOpacitySlider.getValue());
             }
         });
 
@@ -405,14 +390,14 @@ public class ConfigurationDialog extends JDialog {
 
         rbEmbedInTiles.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                savingPrefs.putBoolean("tileSetImages",
+                SAVONG_PREFERENCES.putBoolean("tileSetImages",
                         !rbEmbedInTiles.isSelected());
             }
         });
 
         rbEmbedInSet.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                savingPrefs.putBoolean("tileSetImages",
+                SAVONG_PREFERENCES.putBoolean("tileSetImages",
                         rbEmbedInSet.isSelected());
             }
         });
@@ -429,29 +414,29 @@ public class ConfigurationDialog extends JDialog {
     }
 
     private void updateFromConfiguration() {
-        undoDepth.setValue(prefs.getInt("undoDepth", 30));
-        gridOpacitySlider.setValue(displayPrefs.getInt("gridOpacity", 255));
+        undoDepth.setValue(PREFERENCES.getInt("undoDepth", 30));
+        gridOpacitySlider.setValue(DISPLAY_PREFERENCES.getInt("gridOpacity", 255));
 
-        boolean embedImages = savingPrefs.getBoolean("embedImages", true);
+        boolean embedImages = SAVONG_PREFERENCES.getBoolean("embedImages", true);
         cbEmbedImages.setSelected(embedImages);
 
-        if (savingPrefs.getBoolean("tileSetImages", false)) {
+        if (SAVONG_PREFERENCES.getBoolean("tileSetImages", false)) {
             rbEmbedInSet.setSelected(true);
         } else {
             rbEmbedInTiles.setSelected(true);
         }
 
 
-        cbUsefulComments.setSelected(savingPrefs.getBoolean("usefulComments", false));
-        cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
-        cbCompressLayerData.setSelected(savingPrefs.getBoolean("layerCompression", true));
-        cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));
-        cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
-        cbAutoOpenLastFile.setSelected(ioPrefs.getBoolean("autoOpenLast", false));
+        cbUsefulComments.setSelected(SAVONG_PREFERENCES.getBoolean("usefulComments", false));
+        cbBinaryEncode.setSelected(SAVONG_PREFERENCES.getBoolean("encodeLayerData", true));
+        cbCompressLayerData.setSelected(SAVONG_PREFERENCES.getBoolean("layerCompression", true));
+        cbGridAA.setSelected(DISPLAY_PREFERENCES.getBoolean("gridAntialiasing", true));
+        cbReportIOWarnings.setSelected(IO_PREFERENCES.getBoolean("reportWarnings", false));
+        cbAutoOpenLastFile.setSelected(IO_PREFERENCES.getBoolean("autoOpenLast", false));
 
-        coImageFormat.setSelectedItem(ImageHelper.ImageFormat.valueOf(savingPrefs.get("imageFormat", "PNG"), ImageHelper.ImageFormat.PNG));
-        coPixelFormat.setSelectedItem(ImageHelper.PixelFormat.valueOf(savingPrefs.get("pixelFormat", "A1R5G5B5"), ImageHelper.PixelFormat.A1R5G5B5));
-        boolean imageIsBigEndian = savingPrefs.getBoolean("imageIsBigEndian", true);
+        coImageFormat.setSelectedItem(ImageHelper.ImageFormat.valueOf(SAVONG_PREFERENCES.get("imageFormat", "PNG"), ImageHelper.ImageFormat.PNG));
+        coPixelFormat.setSelectedItem(ImageHelper.PixelFormat.valueOf(SAVONG_PREFERENCES.get("pixelFormat", "A1R5G5B5"), ImageHelper.PixelFormat.A1R5G5B5));
+        boolean imageIsBigEndian = SAVONG_PREFERENCES.getBoolean("imageIsBigEndian", true);
         coByteOrder.setSelectedIndex(imageIsBigEndian ? 0 : 1);
 
         updateUI();
@@ -469,7 +454,7 @@ public class ConfigurationDialog extends JDialog {
                 FileOutputStream outputStream = null;
                 try {
                     outputStream = new FileOutputStream(configFile);
-                    prefs.exportSubtree(outputStream);
+                    PREFERENCES.exportSubtree(outputStream);
                 } finally {
                     if (outputStream != null) {
                         outputStream.close();

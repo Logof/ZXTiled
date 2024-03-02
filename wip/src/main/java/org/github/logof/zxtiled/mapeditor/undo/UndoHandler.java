@@ -13,7 +13,7 @@
 package org.github.logof.zxtiled.mapeditor.undo;
 
 import org.github.logof.zxtiled.mapeditor.MapEditor;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.undo.CannotRedoException;
@@ -34,7 +34,7 @@ public class UndoHandler extends UndoManager {
 
     public UndoHandler(MapEditor editor) {
         this.editor = editor;
-        setLimit(TiledConfiguration.root().getInt("undoDepth", 30));
+        setLimit(ZXTiledConfiguration.root().getInt("undoDepth", 30));
         updateActions();
     }
 

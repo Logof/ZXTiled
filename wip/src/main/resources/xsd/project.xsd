@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by user (home) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="project">
+        <xs:annotation>
+            <xs:documentation>Comment describing your root element</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="graphic">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="loading" type="image"/>
+                            <xs:element name="title" type="image"/>
+                            <xs:element name="ending" type="image"/>
+                            <xs:element name="frame" type="image"/>
+                            <xs:element name="tiles" type="image"/>
+                            <xs:element name="sprites">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="sprites" type="image"/>
+                                        <xs:element name="sprites_bullet" type="image" minOccurs="0"/>
+                                        <xs:element name="sprites_extra" type="image" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="font" type="image"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="map">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="tile">
+                                <xs:complexType>
+                                    <xs:attribute name="id" type="xs:int" use="required"/>
+                                    <xs:attribute name="layer" type="xs:int" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="width" type="xs:int" use="required"/>
+                        <xs:attribute name="height" type="xs:int" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="image">
+        <xs:sequence>
+            <xs:element name="path" type="xs:string"/>
+            <xs:element name="base64" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

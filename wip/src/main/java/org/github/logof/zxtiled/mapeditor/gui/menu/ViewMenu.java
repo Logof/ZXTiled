@@ -27,7 +27,7 @@ public class ViewMenu extends JMenu {
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
 
         cursorMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.cursor"));
-        cursorMenuItem.setSelected(MapEditor.preferences.getBoolean("cursorhighlight", true));
+        cursorMenuItem.setSelected(MapEditor.PREFERENCES.getBoolean("cursorhighlight", true));
         cursorMenuItem.addActionListener(MapEditor.getActionListener());
         cursorMenuItem.setToolTipText(Resources.getString("menu.view.cursor.tooltip"));
 

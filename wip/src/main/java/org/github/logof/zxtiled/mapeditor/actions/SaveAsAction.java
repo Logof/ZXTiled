@@ -18,7 +18,7 @@ import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.ConfirmingFileChooser;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
@@ -54,7 +54,7 @@ public class SaveAsAction extends AbstractAction {
     protected void showFileChooser() {
         // Start at the location of the most recently loaded map file
         String startLocation =
-                TiledConfiguration.node("recent").get("file0", null);
+                ZXTiledConfiguration.node("recent").get("file0", null);
 
         TiledFileFilter byExtensionFilter =
                 new TiledFileFilter(TiledFileFilter.FILTER_EXT);

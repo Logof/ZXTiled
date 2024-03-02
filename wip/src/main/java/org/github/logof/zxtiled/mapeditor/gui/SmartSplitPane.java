@@ -5,7 +5,7 @@
 
 package org.github.logof.zxtiled.mapeditor.gui;
 
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -24,7 +24,7 @@ import java.util.prefs.Preferences;
  * @author upachler
  */
 public class SmartSplitPane extends JSplitPane {
-    private final Preferences prefs;
+    private final Preferences preferences;
     private int defaultDividerSize = getDividerSize();
     private int lastLocation = Integer.MIN_VALUE;
     private State state;
@@ -45,7 +45,7 @@ public class SmartSplitPane extends JSplitPane {
                           String preferencesId) {
         super(newOrientation, newContinuousLayout, newLeftComponent, newRightComponent);
 
-        prefs = TiledConfiguration.node("dock-splitter/" + preferencesId);
+        preferences = ZXTiledConfiguration.node("dock-splitter/" + preferencesId);
 
         state = determineState();
 
@@ -96,7 +96,7 @@ public class SmartSplitPane extends JSplitPane {
     }
 
     public void restore() {
-        final int dividerLocation = prefs.getInt("dividerLocation", -1);
+        final int dividerLocation = preferences.getInt("dividerLocation", -1);
         if (dividerLocation != -1) {
             setDividerLocation(dividerLocation);
         } else {
@@ -111,7 +111,7 @@ public class SmartSplitPane extends JSplitPane {
                 defaultDividerSize = getDividerSize();
             }
             int location = getDividerLocation();
-            prefs.putInt("dividerLocation", location);
+            preferences.putInt("dividerLocation", location);
         }
     }
 

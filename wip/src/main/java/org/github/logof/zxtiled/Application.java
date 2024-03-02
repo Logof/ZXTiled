@@ -6,7 +6,7 @@
 package org.github.logof.zxtiled;
 
 import org.github.logof.zxtiled.mapeditor.MapEditor;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import java.io.File;
 import java.util.List;
 
@@ -23,9 +23,9 @@ public class Application {
      */
     public static void main(String[] args) {
         MapEditor editor = new MapEditor();
-        if (TiledConfiguration.node("io").getBoolean("autoOpenLast", false)) {
+        if (ZXTiledConfiguration.node("io").getBoolean("autoOpenLast", false)) {
             // Load last map if it still exists
-            List<String> recent = TiledConfiguration.getRecentFiles();
+            List<String> recent = ZXTiledConfiguration.getRecentFiles();
             if (!recent.isEmpty()) {
                 String filename = recent.get(0);
                 if (new File(filename).exists()) {

@@ -15,7 +15,7 @@ package org.github.logof.zxtiled.mapeditor.actions;
 import org.github.logof.zxtiled.mapeditor.MapEditor;
 import org.github.logof.zxtiled.mapeditor.Resources;
 import org.github.logof.zxtiled.mapeditor.util.TiledFileFilter;
-import org.github.logof.zxtiled.util.TiledConfiguration;
+import org.github.logof.zxtiled.util.ZXTiledConfiguration;
 import javax.swing.*;
 
 /**
@@ -36,7 +36,7 @@ public class OpenMapAction extends AbstractFileAction {
 
     protected void doPerformAction() {
         // Start at the location of the most recently loaded map file
-        String startLocation = TiledConfiguration.fileDialogStartLocation();
+        String startLocation = ZXTiledConfiguration.fileDialogStartLocation();
 
         JFileChooser chooser = new JFileChooser(startLocation);
 
